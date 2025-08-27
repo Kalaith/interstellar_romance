@@ -1,4 +1,4 @@
-# Mytherra Publishing Script
+# interstellar_romance Publishing Script
 # Publishes frontend and PHP backend to F:\WebHatchery for server sync
 
 param(
@@ -12,13 +12,13 @@ param(
 )
 
 # Configuration
-$SOURCE_DIR = "H:\WebHatchery\game_apps\mytherra"
+$SOURCE_DIR = "H:\WebHatchery\game_apps\interstellar_romance"
 $PREVIEW_ROOT = "H:\xampp\htdocs"
 $PRODUCTION_ROOT = "F:\WebHatchery"
 
 # Set destination based on environment
 $DEST_ROOT = if ($Environment -eq 'preview') { $PREVIEW_ROOT } else { $PRODUCTION_ROOT }
-$DEST_DIR = Join-Path $DEST_ROOT "mytherra"
+$DEST_DIR = Join-Path $DEST_ROOT "interstellar_romance"
 $FRONTEND_SRC = "$SOURCE_DIR\frontend"
 $BACKEND_SRC = "$SOURCE_DIR\backend"
 $FRONTEND_DEST = $DEST_DIR  # Frontend goes to root, not subdirectory
@@ -138,10 +138,10 @@ function Build-Frontend {
     Write-Info "Building frontend for production..."
     $env:NODE_ENV = "production"
     
-    # Set base path for preview environment (mytherra subdirectory)
+    # Set base path for preview environment (interstellar_romance subdirectory)
     if ($Environment -eq 'preview') {
         Write-Info "Setting base path for preview environment..."
-        $env:VITE_BASE_PATH = "/mytherra/"
+        $env:VITE_BASE_PATH = "/interstellar_romance/"
         # Build with preview mode to use .env.preview
         npx vite build --mode preview
     } else {
@@ -341,7 +341,7 @@ function Publish-Backend {
 
 # Main execution
 function Main {
-    Write-Info "Mytherra Publishing Script"
+    Write-Info "interstellar_romance Publishing Script"
     Write-Info "=========================="
     
     # Ensure WebHatchery directory exists
@@ -400,7 +400,7 @@ function Main {
 # Show help
 function Show-Help {
     Write-Host @"
-Mytherra Publishing Script
+interstellar_romance Publishing Script
 ==========================
 
 Usage: .\publish.ps1 [OPTIONS]
@@ -424,14 +424,14 @@ EXAMPLES:
     .\publish.ps1 -Frontend -Verbose -Environment preview # Publish frontend to preview with details
 
 DESCRIPTION:
-    This script builds and publishes the Mytherra god simulation game to either the 
+    This script builds and publishes the interstellar_romance god simulation game to either the 
     preview environment (H:\xampp\htdocs) or production environment (F:\WebHatchery).
     The frontend is built using npm and deployed to the root directory, while
     the PHP backend is deployed to the backend/ subdirectory with dependencies
     optimized for the target environment.
     
     Deployment Structure (for both environments):
-    <root>\mytherra\
+    <root>\interstellar_romance\
     ├── index.html          # Frontend files (root)
     ├── assets\             # Frontend assets
     └── backend\            # PHP backend
