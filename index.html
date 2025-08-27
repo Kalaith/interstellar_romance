@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interstellar Romance: A Stellaris Dating Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main Menu Screen -->
+    <div id="main-menu" class="screen active">
+        <div class="stars-background"></div>
+        <div class="container">
+            <div class="menu-content">
+                <h1 class="game-title">Interstellar Romance</h1>
+                <p class="game-subtitle">A Stellaris Dating Simulator</p>
+                <p class="tagline">Find love among the stars</p>
+                
+                <div class="menu-buttons">
+                    <button class="btn btn--primary btn--lg" id="start-game-btn">Start Game</button>
+                    <button class="btn btn--secondary btn--lg" id="character-creation-btn">Character Creation</button>
+                    <button class="btn btn--outline btn--lg" id="settings-btn">Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Creation Screen -->
+    <div id="character-creation" class="screen">
+        <div class="container">
+            <div class="creation-content">
+                <h2>Create Your Character</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="player-name">Character Name</label>
+                    <input type="text" class="form-control" id="player-name" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="player-species">Species</label>
+                    <select class="form-control" id="player-species">
+                        <option value="human">Human</option>
+                        <option value="plantoid">Plantoid</option>
+                        <option value="aquatic">Aquatic</option>
+                        <option value="reptilian">Reptilian</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Choose Your Traits (Select 2)</label>
+                    <div class="trait-selection">
+                        <label class="trait-option">
+                            <input type="checkbox" name="traits" value="charismatic"> Charismatic (+2 Charisma)
+                        </label>
+                        <label class="trait-option">
+                            <input type="checkbox" name="traits" value="intelligent"> Intelligent (+2 Intelligence)
+                        </label>
+                        <label class="trait-option">
+                            <input type="checkbox" name="traits" value="adventurous"> Adventurous (+2 Adventure)
+                        </label>
+                        <label class="trait-option">
+                            <input type="checkbox" name="traits" value="empathetic"> Empathetic (+2 Empathy)
+                        </label>
+                        <label class="trait-option">
+                            <input type="checkbox" name="traits" value="tech-savvy"> Tech-Savvy (+2 Technology)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="backstory">Backstory</label>
+                    <select class="form-control" id="backstory">
+                        <option value="diplomat">Diplomat - Skilled in negotiation and cultural exchange</option>
+                        <option value="explorer">Explorer - Experienced in discovering new worlds</option>
+                        <option value="merchant">Merchant - Expert in trade and commerce</option>
+                        <option value="scientist">Scientist - Researcher of galactic phenomena</option>
+                        <option value="military">Military Officer - Trained in strategy and combat</option>
+                    </select>
+                </div>
+
+                <div class="creation-buttons">
+                    <button class="btn btn--outline" id="back-to-menu-btn">Back to Menu</button>
+                    <button class="btn btn--primary" id="create-character-btn">Create Character</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Hub Screen -->
+    <div id="main-hub" class="screen">
+        <div class="container">
+            <div class="hub-header">
+                <h2>Galactic Dating Hub</h2>
+                <div class="player-info">
+                    <span id="player-display-name">Commander</span> | Week <span id="current-week">1</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <span class="stat-label">Charisma:</span>
+                        <span id="charisma-stat">5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Intelligence:</span>
+                        <span id="intelligence-stat">5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Adventure:</span>
+                        <span id="adventure-stat">5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Empathy:</span>
+                        <span id="empathy-stat">5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Technology:</span>
+                        <span id="technology-stat">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="characters-grid">
+                <!-- Zara'thul - Plantoid -->
+                <div class="character-card" data-character="zarath">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/ca4ea9771d7c7564e030f38aa0dd7360b7936b6b.jpg" alt="Zara'thul">
+                    </div>
+                    <div class="character-info">
+                        <h3>Zara'thul</h3>
+                        <p class="species">Plantoid - Cactus Species</p>
+                        <p class="personality">Wise • Patient • Eco-conscious</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+
+                <!-- Captain Vel'nari - Humanoid -->
+                <div class="character-card" data-character="velnari">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/e95cdb53efa6232c36d1a108bad460d7041e918b.jpg" alt="Captain Vel'nari">
+                    </div>
+                    <div class="character-info">
+                        <h3>Captain Vel'nari</h3>
+                        <p class="species">Humanoid - Blue-skinned</p>
+                        <p class="personality">Confident • Adventurous • Diplomatic</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+
+                <!-- Dr. Keth'ra - Aquatic -->
+                <div class="character-card" data-character="kethra">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/4d0c2669763ba29ea236ff892d76124b8b9e1208.jpg" alt="Dr. Keth'ra">
+                    </div>
+                    <div class="character-info">
+                        <h3>Dr. Keth'ra</h3>
+                        <p class="species">Aquatic - Fish-like</p>
+                        <p class="personality">Intelligent • Graceful • Mysterious</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+
+                <!-- Commander Ryx'tal - Reptilian -->
+                <div class="character-card" data-character="ryxtal">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/1a002dfee1f9dd851d63c86c06e1d4a34adb5dbb.jpg" alt="Commander Ryx'tal">
+                    </div>
+                    <div class="character-info">
+                        <h3>Commander Ryx'tal</h3>
+                        <p class="species">Reptilian - Lizard-like</p>
+                        <p class="personality">Strategic • Honor-bound • Protective</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+
+                <!-- Sage Mor'geth - Molluscoid -->
+                <div class="character-card" data-character="morgeth">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/3b50ab4fdc907c1e2d49fb226e812d5da1fc8f54.jpg" alt="Sage Mor'geth">
+                    </div>
+                    <div class="character-info">
+                        <h3>Sage Mor'geth</h3>
+                        <p class="species">Molluscoid - Tentacled</p>
+                        <p class="personality">Thoughtful • Empathetic • Artistic</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+
+                <!-- Engineer Thex'ik - Arthropoid -->
+                <div class="character-card" data-character="thexik">
+                    <div class="character-image">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/e901ac18f5b5edc006767e8e795115de4e06fe3c.jpg" alt="Engineer Thex'ik">
+                    </div>
+                    <div class="character-info">
+                        <h3>Engineer Thex'ik</h3>
+                        <p class="species">Arthropoid - Insectoid</p>
+                        <p class="personality">Logical • Innovative • Curious</p>
+                        <div class="affection-bar">
+                            <div class="affection-fill" data-affection="0"></div>
+                        </div>
+                        <span class="affection-text">Affection: <span class="affection-value">0</span>/100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hub-actions">
+                <button class="btn btn--primary" id="activities-btn">Weekly Activities</button>
+                <button class="btn btn--secondary" id="inventory-btn">Inventory</button>
+                <button class="btn btn--outline" id="menu-btn">Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Interaction Screen -->
+    <div id="character-interaction" class="screen">
+        <div class="container">
+            <div class="interaction-content">
+                <div class="character-display">
+                    <img id="interaction-character-image" src="" alt="Character">
+                    <div class="character-details">
+                        <h3 id="interaction-character-name"></h3>
+                        <p id="interaction-character-species"></p>
+                        <div class="affection-display">
+                            <div class="affection-bar">
+                                <div class="affection-fill" id="interaction-affection-fill"></div>
+                            </div>
+                            <span id="interaction-affection-text">Affection: 0/100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialogue-area">
+                    <div class="dialogue-box">
+                        <p id="dialogue-text">Select a conversation topic to begin...</p>
+                    </div>
+
+                    <div class="dialogue-options" id="dialogue-options">
+                        <button class="btn btn--outline dialogue-option" data-topic="greeting">General Chat</button>
+                        <button class="btn btn--outline dialogue-option" data-topic="interests">Ask About Interests</button>
+                        <button class="btn btn--outline dialogue-option" data-topic="backstory">Learn About Past</button>
+                        <button class="btn btn--outline dialogue-option" data-topic="flirt">Flirt</button>
+                    </div>
+                </div>
+
+                <div class="interaction-actions">
+                    <button class="btn btn--secondary" id="give-gift-btn">Give Gift</button>
+                    <button class="btn btn--primary" id="ask-on-date-btn">Ask on Date</button>
+                    <button class="btn btn--outline" id="back-to-hub-btn">Back to Hub</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activities Screen -->
+    <div id="activities-screen" class="screen">
+        <div class="container">
+            <h2>Weekly Activities</h2>
+            <p>Choose 2 activities for this week (Week <span id="activities-week">1</span>)</p>
+            
+            <div class="activities-grid">
+                <div class="activity-card" data-activity="work">
+                    <h4>Work Assignment</h4>
+                    <p>Complete your duties aboard the station</p>
+                    <p class="activity-reward">+1 Random Stat, +50 Credits</p>
+                </div>
+                
+                <div class="activity-card" data-activity="social">
+                    <h4>Social Event</h4>
+                    <p>Attend a diplomatic gathering</p>
+                    <p class="activity-reward">+1 Charisma, Meet characters</p>
+                </div>
+                
+                <div class="activity-card" data-activity="research">
+                    <h4>Research Project</h4>
+                    <p>Assist with scientific studies</p>
+                    <p class="activity-reward">+2 Intelligence, +1 Technology</p>
+                </div>
+                
+                <div class="activity-card" data-activity="exploration">
+                    <h4>Exploration Mission</h4>
+                    <p>Survey nearby star systems</p>
+                    <p class="activity-reward">+2 Adventure, Rare items</p>
+                </div>
+                
+                <div class="activity-card" data-activity="meditation">
+                    <h4>Meditation Retreat</h4>
+                    <p>Focus on inner balance and understanding</p>
+                    <p class="activity-reward">+2 Empathy, +1 Charisma</p>
+                </div>
+                
+                <div class="activity-card" data-activity="training">
+                    <h4>Skills Training</h4>
+                    <p>Improve your abilities</p>
+                    <p class="activity-reward">+1 to chosen stat</p>
+                </div>
+            </div>
+            
+            <div class="activities-selection">
+                <p>Selected Activities: <span id="selected-count">0</span>/2</p>
+                <div id="selected-activities"></div>
+                <button class="btn btn--primary" id="confirm-activities-btn" disabled>Confirm Activities</button>
+                <button class="btn btn--outline" id="cancel-activities-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
