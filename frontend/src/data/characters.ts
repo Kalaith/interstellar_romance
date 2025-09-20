@@ -1,52 +1,129 @@
 import { Character } from '../types/game';
+import { DEFAULT_MILESTONES } from './milestones';
+import { getRandomMood } from './moods';
+import { CHARACTER_PROFILES } from './character-profiles';
+import { CHARACTER_PHOTO_GALLERIES } from './photo-galleries';
+import { initialPersonalityTraits } from './personality-growth';
 
 export const CHARACTERS: Character[] = [
   {
-    id: 'zarath',
+    id: 'zara',
     name: "Zara'thul",
     species: 'Plantoid - Cactus Species',
     personality: 'Wise • Patient • Eco-conscious',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/ca4ea9771d7c7564e030f38aa0dd7360b7936b6b.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.zarath,
+    interactionCooldown: 30,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.zarath],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.zara],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   },
   {
-    id: 'velnari',
+    id: 'kai',
     name: "Captain Vel'nari",
     species: 'Humanoid - Blue-skinned',
     personality: 'Confident • Adventurous • Diplomatic',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/e95cdb53efa6232c36d1a108bad460d7041e918b.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.velnari,
+    interactionCooldown: 45,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.velnari],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.kai],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   },
   {
-    id: 'kethra',
+    id: 'nova',
     name: "Dr. Keth'ra",
     species: 'Aquatic - Fish-like',
     personality: 'Intelligent • Graceful • Mysterious',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/4d0c2669763ba29ea236ff892d76124b8b9e1208.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.kethra,
+    interactionCooldown: 60,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.kethra],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.nova],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   },
   {
-    id: 'ryxtal',
+    id: 'astra',
     name: "Commander Ryx'tal",
     species: 'Reptilian - Lizard-like',
     personality: 'Strategic • Honor-bound • Protective',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/1a002dfee1f9dd851d63c86c06e1d4a34adb5dbb.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.ryxtal,
+    interactionCooldown: 40,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.ryxtal],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.astra],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   },
   {
-    id: 'morgeth',
+    id: 'orion',
     name: "Sage Mor'geth",
     species: 'Molluscoid - Tentacled',
     personality: 'Thoughtful • Empathetic • Artistic',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/3b50ab4fdc907c1e2d49fb226e812d5da1fc8f54.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.morgeth,
+    interactionCooldown: 50,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.morgeth],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.orion],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   },
   {
-    id: 'thexik',
+    id: 'luna',
     name: "Engineer Thex'ik",
     species: 'Arthropoid - Insectoid',
     personality: 'Logical • Innovative • Curious',
     image: 'https://pplx-res.cloudinary.com/image/upload/v1753245899/pplx_project_search_images/e901ac18f5b5edc006767e8e795115de4e06fe3c.jpg',
-    affection: 0
+    affection: 0,
+    mood: getRandomMood(),
+    milestones: [...DEFAULT_MILESTONES],
+    profile: CHARACTER_PROFILES.thexik,
+    interactionCooldown: 35,
+    photoGallery: [...CHARACTER_PHOTO_GALLERIES.thexik],
+    dateHistory: [],
+    personalityGrowth: [...initialPersonalityTraits.luna],
+    superLikesReceived: [],
+    activeConflicts: [],
+    conflictHistory: [],
+    icebreakerMessages: [],
+    temporaryBoosts: []
   }
 ];

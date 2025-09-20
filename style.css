@@ -1,0 +1,336 @@
+/* Stellaris-inspired UI theme
+   Scope everything with .stellaris-theme to avoid collisions.
+   - Tweak the --accent and --accent-2 for different faction colors.
+   - Designed for a dark, high-contrast sci-fi dashboard.
+*/
+
+/* ---------- Variables ---------- */
+.stellaris-theme {
+  --bg-0: #0a0e13;        /* deep space black background */
+  --bg-1: #1a2330;        /* dark teal panel background */
+  --bg-2: #152028;        /* slightly lighter panel variant */
+  --card: #1e2d3a;        /* card background with teal tint */
+  --glass: #243242;       /* glass overlay */
+  --muted: #5a7a8a;       /* muted teal-gray text */
+  --text: #b8d4e3;        /* light cyan-white text */
+  --accent: #00d4ff;      /* bright stellaris cyan */
+  --accent-2: #4ae6c8;    /* secondary teal accent */
+  --danger: #ff4757;
+  --success: #2ed573;
+  --glass-border: rgba(0, 212, 255, 0.15);
+  --radius: 6px;
+  --panel-blur: 8px;
+  --ui-font: "Inter", "SF Pro Text", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --mono-font: "Fira Code", "Roboto Mono", monospace;
+  --elevation: 0 8px 32px rgba(0,0,0,0.8);
+  color-scheme: dark;
+  font-family: var(--ui-font);
+}
+
+/* ---------- Global base ---------- */
+.stellaris-theme body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  /* dark teal gradient for depth */
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(0,212,255,0.03), transparent 12%),
+    radial-gradient(circle at 85% 75%, rgba(74,230,200,0.02), transparent 10%),
+    linear-gradient(135deg, rgba(26,35,48,0.1), transparent 40%);
+  background-color: var(--bg-0);
+}
+
+/* ---------- Starfield layer (decorative) ---------- */
+.stellaris-theme .starfield {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02) 0 1px, transparent 1px),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.014) 0 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.018) 0 1px, transparent 1px);
+  background-size: 1200px 1200px, 800px 800px, 1600px 1600px;
+  mix-blend-mode: screen;
+  animation: star-drift 80s linear infinite;
+}
+@keyframes star-drift {
+  from { transform: translate3d(0,0,0); }
+  to   { transform: translate3d(-400px, 200px, 0); }
+}
+
+/* ---------- Layout helpers ---------- */
+.container {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 24px;
+  position: relative;
+  z-index: 2; /* above starfield */
+}
+
+/* ---------- Panel / Card (glassy) ---------- */
+.stellaris-theme div.card,
+.stellaris-theme .card {
+  background: linear-gradient(135deg, var(--card), var(--bg-1));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--elevation), inset 0 1px 0 rgba(0,212,255,0.1);
+  backdrop-filter: blur(var(--panel-blur));
+  margin-bottom: 18px;
+  color: var(--text);
+  position: relative;
+}
+
+/* Header styles */
+.stellaris-theme .header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stellaris-theme h1.brand,
+.stellaris-theme h2.brand,
+.stellaris-theme h3.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.stellaris-theme p.subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- Buttons ---------- */
+.stellaris-theme button.btn,
+.stellaris-theme .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+  box-shadow: var(--elevation);
+  user-select: none;
+  text-decoration: none;
+}
+.stellaris-theme button.btn:hover,
+.stellaris-theme .btn:hover {
+  background: linear-gradient(135deg, var(--glass), var(--bg-2));
+  border-color: var(--accent);
+}
+.stellaris-theme button.btn:active,
+.stellaris-theme .btn:active {
+  transform: translateY(1px);
+}
+.stellaris-theme button.btn.primary,
+.stellaris-theme .btn.primary {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,212,255,0.3), var(--elevation);
+  background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,212,255,0.05));
+  color: var(--text);
+}
+.stellaris-theme button.btn.primary:hover,
+.stellaris-theme .btn.primary:hover {
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.08));
+  box-shadow: 0 0 30px rgba(0,212,255,0.4), var(--elevation);
+}
+.stellaris-theme button.btn.ghost,
+.stellaris-theme .btn.ghost {
+  background: transparent;
+  border-color: var(--muted);
+  color: var(--muted);
+}
+.stellaris-theme button.btn.ghost:hover,
+.stellaris-theme .btn.ghost:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.stellaris-theme button.btn.warn,
+.stellaris-theme .btn.warn {
+  background: linear-gradient(135deg, rgba(74,230,200,0.1), rgba(74,230,200,0.05));
+  border-color: var(--accent-2);
+  color: var(--text);
+}
+.stellaris-theme button.btn.warn:hover,
+.stellaris-theme .btn.warn:hover {
+  background: linear-gradient(135deg, rgba(74,230,200,0.15), rgba(74,230,200,0.08));
+  box-shadow: 0 0 20px rgba(74,230,200,0.3), var(--elevation);
+}
+
+/* small neon badge */
+.stellaris-theme span.badge,
+.stellaris-theme div.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: var(--bg-2);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+/* ---------- Neon outline helpers ---------- */
+.neon-outline {
+  position: relative;
+}
+.neon-outline::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    0 0 24px var(--accent),
+    0 0 48px rgba(43,212,255,0.08);
+  opacity: 0;
+  transition: opacity .18s linear;
+}
+.neon-outline:hover::after { opacity: 1; }
+
+/* ---------- Data rows / table ---------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-family: var(--ui-font);
+}
+.table th, .table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.95rem;
+}
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* row highlight */
+.table tr:hover td {
+  background: linear-gradient(90deg, rgba(43,212,255,0.01), transparent);
+}
+
+/* status chips */
+.stellaris-theme span.chip,
+.stellaris-theme div.chip {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:0.85rem;
+  background: var(--bg-2);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+/* ---------- Progress / Resource bars ---------- */
+.stellaris-theme div.progress {
+  height: 12px;
+  background: var(--bg-1);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+.stellaris-theme div.progress > i {
+  display: block;
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 12px rgba(0,212,255,0.4);
+  transition: width .6s cubic-bezier(.2,.9,.2,1);
+}
+
+/* ---------- Sidebar / Navigation ---------- */
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008));
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:8px;
+  color:var(--muted);
+  cursor:pointer;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(43,212,255,0.02), transparent);
+}
+
+/* active nav with accent underline */
+.nav-item.active {
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* ---------- Small UI bits ---------- */
+.kv {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  color:var(--muted);
+}
+.kv .key { font-size:0.85rem; color:var(--muted); }
+.kv .value { font-weight:700; color:var(--text); }
+
+/* tooltips */
+.tooltip {
+  position:relative;
+}
+.tooltip:hover::after {
+  content: attr(data-tip);
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(2,7,10,0.9);
+  padding:8px 10px;
+  color:var(--text);
+  font-size:0.8rem;
+  border-radius:6px;
+  white-space:nowrap;
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  z-index: 30;
+}
+
+/* ---------- Tiny Utilities ---------- */
+.row { display:flex; gap:12px; align-items:center; }
+.col { display:flex; flex-direction:column; gap:8px; }
+.flex-1 { flex:1; }
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 880px) {
+  .container { padding: 18px; }
+  .sidebar { width: 100%; display:flex; gap:8px; overflow:auto; }
+}
+
+/* ---------- Misc flourish: blinking cursor for console headings ---------- */
+.cursor {
+  display:inline-block;
+  width:8px;
+  height:18px;
+  background:var(--accent);
+  margin-left:8px;
+  animation: blink 1.1s steps(2, start) infinite;
+}
+@keyframes blink { 50% { opacity: 0 } }

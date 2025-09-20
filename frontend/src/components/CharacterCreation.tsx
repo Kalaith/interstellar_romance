@@ -66,29 +66,29 @@ export const CharacterCreation: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-800 py-8">
-      <div className="container mx-auto max-w-2xl px-4">
-        <div className="bg-slate-900 rounded-lg p-8 text-white">
-          <h2 className="text-3xl font-bold mb-6 text-center">Create Your Character</h2>
+    <div className="min-h-screen py-8">
+      <div className="mx-auto max-w-2xl px-4">
+        <div className="card">
+          <h2 className="brand text-2xl md:text-3xl mb-6 text-center">Create Your Character<span className="cursor"></span></h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Character Name</label>
+              <label className="subtitle block text-sm mb-2">Character Name</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                className="w-full px-3 py-2 border rounded-md bg-slate-800 border-cyan-400/20 text-cyan-100 placeholder-cyan-300/50"
                 placeholder="Enter your name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Species</label>
+              <label className="subtitle block text-sm mb-2">Species</label>
               <select
                 value={formData.species}
                 onChange={(e) => setFormData(prev => ({ ...prev, species: e.target.value as any }))}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                className="w-full px-3 py-2 border rounded-md bg-slate-800 border-cyan-400/20 text-cyan-100"
               >
                 <option value="human">Human</option>
                 <option value="plantoid">Plantoid</option>
@@ -98,30 +98,30 @@ export const CharacterCreation: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Choose Your Traits (Select 2) - {formData.traits.length}/2 selected
+              <label className="subtitle block text-sm mb-2">
+                Choose Your Traits (Select 2) - <span className="value">{formData.traits.length}/2</span> selected
               </label>
               <div className="space-y-2">
                 {traits.map((trait) => (
-                  <label key={trait.id} className="flex items-center space-x-2 cursor-pointer">
+                  <label key={trait.id} className="card flex items-center space-x-2 cursor-pointer hover:opacity-80">
                     <input
                       type="checkbox"
                       checked={formData.traits.includes(trait.id)}
                       onChange={() => handleTraitToggle(trait.id)}
-                      className="rounded border-slate-600"
+                      className="rounded accent-cyan-400"
                     />
-                    <span>{trait.label}</span>
+                    <span className={formData.traits.includes(trait.id) ? 'value' : ''}>{trait.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Backstory</label>
+              <label className="subtitle block text-sm mb-2">Backstory</label>
               <select
                 value={formData.backstory}
                 onChange={(e) => setFormData(prev => ({ ...prev, backstory: e.target.value }))}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                className="w-full px-3 py-2 border rounded-md bg-slate-800 border-cyan-400/20 text-cyan-100"
               >
                 {backstories.map((backstory) => (
                   <option key={backstory.value} value={backstory.value}>
@@ -135,15 +135,15 @@ export const CharacterCreation: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setScreen('main-menu')}
-                className="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors"
+                className="btn ghost flex-1 px-6 py-3 text-lg"
               >
-                Back to Menu
+                🏠 Back to Menu
               </button>
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+                className="btn primary neon-outline flex-1 px-6 py-3 text-lg"
               >
-                Create Character
+                ✨ Create Character
               </button>
             </div>
           </form>
