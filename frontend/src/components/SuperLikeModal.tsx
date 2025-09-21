@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Character, SuperLike, SuperLikeResult } from '../types/game';
+import { Character, SuperLikeResult } from '../types/game';
 import { superLikeEffects, superLikeResponses, superLikeUnlocks } from '../data/super-likes';
 
 interface SuperLikeModalProps {

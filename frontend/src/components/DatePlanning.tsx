@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { DatePlan, ActivityType } from '../types/game';
-import { getAvailableDatePlans, getDatePlansByActivity } from '../data/date-plans';
+import { getDatePlansByActivity } from '../data/date-plans';
 import { calculateCompatibility } from '../utils/compatibility';
 
 export const DatePlanning: React.FC = () => {
@@ -26,7 +26,7 @@ export const DatePlanning: React.FC = () => {
     );
   }
 
-  const availablePlans = getAvailableDatePlans(selectedCharacter.affection);
+  // const availablePlans = getAvailableDatePlans(selectedCharacter.affection);
   const compatibility = calculateCompatibility(player, selectedCharacter.profile);
 
   const activityTypes: { type: ActivityType; icon: string; description: string }[] = [

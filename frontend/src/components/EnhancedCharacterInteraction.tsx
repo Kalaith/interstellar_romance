@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { DialogueOption, DialogueResponse, EmotionType } from '../types/game';
+import { DialogueOption, EmotionType } from '../types/game';
 import { getDialogueTree, getDialogueResponse } from '../data/dialogue-trees';
 import { getMoodModifier } from '../data/moods';
 import { EmotionalText } from './ui/EmotionalText';
@@ -12,7 +12,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
   const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
   const [dialogueHistory, setDialogueHistory] = useState<{ player: string; character: string; emotion: string }[]>([]);
-  const [currentBranch, setCurrentBranch] = useState<string | null>(null);
+  // const [currentBranch, setCurrentBranch] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedCharacter) {
@@ -101,7 +101,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
             dialogueTree.branches[branchId] || []
           );
           setAvailableOptions([...dialogueTree.rootOptions, ...nextBranchOptions]);
-          setCurrentBranch(option.nextOptions[0] || null);
+          // setCurrentBranch(option.nextOptions[0] || null);
         }
       }
     } else {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { GameScreen, PlayerCharacter, Character, CharacterMood, Achievement, DateHistoryEntry, CharacterKnownInfo, DailyInteractionData } from '../types/game';
+import { GameScreen, PlayerCharacter, Character, CharacterMood, Achievement, DateHistoryEntry, CharacterKnownInfo } from '../types/game';
 import { CHARACTERS, calculateMaxInteractions } from '../data/characters';
 import { getRandomMood } from '../data/moods';
 import { checkMilestones } from '../data/milestones';
