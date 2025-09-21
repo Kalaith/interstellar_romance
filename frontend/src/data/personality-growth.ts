@@ -1,4 +1,47 @@
-import { PersonalityGrowth } from '../types/game';
+import { PersonalityGrowth, GrowthTrigger } from '../types/game';
+
+export const personalityGrowthTriggers: Record<GrowthTrigger, Record<string, number>> = {
+  'positive_interaction': {
+    confidence: 2,
+    trust: 3,
+    openness: 2,
+    empathy: 1,
+    warmth: 2
+  },
+  'negative_interaction': {
+    confidence: -1,
+    trust: -3,
+    openness: -2,
+    warmth: -1
+  },
+  'milestone_achievement': {
+    confidence: 4,
+    trust: 2,
+    emotional_stability: 3
+  },
+  'date_success': {
+    confidence: 3,
+    trust: 2,
+    openness: 2,
+    playfulness: 1
+  },
+  'date_failure': {
+    confidence: -2,
+    trust: -1,
+    openness: -1
+  },
+  'conversation_choice': {
+    trust: 1,
+    openness: 1,
+    empathy: 1
+  },
+  'conflict_resolution': {
+    trust: 4,
+    emotional_stability: 3,
+    patience: 2,
+    empathy: 2
+  }
+};
 
 export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
   'aerarfin': [

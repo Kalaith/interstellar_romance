@@ -119,7 +119,7 @@ export const PersonalityGrowthTracker: React.FC<PersonalityGrowthTrackerProps> =
                   {selectedTrait.growthHistory
                     .slice()
                     .reverse()
-                    .map((event, index) => (
+                    .map((event, _index) => (
                       <div key={event.id} className="flex items-start space-x-3 p-3 bg-slate-700 rounded">
                         <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
                           event.change > 0 ? 'bg-green-400' : 'bg-red-400'

@@ -1,4 +1,4 @@
-import { DialogueTree, DialogueOption, DialogueResponse, EmotionType } from '../types/game';
+import { DialogueTree, DialogueResponse } from '../types/game';
 
 // Zarath (Plantoid) Dialogue Tree
 export const ZARATH_DIALOGUE: DialogueTree = {

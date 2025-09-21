@@ -620,9 +620,9 @@ export function getAvailableIcebreakers(
 }
 
 export function generateContextualSuggestion(
-  characterId: string,
-  currentAffection: number,
-  recentInteractions: string[]
+  _characterId: string,
+  _currentAffection: number,
+  _recentInteractions: string[]
 ): string {
   const suggestions = [
     "Ask about their interests and hobbies",

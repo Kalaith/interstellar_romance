@@ -1,4 +1,4 @@
-import { Character, PlayerCharacter, SexualPreference, Gender } from '../types/game';
+import { Character, SexualPreference } from '../types/game';
 
 /**
  * Filters characters based on the player's sexual preference

@@ -166,7 +166,7 @@ export const RelationshipTimeline: React.FC = () => {
 
               {/* Timeline Events */}
               <div className="space-y-6">
-                {timelineEvents.map((event, index) => (
+                {timelineEvents.map((event, _index) => (
                   <div key={event.id} className="relative flex items-start space-x-4">
                     {/* Timeline Dot */}
                     <div className={`relative z-10 w-16 h-16 rounded-full ${typeColors[event.type]} flex items-center justify-center text-white text-2xl shadow-lg`}>
