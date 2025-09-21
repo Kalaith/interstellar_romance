@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { GameScreen, PlayerCharacter, Character, CharacterMood, Achievement, DateHistoryEntry } from '../types/game';
-import { CHARACTERS } from '../data/characters';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { GameScreen, PlayerCharacter, Character, CharacterMood, Achievement, DateHistoryEntry, CharacterKnownInfo, DailyInteractionData } from '../types/game';
+import { CHARACTERS, calculateMaxInteractions } from '../data/characters';
 import { getRandomMood } from '../data/moods';
 import { checkMilestones } from '../data/milestones';
 import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
@@ -25,19 +26,26 @@ interface GameState {
   updateMood: (characterId: string, mood: CharacterMood) => void;
   refreshDailyMoods: () => void;
   checkAndUpdateMilestones: (characterId: string) => void;
-  updateLastInteraction: (characterId: string) => void;
+  updateLastInteractionDate: (characterId: string) => void;
   addDateToHistory: (characterId: string, datePlanId: string, affectionGained: number, success: boolean) => void;
   incrementConversations: () => void;
   updateAchievements: () => void;
-  isCharacterAvailable: (characterId: string) => boolean;
-  getTimeUntilAvailable: (characterId: string) => number;
+  canTalkToCharacterToday: (characterId: string) => boolean;
   toggleActivity: (activityId: string) => void;
   confirmActivities: () => void;
   nextWeek: () => void;
+
+  // Knowledge system actions
+  unlockCharacterInfo: (characterId: string, infoType: keyof CharacterKnownInfo) => void;
+  updateCharacterKnowledge: (characterId: string) => void;
+
+
+  // Game reset actions
+  resetGame: () => void;
 }
 
-export const useGameStore = create<GameState>((set, get) => ({
-  currentScreen: 'main-menu',
+const initialState = {
+  currentScreen: 'main-menu' as GameScreen,
   currentWeek: 1,
   player: null,
   characters: [...CHARACTERS],
@@ -46,6 +54,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   achievements: [...ACHIEVEMENTS],
   totalConversations: 0,
   totalDates: 0,
+};
+
+export const useGameStore = create<GameState>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -56,6 +70,13 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   selectCharacter: (characterId) => {
     const character = get().characters.find(c => c.id === characterId);
+
+    // Unlock basic info on first interaction
+    setTimeout(() => {
+      get().unlockCharacterInfo(characterId, 'species');
+      get().unlockCharacterInfo(characterId, 'basicPersonality');
+    }, 0);
+
     set({
       selectedCharacter: character || null,
       currentScreen: 'character-profile'
@@ -75,6 +96,11 @@ export const useGameStore = create<GameState>((set, get) => ({
         updatedChar.milestones = checkMilestones(newAffection, char.milestones);
         // Check photo unlocks
         updatedChar.photoGallery = checkPhotoUnlocks(char.photoGallery, newAffection);
+        // Update max interactions based on new affection level
+        updatedChar.dailyInteractions = {
+          ...char.dailyInteractions,
+          maxInteractions: calculateMaxInteractions(newAffection)
+        };
         return updatedChar;
       }
       return char;
@@ -84,8 +110,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
       : state.selectedCharacter;
 
-    // Update achievements after affection change
-    setTimeout(() => get().updateAchievements(), 0);
+    // Update achievements and knowledge after affection change
+    setTimeout(() => {
+      get().updateAchievements();
+      get().updateCharacterKnowledge(characterId);
+    }, 0);
 
     return {
       characters: updatedCharacters,
@@ -128,34 +157,25 @@ export const useGameStore = create<GameState>((set, get) => ({
     };
   }),
 
-  updateLastInteraction: (characterId) => set((state) => ({
-    characters: state.characters.map(char =>
-      char.id === characterId ? { ...char, lastInteraction: new Date() } : char
-    ),
-    selectedCharacter: state.selectedCharacter?.id === characterId
-      ? { ...state.selectedCharacter, lastInteraction: new Date() }
-      : state.selectedCharacter
-  })),
+  updateLastInteractionDate: (characterId) => set((state) => {
+    const today = new Date().toISOString().split('T')[0];
+    return {
+      characters: state.characters.map(char =>
+        char.id === characterId ? { ...char, lastInteractionDate: today } : char
+      ),
+      selectedCharacter: state.selectedCharacter?.id === characterId
+        ? { ...state.selectedCharacter, lastInteractionDate: today }
+        : state.selectedCharacter
+    };
+  }),
 
-  isCharacterAvailable: (characterId) => {
+  canTalkToCharacterToday: (characterId) => {
     const state = get();
     const character = state.characters.find(c => c.id === characterId);
-    if (!character || !character.lastInteraction || !character.interactionCooldown) return true;
+    if (!character) return false;
 
-    const timeSinceLastInteraction = Date.now() - character.lastInteraction.getTime();
-    const cooldownMs = character.interactionCooldown * 60 * 1000; // Convert minutes to milliseconds
-    return timeSinceLastInteraction >= cooldownMs;
-  },
-
-  getTimeUntilAvailable: (characterId) => {
-    const state = get();
-    const character = state.characters.find(c => c.id === characterId);
-    if (!character || !character.lastInteraction || !character.interactionCooldown) return 0;
-
-    const timeSinceLastInteraction = Date.now() - character.lastInteraction.getTime();
-    const cooldownMs = character.interactionCooldown * 60 * 1000;
-    const timeRemaining = cooldownMs - timeSinceLastInteraction;
-    return Math.max(0, Math.ceil(timeRemaining / (60 * 1000))); // Return minutes remaining
+    const today = new Date().toISOString().split('T')[0];
+    return character.lastInteractionDate !== today;
   },
 
   addDateToHistory: (characterId, datePlanId, affectionGained, success) => set((state) => {
@@ -249,5 +269,72 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   nextWeek: () => set((state) => ({
     currentWeek: state.currentWeek + 1
+  })),
+
+  // Knowledge system implementation
+  unlockCharacterInfo: (characterId, infoType) => set((state) => {
+    const updatedCharacters = state.characters.map(char =>
+      char.id === characterId
+        ? { ...char, knownInfo: { ...char.knownInfo, [infoType]: true } }
+        : char
+    );
+
+    const updatedSelectedCharacter = state.selectedCharacter?.id === characterId
+      ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
+      : state.selectedCharacter;
+
+    return {
+      characters: updatedCharacters,
+      selectedCharacter: updatedSelectedCharacter
+    };
+  }),
+
+  updateCharacterKnowledge: (characterId) => set((state) => {
+    const character = state.characters.find(c => c.id === characterId);
+    if (!character) return state;
+
+    const affection = character.affection;
+    const knownInfo = { ...character.knownInfo };
+
+    // Progressive knowledge unlock based on affection levels
+    if (affection >= 5) knownInfo.mood = true;
+    if (affection >= 10) knownInfo.interests = true;
+    if (affection >= 15) knownInfo.conversationStyle = true;
+    if (affection >= 25) knownInfo.values = true;
+    if (affection >= 35) knownInfo.background = true;
+    if (affection >= 50) knownInfo.goals = true;
+    if (affection >= 60) knownInfo.dealbreakers = true;
+    if (affection >= 70) knownInfo.favoriteTopics = true;
+
+    // Check for milestone unlocks
+    const achievedMilestones = character.milestones.filter(m => m.achieved);
+    if (achievedMilestones.length >= 2) knownInfo.deepPersonality = true;
+    if (achievedMilestones.length >= 4) knownInfo.secretTraits = true;
+
+    const updatedCharacters = state.characters.map(char =>
+      char.id === characterId ? { ...char, knownInfo } : char
+    );
+
+    const updatedSelectedCharacter = state.selectedCharacter?.id === characterId
+      ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
+      : state.selectedCharacter;
+
+    return {
+      characters: updatedCharacters,
+      selectedCharacter: updatedSelectedCharacter
+    };
+  }),
+
+
+  resetGame: () => set(() => ({
+    ...initialState,
+    characters: [...CHARACTERS], // Fresh copy of characters
+    achievements: [...ACHIEVEMENTS] // Fresh copy of achievements
   }))
-}));
+    }),
+    {
+      name: 'interstellar-romance-game', // unique name
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);

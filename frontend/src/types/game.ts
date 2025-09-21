@@ -2,16 +2,19 @@ export interface Character {
   id: string;
   name: string;
   species: string;
+  gender: Gender;
   personality: string;
   image: string;
   affection: number;
   mood: CharacterMood;
   milestones: RelationshipMilestone[];
   profile: CharacterProfile;
-  lastInteraction?: Date;
-  interactionCooldown?: number; // minutes
+  lastInteractionDate?: string; // YYYY-MM-DD format for daily tracking
   photoGallery: CharacterPhoto[];
   dateHistory: DateHistoryEntry[];
+  knownInfo: CharacterKnownInfo; // Progressive disclosure tracking
+  // Daily interaction tracking
+  dailyInteractions: DailyInteractionData;
   // Phase 4: Advanced Features
   personalityGrowth: PersonalityGrowth[];
   superLikesReceived: SuperLike[];
@@ -24,6 +27,8 @@ export interface Character {
 export interface PlayerCharacter {
   name: string;
   species: 'human' | 'plantoid' | 'aquatic' | 'reptilian';
+  gender: Gender;
+  sexualPreference: SexualPreference;
   traits: string[];
   backstory: string;
   stats: PlayerStats;
@@ -42,6 +47,15 @@ export interface Activity {
   name: string;
   description: string;
   reward: string;
+  type: 'weekly' | 'daily';
+  category?: 'social' | 'exploration' | 'personal' | 'fitness' | 'study' | 'leisure';
+  statBonus?: Partial<PlayerStats>;
+}
+
+export interface SelfImprovementActivity extends Activity {
+  type: 'daily';
+  energyCost: number;
+  timeSlots: number; // How many time slots this takes
 }
 
 export type GameScreen =
@@ -50,6 +64,7 @@ export type GameScreen =
   | 'main-hub'
   | 'character-interaction'
   | 'activities'
+  | 'self-improvement'
   | 'character-profile'
   | 'date-planning'
   | 'photo-gallery'
@@ -167,6 +182,19 @@ export type PersonalValue =
   | 'honor'
   | 'empathy'
   | 'efficiency';
+
+export type Gender =
+  | 'male'
+  | 'female'
+  | 'non-binary'
+  | 'other';
+
+export type SexualPreference =
+  | 'men'
+  | 'women'
+  | 'all'
+  | 'non-binary'
+  | 'alien-species';
 
 export interface DatePlan {
   id: string;
@@ -389,6 +417,12 @@ export interface DateHistoryEntry {
   notes?: string;
 }
 
+export interface DailyInteractionData {
+  lastResetDate: string; // YYYY-MM-DD format
+  interactionsUsed: number;
+  maxInteractions: number;
+}
+
 export interface RelationshipTimeline {
   characterId: string;
   events: TimelineEvent[];
@@ -411,4 +445,31 @@ export interface PlayerAdvancedState {
   lastSuperLikeReset: Date;
   conflictResolutionSkill: number; // 0-100, improves with successful resolutions
   icebreakerUnlocks: string[]; // unlocked icebreaker categories
+}
+
+// Progressive Information Disclosure System
+export interface CharacterKnownInfo {
+  // Basic info (always known after first encounter)
+  name: boolean;
+  appearance: boolean;
+
+  // Basic details (unlocked after first conversation)
+  species: boolean;
+  basicPersonality: boolean;
+
+  // Intermediate info (unlocked at various affection levels)
+  mood: boolean; // Unlocked at 5 affection
+  interests: boolean; // Unlocked at 10 affection
+  conversationStyle: boolean; // Unlocked at 15 affection
+  values: boolean; // Unlocked at 25 affection
+
+  // Deep info (unlocked at higher affection levels)
+  background: boolean; // Unlocked at 35 affection
+  goals: boolean; // Unlocked at 50 affection
+  dealbreakers: boolean; // Unlocked at 60 affection
+  favoriteTopics: boolean; // Unlocked at 70 affection
+
+  // Secret info (unlocked through milestones or special events)
+  deepPersonality: boolean; // Unlocked through milestones
+  secretTraits: boolean; // Unlocked through specific interactions
 }

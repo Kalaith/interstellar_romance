@@ -7,6 +7,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Stellaris Color Palette
+        'stellaris-space': '#0a0e13',
+        'stellaris-panel': '#1a2330',
+        'stellaris-section': '#152028',
+        'stellaris-item': '#1e2d3a',
+        'stellaris-text': '#e8f4fa',
+        'stellaris-muted': '#6b8395',
+        'stellaris-cyan': '#00d4ff',
+        'stellaris-teal': '#4ae6c8',
+        'stellaris-energy': '#f1c40f',
+        'stellaris-minerals': '#e74c3c',
+        'stellaris-food': '#27ae60',
+        'stellaris-alloys': '#9b59b6',
+        'stellaris-research': '#3498db',
+        'stellaris-influence': '#f39c12',
+        'stellaris-success': '#2ed573',
+        'stellaris-warning': '#f39c12',
+        'stellaris-danger': '#e74c3c',
+        
+        // Legacy colors for compatibility
         gold: {
           50: '#fefce8',
           100: '#fef9c3',

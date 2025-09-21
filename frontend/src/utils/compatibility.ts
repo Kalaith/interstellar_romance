@@ -1,4 +1,4 @@
-import { CompatibilityScore, CharacterProfile, PlayerCharacter, Interest } from '../types/game';
+import { CompatibilityScore, CharacterProfile, PlayerCharacter, Character } from '../types/game';
 
 export function calculateCompatibility(playerCharacter: PlayerCharacter, characterProfile: CharacterProfile): CompatibilityScore {
   const interestScore = calculateInterestCompatibility(playerCharacter, characterProfile);
@@ -207,4 +207,67 @@ export function getCompatibilityLabel(score: number): string {
   if (score >= 40) return 'Fair';
   if (score >= 30) return 'Challenging';
   return 'Difficult';
+}
+
+// Romance compatibility functions
+export function isRomanticallyCompatible(player: PlayerCharacter, character: Character): boolean {
+  const playerPreference = player.sexualPreference;
+  const characterGender = character.gender;
+
+  switch (playerPreference) {
+    case 'men':
+      return characterGender === 'male';
+    case 'women':
+      return characterGender === 'female';
+    case 'non-binary':
+      return characterGender === 'non-binary';
+    case 'all':
+      return true; // Compatible with all genders
+    case 'alien-species':
+      return true; // Compatible with all alien species regardless of gender
+    default:
+      return false;
+  }
+}
+
+export function getFilteredCharactersByPreference(player: PlayerCharacter, characters: Character[]): Character[] {
+  return characters.filter(character => isRomanticallyCompatible(player, character));
+}
+
+export function getRomanceCompatibilityLabel(player: PlayerCharacter, character: Character): string {
+  if (!isRomanticallyCompatible(player, character)) {
+    return 'Not Romantically Interested';
+  }
+
+  const playerPreference = player.sexualPreference;
+  const characterGender = character.gender;
+
+  if (playerPreference === 'all' || playerPreference === 'alien-species') {
+    return 'Open to Romance';
+  }
+
+  // For specific preferences, give more enthusiastic labels
+  const genderLabels = {
+    'male': 'Attracted to Men',
+    'female': 'Attracted to Women',
+    'non-binary': 'Attracted to Non-Binary Individuals',
+    'other': 'Attracted to Unique Beings'
+  };
+
+  return genderLabels[characterGender] || 'Open to Romance';
+}
+
+export function getRomanceCompatibilityColor(player: PlayerCharacter, character: Character): string {
+  if (!isRomanticallyCompatible(player, character)) {
+    return 'text-gray-400';
+  }
+
+  const playerPreference = player.sexualPreference;
+
+  if (playerPreference === 'all' || playerPreference === 'alien-species') {
+    return 'text-pink-400';
+  }
+
+  // Perfect match for specific preference
+  return 'text-green-400';
 }

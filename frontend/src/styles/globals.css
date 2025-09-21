@@ -1,2 +1,43 @@
 @import "tailwindcss";
-@import "../../../style.css";
+
+/* Base styles for Stellaris theme */
+.stellaris-theme {
+  font-family: "Inter", "SF Pro Text", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #e8f4fa;
+  background: #0a0e13;
+}
+
+/* Starfield animation */
+.starfield {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02) 0 1px, transparent 1px),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.014) 0 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.018) 0 1px, transparent 1px);
+  background-size: 1200px 1200px, 800px 800px, 1600px 1600px;
+  mix-blend-mode: screen;
+  animation: star-drift 80s linear infinite;
+}
+
+@keyframes star-drift {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(-400px, 200px, 0); }
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 18px;
+  background: #00d4ff;
+  margin-left: 8px;
+  animation: blink 1.1s steps(2, start) infinite;
+}

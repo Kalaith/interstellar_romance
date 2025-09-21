@@ -7,7 +7,7 @@ import { EmotionalText } from './ui/EmotionalText';
 import { MoodDisplay } from './ui/MoodDisplay';
 
 export const EnhancedCharacterInteraction: React.FC = () => {
-  const { selectedCharacter, setScreen, updateAffection, updateLastInteraction, incrementConversations } = useGameStore();
+  const { selectedCharacter, setScreen, updateAffection, updateLastInteractionDate, incrementConversations, canTalkToCharacterToday } = useGameStore();
   const [currentDialogue, setCurrentDialogue] = useState<string>('Choose how to start your conversation...');
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
   const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
@@ -33,12 +33,12 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
   if (!selectedCharacter) {
     return (
-      <div className="min-h-screen bg-slate-800 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-xl mb-4">No character selected!</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
+          <p className="text-xl text-[var(--text-primary)] mb-4">No character selected!</p>
           <button
             onClick={() => setScreen('main-hub')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
+            className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
           >
             Back to Hub
           </button>
@@ -48,6 +48,13 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   }
 
   const handleDialogueChoice = (option: DialogueOption) => {
+    // Check if we can talk today (once per day limit)
+    if (!canTalkToCharacterToday(selectedCharacter.id)) {
+      setCurrentDialogue(`You've already had your daily conversation with ${selectedCharacter.name}. Come back tomorrow for another chat!`);
+      setCurrentEmotion('neutral');
+      return;
+    }
+
     // Check requirements
     if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
       setCurrentDialogue(`${selectedCharacter.name} seems uncomfortable with that approach. Perhaps build more trust first.`);
@@ -61,6 +68,9 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       return;
     }
 
+    // Mark that we've talked today (no longer using the multi-interaction system)
+    updateLastInteractionDate(selectedCharacter.id);
+
     // Get response
     const response = getDialogueResponse(option.id);
     if (response) {
@@ -73,7 +83,6 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
       if (totalAffectionChange !== 0) {
         updateAffection(selectedCharacter.id, totalAffectionChange);
-        updateLastInteraction(selectedCharacter.id);
         incrementConversations();
       }
 
@@ -102,6 +111,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   };
 
   const handleBasicDialogue = (option: DialogueOption) => {
+    // Note: interaction already used in handleDialogueChoice, don't use again
+
     let dialogue = '';
     let affectionGain = 0;
     let emotion: EmotionType = 'neutral';
@@ -144,7 +155,6 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
     if (totalAffectionChange > 0) {
       updateAffection(selectedCharacter.id, totalAffectionChange);
-      updateLastInteraction(selectedCharacter.id);
       incrementConversations();
     }
   };
@@ -156,126 +166,243 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     return true;
   });
 
+  const canTalkToday = canTalkToCharacterToday(selectedCharacter.id);
+
   const unlockedMilestones = selectedCharacter.milestones.filter(m => m.achieved);
   const nextMilestone = selectedCharacter.milestones.find(m => !m.achieved);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Character Display */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="w-32 h-32 rounded-lg overflow-hidden bg-slate-700">
-                <img
-                  src={selectedCharacter.image}
-                  alt={selectedCharacter.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2">{selectedCharacter.name}</h3>
-                <p className="text-blue-300 mb-2">{selectedCharacter.species}</p>
-
-                {/* Mood Display */}
-                <div className="mb-3">
-                  <MoodDisplay
-                    mood={selectedCharacter.mood}
-                    characterName={selectedCharacter.name}
+    <div className="min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Stellaris-Style Character Console */}
+        <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-6 backdrop-blur-sm">
+          {/* Character Header Panel */}
+          <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+            <div className="flex items-start gap-6">
+              {/* Character Portrait */}
+              <div className="relative">
+                <div className="w-32 h-32 rounded-lg overflow-hidden bg-[var(--bg-item)] border-2 border-[var(--accent-cyan)]">
+                  <img
+                    src={selectedCharacter.image}
+                    alt={selectedCharacter.name}
+                    className="w-full h-full object-cover"
                   />
                 </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--state-available)] rounded-full border-2 border-[var(--bg-section)] animate-pulse"></div>
+              </div>
 
-                {/* Affection Bar */}
-                <div className="mb-2">
-                  <div className="w-full bg-gray-700 rounded-full h-3">
-                    <div
-                      className="bg-pink-500 h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${selectedCharacter.affection}%` }}
-                    ></div>
+              {/* Character Details */}
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{selectedCharacter.name}</h3>
+                    {selectedCharacter.knownInfo.species ? (
+                      <p className="text-[var(--accent-teal)] font-medium mb-1">{selectedCharacter.species}</p>
+                    ) : (
+                      <p className="text-[var(--text-muted)] font-medium mb-1">Unknown Species</p>
+                    )}
+                    {selectedCharacter.knownInfo.basicPersonality ? (
+                      <p className="text-[var(--text-muted)] text-sm">{selectedCharacter.personality}</p>
+                    ) : (
+                      <p className="text-[var(--text-muted)] text-sm">Personality Unknown</p>
+                    )}
                   </div>
-                  <div className="text-sm text-gray-400 mt-1">
-                    Affection: {selectedCharacter.affection}/100
+
+                  {/* Communication Status */}
+                  <div className="text-right space-y-2">
+                    <div>
+                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Comm Status</div>
+                      <div className="text-[var(--state-available)] font-semibold">ONLINE</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Daily Chat</div>
+                      <div className={`font-semibold ${canTalkToday ? 'text-[var(--state-available)]' : 'text-[var(--state-deficit)]'}`}>
+                        {canTalkToday ? 'AVAILABLE' : 'USED'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mood Display */}
+                {selectedCharacter.knownInfo.mood ? (
+                  <div className="mb-4">
+                    <MoodDisplay
+                      mood={selectedCharacter.mood}
+                      characterName={selectedCharacter.name}
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-4">
+                    <div className="text-[var(--text-muted)] text-sm">Current mood is unknown - spend more time with them to learn their emotional state.</div>
+                  </div>
+                )}
+
+                {/* Relationship Resources */}
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Affection</span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">{selectedCharacter.affection}/100</span>
+                    </div>
+                    <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${selectedCharacter.affection}%`,
+                          background: `linear-gradient(90deg, var(--resource-minerals), var(--resource-energy))`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Trust</span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">75/100</span>
+                    </div>
+                    <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `75%`,
+                          background: `linear-gradient(90deg, var(--accent-teal), var(--accent-cyan))`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Compatibility</span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">85%</span>
+                    </div>
+                    <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `85%`,
+                          background: `linear-gradient(90deg, var(--state-available), var(--resource-food))`
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Milestones */}
-                {unlockedMilestones.length > 0 && (
-                  <div className="mb-2">
-                    <p className="text-xs text-purple-300">
-                      Milestones: {unlockedMilestones.map(m => m.name).join(', ')}
-                    </p>
-                  </div>
-                )}
-
-                {nextMilestone && (
-                  <div className="text-xs text-yellow-300">
-                    Next: {nextMilestone.name} (at {nextMilestone.unlockedAt} affection)
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {unlockedMilestones.map((milestone, index) => (
+                    <div key={index} className="px-3 py-1 bg-[var(--state-available)] text-[var(--bg-space)] rounded-full text-xs font-semibold">
+                      ✨ {milestone.name}
+                    </div>
+                  ))}
+                  {nextMilestone && (
+                    <div className="px-3 py-1 bg-[var(--state-locked)] text-[var(--text-muted)] rounded-full text-xs">
+                      🔒 {nextMilestone.name} ({nextMilestone.unlockedAt} affection)
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Dialogue Area */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
-            <div className="bg-slate-800 rounded-lg p-4 mb-4 min-h-[120px] flex items-start">
-              <EmotionalText
-                text={currentDialogue}
-                emotion={currentEmotion}
-                className="w-full"
-              />
+          {/* Communication Console */}
+          <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-[var(--accent-cyan)] font-bold uppercase tracking-wide">Communication Interface</h4>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-[var(--state-available)] rounded-full animate-pulse"></div>
+                <span className="text-[var(--text-muted)] text-xs">ACTIVE CHANNEL</span>
+              </div>
             </div>
 
-            {/* Dialogue Options */}
-            <div className="grid grid-cols-1 gap-3">
-              {filteredOptions.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleDialogueChoice(option)}
-                  className={`px-4 py-3 rounded-lg transition-colors text-left
-                    ${option.requiresAffection && selectedCharacter.affection < option.requiresAffection
-                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                      : 'bg-slate-700 hover:bg-slate-600 text-white'
-                    }`}
-                  disabled={option.requiresAffection ? selectedCharacter.affection < option.requiresAffection : false}
-                >
-                  <div className="flex justify-between items-center">
-                    <span>{option.text}</span>
-                    {option.requiresAffection && (
-                      <span className="text-xs text-gray-400">
-                        (Requires {option.requiresAffection} affection)
-                      </span>
-                    )}
+            {/* Dialogue Display */}
+            <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4 mb-6 min-h-[120px]">
+              <div className="text-[var(--text-primary)] leading-relaxed">
+                <EmotionalText
+                  text={currentDialogue}
+                  emotion={currentEmotion}
+                  className="w-full"
+                />
+              </div>
+            </div>
+
+            {/* Daily Chat Warning */}
+            {!canTalkToday && (
+              <div className="bg-[var(--state-deficit)]/20 border border-[var(--state-deficit)]/30 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">💬</span>
+                  <div>
+                    <div className="text-[var(--state-deficit)] font-semibold">Daily conversation completed</div>
+                    <div className="text-[var(--text-muted)] text-sm">
+                      You've already had your daily chat with {selectedCharacter.name}. Come back tomorrow for another conversation!
+                    </div>
                   </div>
-                </button>
-              ))}
+                </div>
+              </div>
+            )}
+
+            {/* Response Options Grid */}
+            <div className="grid grid-cols-1 gap-3">
+              {filteredOptions.map((option) => {
+                const isLocked = option.requiresAffection && selectedCharacter.affection < option.requiresAffection;
+                const isDisabled = isLocked || !canTalkToday;
+
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => !isDisabled && handleDialogueChoice(option)}
+                    className={`p-4 rounded-lg border-2 text-left transition-all duration-300 ${
+                      isDisabled
+                        ? 'border-[var(--state-locked)] bg-[var(--bg-item)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
+                        : 'border-[var(--border-inner)] bg-[var(--bg-item)] text-[var(--text-primary)] hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-section)] hover:shadow-[0_0_15px_rgba(0,212,255,0.2)]'
+                    }`}
+                    disabled={isDisabled}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{option.text}</span>
+                      {option.requiresAffection && (
+                        <span className="text-xs px-2 py-1 rounded-full bg-[var(--bg-section)] border border-[var(--border-inner)]">
+                          {isLocked ? '🔒' : '💖'} {option.requiresAffection}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Dialogue History */}
+          {/* Conversation Log */}
           {dialogueHistory.length > 0 && (
-            <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
-              <h4 className="text-lg font-semibold mb-4">Recent Conversation</h4>
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
+              <h4 className="text-[var(--accent-teal)] font-bold uppercase tracking-wide mb-4">Recent Exchange Log</h4>
               <div className="space-y-3 max-h-40 overflow-y-auto">
                 {dialogueHistory.slice(-3).map((exchange, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="text-blue-300 text-sm">You: {exchange.player}</div>
-                    <div className="text-gray-300 text-sm pl-4">{selectedCharacter.name}: {exchange.character}</div>
+                  <div key={index} className="space-y-2 border-b border-[var(--border-inner)] pb-3 last:border-b-0">
+                    <div className="flex items-start gap-3">
+                      <span className="text-[var(--accent-cyan)] text-xs font-semibold uppercase">You:</span>
+                      <span className="text-[var(--text-secondary)] text-sm">{exchange.player}</span>
+                    </div>
+                    <div className="flex items-start gap-3 pl-4">
+                      <span className="text-[var(--accent-teal)] text-xs font-semibold uppercase">{selectedCharacter.name}:</span>
+                      <span className="text-[var(--text-primary)] text-sm">{exchange.character}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => setScreen('main-hub')}
-              className="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors"
-            >
-              Back to Hub
-            </button>
-          </div>
+        {/* Bottom Action Panel */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setScreen('main-hub')}
+            className="flex items-center gap-3 px-8 py-4 text-lg font-semibold text-[var(--text-primary)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg transition-all duration-300"
+          >
+            <span className="text-2xl">🏠</span>
+            <span>Return to Hub</span>
+          </button>
         </div>
       </div>
     </div>
