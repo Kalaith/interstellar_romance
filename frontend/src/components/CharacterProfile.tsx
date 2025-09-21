@@ -117,7 +117,7 @@ export const CharacterProfile: React.FC = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button
                   onClick={() => setScreen('character-interaction')}
-                  className="flex items-center gap-3 px-4 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] rounded-lg font-semibold transition-all duration-300"
+                  className="flex items-center gap-3 px-4 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] border border-[var(--border-inner)] rounded-lg font-semibold transition-all duration-300"
                 >
                   <span className="text-xl">💬</span>
                   <span>Chat</span>

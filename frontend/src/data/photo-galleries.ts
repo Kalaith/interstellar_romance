@@ -4,7 +4,7 @@ import { CharacterPhoto, PhotoRarity } from '../types/game';
 export const AERARFIN_PHOTOS: CharacterPhoto[] = [
   {
     id: 'aerarfin_portrait',
-    url: './images/characters/character1.png',
+    url: './images/characters/aerarfin.png',
     title: 'Wind Dance Portrait',
     description: 'Aerarfin floating gracefully among the clouds, hair flowing with ethereal wind',
     unlockedAt: 0,
@@ -13,7 +13,7 @@ export const AERARFIN_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'aerarfin_storm',
-    url: './images/characters/character1.png',
+    url: './images/characters/aerarfin.png',
     title: 'Storm Calling',
     description: 'Aerarfin commanding lightning and wind in a spectacular aerial display',
     unlockedAt: 15,
@@ -22,7 +22,7 @@ export const AERARFIN_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'aerarfin_sunset',
-    url: './images/characters/character1.png',
+    url: './images/characters/aerarfin.png',
     title: 'Sunset Flight',
     description: 'A breathtaking moment of freedom as Aerarfin soars through twilight skies',
     unlockedAt: 35,
@@ -35,7 +35,7 @@ export const AERARFIN_PHOTOS: CharacterPhoto[] = [
 export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
   {
     id: 'bellasnor_portrait',
-    url: './images/characters/character2.png',
+    url: './images/characters/bellasnor.png',
     title: 'Starlight Portrait',
     description: 'Bellasnor radiating celestial light, stars reflecting in her luminous eyes',
     unlockedAt: 0,
@@ -44,7 +44,7 @@ export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'bellasnor_healing',
-    url: './images/characters/character2.png',
+    url: './images/characters/bellasnor.png',
     title: 'Light Healing',
     description: 'Channeling pure starlight to heal and comfort those in need',
     unlockedAt: 15,
@@ -53,7 +53,7 @@ export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'bellasnor_cosmic',
-    url: './images/characters/character2.png',
+    url: './images/characters/bellasnor.png',
     title: 'Cosmic Meditation',
     description: 'In deep communion with the cosmos, surrounded by swirling galaxies',
     unlockedAt: 35,
@@ -66,7 +66,7 @@ export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
 export const CELANLAS_PHOTOS: CharacterPhoto[] = [
   {
     id: 'celanlas_portrait',
-    url: './images/characters/character3.png',
+    url: './images/characters/celanlas.png',
     title: 'Forest Guardian',
     description: 'Celanlas standing watch over the ancient woodland, one with nature',
     unlockedAt: 0,
@@ -75,7 +75,7 @@ export const CELANLAS_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'celanlas_animals',
-    url: './images/characters/character3.png',
+    url: './images/characters/celanlas.png',
     title: 'Wild Council',
     description: 'Communing with forest creatures, speaking their ancient language',
     unlockedAt: 15,
@@ -84,7 +84,7 @@ export const CELANLAS_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'celanlas_treeheart',
-    url: './images/characters/character3.png',
+    url: './images/characters/celanlas.png',
     title: 'Heart of the Forest',
     description: 'Connected to the great tree spirits, channeling their wisdom',
     unlockedAt: 35,
@@ -97,7 +97,7 @@ export const CELANLAS_PHOTOS: CharacterPhoto[] = [
 export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
   {
     id: 'lyraiel_portrait',
-    url: './images/characters/character4.png',
+    url: './images/characters/lyraiel.png',
     title: 'Song Portrait',
     description: 'Lyraiel in the midst of a beautiful melody, music made visible around her',
     unlockedAt: 0,
@@ -106,7 +106,7 @@ export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'lyraiel_performance',
-    url: './images/characters/character4.png',
+    url: './images/characters/lyraiel.png',
     title: 'Grand Performance',
     description: 'Enchanting an audience with songs that touch the very soul',
     unlockedAt: 15,
@@ -115,7 +115,7 @@ export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'lyraiel_harmony',
-    url: './images/characters/character4.png',
+    url: './images/characters/lyraiel.png',
     title: 'Universal Harmony',
     description: 'Creating music that bridges worlds, connecting all hearts through melody',
     unlockedAt: 35,
@@ -128,7 +128,7 @@ export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
 export const MORIAION_PHOTOS: CharacterPhoto[] = [
   {
     id: 'moriaion_portrait',
-    url: './images/characters/character5.png',
+    url: './images/characters/moriaion.png',
     title: 'Shadow Guardian',
     description: 'Moriaion emerging from the void, darkness and light in perfect balance',
     unlockedAt: 0,
@@ -137,7 +137,7 @@ export const MORIAION_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'moriaion_dimensional',
-    url: './images/characters/character5.png',
+    url: './images/characters/moriaion.png',
     title: 'Dimensional Walk',
     description: 'Stepping between realms, master of both shadow and space',
     unlockedAt: 15,
@@ -146,7 +146,7 @@ export const MORIAION_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'moriaion_protection',
-    url: './images/characters/character5.png',
+    url: './images/characters/moriaion.png',
     title: 'Protective Barrier',
     description: 'Shielding others with shadow magic, strength born from dedication',
     unlockedAt: 35,
@@ -159,7 +159,7 @@ export const MORIAION_PHOTOS: CharacterPhoto[] = [
 export const QUINAELMIR_PHOTOS: CharacterPhoto[] = [
   {
     id: 'quinaelmir_portrait',
-    url: './images/characters/character6.png',
+    url: './images/characters/quinaelmir.png',
     title: 'Crystal Clarity',
     description: 'Quinaelmir displaying perfect geometric beauty, light refracting through crystalline form',
     unlockedAt: 0,
@@ -168,7 +168,7 @@ export const QUINAELMIR_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'quinaelmir_mathematics',
-    url: './images/characters/character6.png',
+    url: './images/characters/quinaelmir.png',
     title: 'Living Mathematics',
     description: 'Equations and geometric patterns flowing around them like living art',
     unlockedAt: 15,
@@ -177,7 +177,7 @@ export const QUINAELMIR_PHOTOS: CharacterPhoto[] = [
   },
   {
     id: 'quinaelmir_prism',
-    url: './images/characters/character6.png',
+    url: './images/characters/quinaelmir.png',
     title: 'Prismatic Harmony',
     description: 'Creating rainbows of impossible beauty through crystal manipulation',
     unlockedAt: 35,

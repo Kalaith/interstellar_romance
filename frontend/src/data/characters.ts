@@ -57,7 +57,7 @@ export const CHARACTERS: Character[] = [
     species: 'Aviari - Sky Warrior',
     gender: 'male',
     personality: 'Noble • Protective • Wise',
-    image: './images/characters/character1.png',
+    image: './images/characters/kyrathen.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -78,7 +78,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/character1.png', title: 'Tribal Portrait', description: 'In ceremonial feathered headdress', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/kyrathen.png', title: 'Tribal Portrait', description: 'In ceremonial feathered headdress', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -100,7 +100,7 @@ export const CHARACTERS: Character[] = [
     species: 'Mystari - Dimensional Sage',
     gender: 'female',
     personality: 'Mystical • Intuitive • Enigmatic',
-    image: './images/characters/character2.png',
+    image: './images/characters/seraphina.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -121,7 +121,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/blue_mystic.png', title: 'Hooded Oracle', description: 'In traditional temple robes', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/seraphina.png', title: 'Hooded Oracle', description: 'In traditional temple robes', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -143,7 +143,7 @@ export const CHARACTERS: Character[] = [
     species: 'Sylvani - Biotechnician',
     gender: 'non-binary',
     personality: 'Analytical • Innovative • Precise',
-    image: './images/characters/character3.png',
+    image: './images/characters/thessarian.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -164,7 +164,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/pale_elf_tech.png', title: 'Laboratory Portrait', description: 'In formal research attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/thessarian.png', title: 'Laboratory Portrait', description: 'In formal research attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -186,7 +186,7 @@ export const CHARACTERS: Character[] = [
     species: 'Florani - Garden Keeper',
     gender: 'female',
     personality: 'Nurturing • Peaceful • Connected',
-    image: './images/characters/character4.png',
+    image: './images/characters/lyralynn.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -207,7 +207,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/plant_woman.png', title: 'Forest Guardian', description: 'Among her beloved plants', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/lyralynn.png', title: 'Forest Guardian', description: 'Among her beloved plants', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -229,7 +229,7 @@ export const CHARACTERS: Character[] = [
     species: 'Draconi - Elite Guard',
     gender: 'female',
     personality: 'Confident • Ambitious • Tactical',
-    image: './images/characters/character5.png',
+    image: './images/characters/zarantha.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -250,7 +250,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/reptilian_female.png', title: 'Command Portrait', description: 'In military dress uniform', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/zarantha.png', title: 'Command Portrait', description: 'In military dress uniform', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -272,7 +272,7 @@ export const CHARACTERS: Character[] = [
     species: 'Aquari - Deep Sage',
     gender: 'male',
     personality: 'Wise • Contemplative • Spiritual',
-    image: './images/characters/character6.png',
+    image: './images/characters/thalassos.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -293,7 +293,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/aquatic_reptilian.png', title: 'Ceremonial Robes', description: 'In traditional temple attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/thalassos.png', title: 'Ceremonial Robes', description: 'In traditional temple attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -315,7 +315,7 @@ export const CHARACTERS: Character[] = [
     species: 'Umbra - Shadow Operative',
     gender: 'other',
     personality: 'Mysterious • Intense • Protective',
-    image: './images/characters/shadow_alien.png',
+    image: './images/characters/nightshade.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -336,7 +336,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/shadow_alien.png', title: 'Shadow Form', description: 'In operational attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/nightshade.png', title: 'Shadow Form', description: 'In operational attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -358,7 +358,7 @@ export const CHARACTERS: Character[] = [
     species: 'Cephalopi - Neural Engineer',
     gender: 'male',
     personality: 'Brilliant • Curious • Complex',
-    image: './images/characters/tentacle_alien.png',
+    image: './images/characters/kronos.png',
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -379,7 +379,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/tentacle_alien.png', title: 'Research Station', description: 'In his laboratory', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: './images/characters/kronos.png', title: 'Research Station', description: 'In his laboratory', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },

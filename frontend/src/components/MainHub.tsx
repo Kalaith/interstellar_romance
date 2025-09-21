@@ -2,6 +2,7 @@ import React from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { MoodDisplay } from './ui/MoodDisplay';
 import { calculateCompatibility, getCompatibilityColor } from '../utils/compatibility';
+import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
 
 export const MainHub: React.FC = () => {
   const {
@@ -28,6 +29,10 @@ export const MainHub: React.FC = () => {
       </div>
     );
   }
+
+  // Filter characters based on player's sexual preference
+  const filteredCharacters = filterCharactersByPreference(characters, player.sexualPreference);
+  const preferenceDescription = getPreferenceDescription(player.sexualPreference);
 
   return (
     <div className="min-h-screen">
@@ -88,7 +93,10 @@ export const MainHub: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-[var(--accent-cyan)] uppercase tracking-wide">Available Companions</h3>
             <div className="flex items-center gap-4">
-              <span className="text-[var(--text-muted)] text-sm">{characters.length} Total</span>
+              <span className="text-[var(--text-muted)] text-sm">{filteredCharacters.length} of {characters.length} shown</span>
+              <span className="text-[var(--text-secondary)] text-xs bg-[var(--bg-section)] px-3 py-1 rounded-full border border-[var(--border-inner)]">
+                {preferenceDescription}
+              </span>
               <button className="px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg text-[var(--text-secondary)] text-sm hover:bg-[var(--bg-item)] transition-colors">
                 🔄 Auto Manage
               </button>
@@ -96,7 +104,22 @@ export const MainHub: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {characters.map((character) => {
+            {filteredCharacters.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <div className="text-6xl mb-4">💔</div>
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">No Compatible Characters</h3>
+                <p className="text-[var(--text-secondary)] mb-4">
+                  No characters match your current preference: {preferenceDescription.toLowerCase()}
+                </p>
+                <button
+                  onClick={() => setScreen('character-creation')}
+                  className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
+                >
+                  Update Preferences
+                </button>
+              </div>
+            ) : (
+              filteredCharacters.map((character) => {
               const canTalkToday = canTalkToCharacterToday(character.id);
               const compatibility = player ? calculateCompatibility(player, character.profile) : null;
 
@@ -240,7 +263,8 @@ export const MainHub: React.FC = () => {
                   </div>
                 </div>
               );
-            })}
+            })
+            )}
           </div>
         </div>
 

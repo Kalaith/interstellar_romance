@@ -326,11 +326,17 @@ export const useGameStore = create<GameState>()(
   }),
 
 
-  resetGame: () => set(() => ({
-    ...initialState,
-    characters: [...CHARACTERS], // Fresh copy of characters
-    achievements: [...ACHIEVEMENTS] // Fresh copy of achievements
-  }))
+  resetGame: () => {
+    // Clear localStorage completely
+    localStorage.removeItem('interstellar-romance-game');
+    
+    // Reset the state
+    set(() => ({
+      ...initialState,
+      characters: [...CHARACTERS], // Fresh copy of characters
+      achievements: [...ACHIEVEMENTS] // Fresh copy of achievements
+    }));
+  }
     }),
     {
       name: 'interstellar-romance-game', // unique name

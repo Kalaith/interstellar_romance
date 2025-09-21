@@ -67,6 +67,16 @@ export const MainMenu: React.FC = () => {
           >
             ⚙️ Settings
           </button>
+
+          {/* Development Reset Button - More prominent for testing */}
+          {player && (
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="block w-64 mx-auto px-6 py-4 text-lg font-semibold text-red-200 bg-red-900/30 hover:bg-red-900/50 border border-red-500/50 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              🗑️ Clear All Data
+            </button>
+          )}
         </div>
 
         {/* Settings Panel */}
@@ -122,13 +132,14 @@ export const MainMenu: React.FC = () => {
             <div className="bg-slate-800 border border-red-500/50 rounded-lg p-6 max-w-md mx-4">
               <h3 className="text-xl font-bold text-red-300 mb-4">⚠️ Confirm Reset</h3>
               <p className="text-cyan-100 mb-6">
-                Are you sure you want to reset all game data? This will permanently delete:
+                Are you sure you want to reset all game data? This will permanently delete all stored data including:
               </p>
               <ul className="text-cyan-200 text-sm mb-6 list-disc list-inside space-y-1">
                 <li>Your character ({player?.name})</li>
                 <li>All relationship progress</li>
                 <li>Unlocked photos and achievements</li>
                 <li>Conversation history</li>
+                <li>All locally saved game data</li>
               </ul>
               <div className="flex gap-3">
                 <button
