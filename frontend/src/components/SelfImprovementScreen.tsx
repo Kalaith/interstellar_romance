@@ -28,7 +28,7 @@ export const SelfImprovementScreen: React.FC = () => {
     const activity = SELF_IMPROVEMENT_ACTIVITIES.find(a => a.id === activityId);
     if (activity?.statBonus) {
       // Apply stat bonuses (this would be handled by game store in real implementation)
-      console.log(`Applied bonuses from ${activity.name}:`, activity.statBonus);
+      // console.log(`Applied bonuses from ${activity.name}:`, activity.statBonus);
     }
   };
 

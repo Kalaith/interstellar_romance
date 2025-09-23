@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { MoodDisplay } from './ui/MoodDisplay';
-import { calculateCompatibility, getCompatibilityColor } from '../utils/compatibility';
+import { calculateCompatibility } from '../utils/compatibility';
 import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
 
 export const MainHub: React.FC = () => {
