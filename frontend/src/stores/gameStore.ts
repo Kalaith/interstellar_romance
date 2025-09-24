@@ -6,6 +6,8 @@ import { getRandomMood } from '../data/moods';
 import { checkMilestones } from '../data/milestones';
 import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
 import { checkPhotoUnlocks } from '../data/photo-galleries';
+import { updateRelationshipStatus, createRelationshipMemory } from '../utils/relationshipUtils';
+import { checkStorylineUnlocks, processStorylineChoice, StorylineEvent } from '../data/character-storylines';
 
 interface GameState {
   currentScreen: GameScreen;
@@ -17,6 +19,7 @@ interface GameState {
   achievements: Achievement[];
   totalConversations: number;
   totalDates: number;
+  availableStorylines: Record<string, StorylineEvent[]>;
 
   // Actions
   setScreen: (screen: GameScreen) => void;
@@ -39,6 +42,9 @@ interface GameState {
   unlockCharacterInfo: (characterId: string, infoType: keyof CharacterKnownInfo) => void;
   updateCharacterKnowledge: (characterId: string) => void;
 
+  // Storyline actions
+  updateStorylines: (characterId: string) => void;
+  completeStorylineChoice: (storylineId: string, choiceId: string) => void;
 
   // Game reset actions
   resetGame: () => void;
@@ -54,6 +60,7 @@ const initialState = {
   achievements: [...ACHIEVEMENTS],
   totalConversations: 0,
   totalDates: 0,
+  availableStorylines: {},
 };
 
 export const useGameStore = create<GameState>()(
@@ -85,7 +92,7 @@ export const useGameStore = create<GameState>()(
 
   updateAffection: (characterId, amount) => set((state) => {
     const character = state.characters.find(c => c.id === characterId);
-    if (!character) return state;
+    if (!character || !state.player) return state;
 
     const newAffection = Math.max(0, Math.min(100, character.affection + amount));
 
@@ -101,6 +108,14 @@ export const useGameStore = create<GameState>()(
           ...char.dailyInteractions,
           maxInteractions: calculateMaxInteractions(newAffection)
         };
+        // Update relationship status
+        updatedChar.relationshipStatus = updateRelationshipStatus(
+          char.relationshipStatus,
+          newAffection,
+          char.name,
+          state.player,
+          char
+        );
         return updatedChar;
       }
       return char;
@@ -110,10 +125,11 @@ export const useGameStore = create<GameState>()(
       ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
       : state.selectedCharacter;
 
-    // Update achievements and knowledge after affection change
+    // Update achievements, knowledge, and storylines after affection change
     setTimeout(() => {
       get().updateAchievements();
       get().updateCharacterKnowledge(characterId);
+      get().updateStorylines(characterId);
     }, 0);
 
     return {
@@ -325,6 +341,47 @@ export const useGameStore = create<GameState>()(
     };
   }),
 
+  // Storyline system implementation
+  updateStorylines: (characterId) => set((state) => {
+    const character = state.characters.find(c => c.id === characterId);
+    if (!character) return state;
+
+    const availableStorylines = checkStorylineUnlocks(characterId, character.affection);
+
+    return {
+      availableStorylines: {
+        ...state.availableStorylines,
+        [characterId]: availableStorylines
+      }
+    };
+  }),
+
+  completeStorylineChoice: (storylineId, choiceId) => set((state) => {
+    const result = processStorylineChoice(storylineId, choiceId, '');
+
+    if (result.affectionChange > 0) {
+      // Find which character this storyline belongs to
+      const characterId = storylineId.split('_')[0]; // Extract character ID from storyline ID
+      const character = state.characters.find(c => c.id === characterId);
+
+      if (character) {
+        // Update affection through the existing updateAffection method
+        setTimeout(() => {
+          get().updateAffection(characterId, result.affectionChange);
+        }, 100);
+      }
+    }
+
+    // Mark storyline as completed
+    const updatedStorylines = { ...state.availableStorylines };
+    Object.keys(updatedStorylines).forEach(charId => {
+      updatedStorylines[charId] = updatedStorylines[charId].map(storyline =>
+        storyline.id === storylineId ? { ...storyline, completed: true } : storyline
+      );
+    });
+
+    return { availableStorylines: updatedStorylines };
+  }),
 
   resetGame: () => {
     // Clear localStorage completely

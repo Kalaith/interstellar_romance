@@ -125,13 +125,9 @@ This project follows clean architecture principles with:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the individual component README files for details.
 
-## 🙏 Acknowledgments
-
-- Built with modern web technologies
-- Inspired by classic dating simulators
-- Special thanks to the open-source community</content>
+Part of the WebHatchery game collection.</content>
 <parameter name="filePath">H:\WebHatchery\game_apps\interstellar_romance\README.md

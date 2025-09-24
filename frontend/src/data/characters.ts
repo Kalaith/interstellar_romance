@@ -1,4 +1,5 @@
 import { Character, CharacterKnownInfo, DailyInteractionData } from '../types/game';
+import { getDefaultRelationshipStatus } from '../utils/relationshipUtils';
 
 // Default knowledge state - everything starts as unknown except name and appearance
 const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
@@ -83,6 +84,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Kyra'then"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'protective', baseValue: 8, currentValue: 8, growthHistory: [], maxGrowth: 10, minGrowth: 5 },
       { trait: 'traditional', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 7 },
@@ -126,6 +129,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'intuitive', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 7 },
       { trait: 'mystical', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
@@ -169,6 +174,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'analytical', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
       { trait: 'innovative', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 6 },
@@ -212,6 +219,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'nurturing', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
       { trait: 'peaceful', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 6 },
@@ -255,6 +264,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'confident', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 6 },
       { trait: 'ambitious', baseValue: 8, currentValue: 8, growthHistory: [], maxGrowth: 10, minGrowth: 5 },
@@ -298,6 +309,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'wise', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
       { trait: 'contemplative', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 6 },
@@ -341,6 +354,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'mysterious', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
       { trait: 'intense', baseValue: 8, currentValue: 8, growthHistory: [], maxGrowth: 10, minGrowth: 5 },
@@ -384,6 +399,8 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
+    relationshipStatus: getDefaultRelationshipStatus("Dr. Kronos Mindweave"),
+    relationshipMemories: [],
     personalityGrowth: [
       { trait: 'brilliant', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
       { trait: 'curious', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 7 },

@@ -15,6 +15,9 @@ export interface Character {
   knownInfo: CharacterKnownInfo; // Progressive disclosure tracking
   // Daily interaction tracking
   dailyInteractions: DailyInteractionData;
+  // Relationship status tracking
+  relationshipStatus: RelationshipStatus;
+  relationshipMemories: RelationshipMemory[];
   // Phase 4: Advanced Features
   personalityGrowth: PersonalityGrowth[];
   superLikesReceived: SuperLike[];
@@ -473,3 +476,60 @@ export interface CharacterKnownInfo {
   deepPersonality: boolean; // Unlocked through milestones
   secretTraits: boolean; // Unlocked through specific interactions
 }
+
+// Relationship Status System
+export interface RelationshipStatus {
+  level: RelationshipLevel;
+  title: string;
+  description: string;
+  compatibility: number; // 0-100 based on personalities, values, interests
+  trust: number; // 0-100 separate from affection
+  intimacy: number; // 0-100 emotional closeness
+  commitment: number; // 0-100 dedication to the relationship
+  communicationStyle: CommunicationStyleMatch;
+  sharedExperiences: number; // Count of significant moments together
+  conflicts: number; // Total number of conflicts resolved
+  lastStatusChange: Date;
+}
+
+export type RelationshipLevel =
+  | 'stranger'           // 0-10 affection
+  | 'acquaintance'       // 11-20 affection
+  | 'friend'             // 21-35 affection
+  | 'close_friend'       // 36-50 affection
+  | 'romantic_interest'  // 51-65 affection
+  | 'dating'             // 66-80 affection
+  | 'committed_partner'  // 81-95 affection
+  | 'soulmate';          // 96-100 affection
+
+export interface CommunicationStyleMatch {
+  compatibility: number; // How well your styles mesh
+  playerPreference: ConversationStyle;
+  characterStyle: ConversationStyle;
+  adaptationLevel: number; // How much each has adapted to the other
+}
+
+export interface RelationshipMemory {
+  id: string;
+  date: Date;
+  type: MemoryType;
+  title: string;
+  description: string;
+  emotionalImpact: number; // -10 to +10
+  participantEmotions: EmotionType[];
+  affectionAtTime: number;
+  consequence?: string;
+  tags: string[];
+}
+
+export type MemoryType =
+  | 'first_meeting'
+  | 'meaningful_conversation'
+  | 'romantic_moment'
+  | 'conflict_resolution'
+  | 'shared_activity'
+  | 'milestone_achievement'
+  | 'gift_exchange'
+  | 'date_experience'
+  | 'personal_revelation'
+  | 'crisis_support';
