@@ -1,34 +1,94 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { getAvailableDialogueOptions, getContextualDialogue, processDialogueConsequence } from '../data/dialogue-trees';
 import { DialogueOption } from '../types/game';
 import { StorylinePanel } from './StorylinePanel';
+import { CharacterImage } from './AssetLoader';
+import { usePerformanceMonitor, useDebouncedAffectionUpdate, useOptimizedNavigation } from '../hooks/useOptimizedGame';
 
 export const CharacterInteraction: React.FC = () => {
-  const { selectedCharacter, setScreen, updateAffection } = useGameStore();
+  const { selectedCharacter } = useGameStore();
+  const { logSlowOperation } = usePerformanceMonitor('CharacterInteraction');
+  const debouncedUpdateAffection = useDebouncedAffectionUpdate(150);
+  const { navigateToScreen } = useOptimizedNavigation();
+
   const [currentDialogue, setCurrentDialogue] = useState<string>('Select a conversation topic to begin...');
   const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
   const [consequences, setConsequences] = useState<string[]>([]);
 
-  // Update available dialogue options when character or affection changes
+  // Memoize dialogue options calculation for performance
+  const dialogueOptions = useMemo(() => {
+    if (!selectedCharacter) return [];
+
+    const startTime = Date.now();
+    const options = getAvailableDialogueOptions(
+      selectedCharacter.id,
+      selectedCharacter.affection,
+      selectedCharacter.mood
+    );
+    logSlowOperation('getAvailableDialogueOptions', startTime);
+
+    return options;
+  }, [selectedCharacter?.id, selectedCharacter?.affection, selectedCharacter?.mood, selectedCharacter, logSlowOperation]);
+
+  // Update available options when memoized calculation changes
   useEffect(() => {
-    if (selectedCharacter) {
-      const options = getAvailableDialogueOptions(
-        selectedCharacter.id,
-        selectedCharacter.affection,
-        selectedCharacter.mood
-      );
-      setAvailableOptions(options);
+    setAvailableOptions(dialogueOptions);
+  }, [dialogueOptions]);
+
+  const handleDialogue = useCallback((option: DialogueOption) => {
+    if (!selectedCharacter) return;
+
+    const startTime = Date.now();
+    const response = getContextualDialogue(
+      selectedCharacter.id,
+      option.topic,
+      selectedCharacter.mood,
+      selectedCharacter.affection
+    );
+    logSlowOperation('getContextualDialogue', startTime);
+
+    setCurrentDialogue(response.text);
+
+    if (response.affectionChange > 0) {
+      // Use debounced update for better performance
+      debouncedUpdateAffection(selectedCharacter.id, response.affectionChange);
     }
-  }, [selectedCharacter]);
+
+    // Handle consequences
+    if (response.consequence) {
+      const processedConsequence = processDialogueConsequence(response.consequence, selectedCharacter.id);
+      setConsequences(prev => [...prev.slice(-2), processedConsequence]); // Keep last 3 consequences
+    }
+
+    // Options will be automatically updated via the memoized calculation
+    // when affection changes through the debounced update
+  }, [selectedCharacter, logSlowOperation, debouncedUpdateAffection]);
+
+  const handleGift = useCallback(() => {
+    if (!selectedCharacter) return;
+    setCurrentDialogue(`${selectedCharacter.name} appreciates your thoughtful gift!`);
+    debouncedUpdateAffection(selectedCharacter.id, 5);
+  }, [selectedCharacter, debouncedUpdateAffection]);
+
+  const handleDate = useCallback(() => {
+    if (!selectedCharacter) return;
+
+    if (selectedCharacter.affection >= 50) {
+      setCurrentDialogue(`${selectedCharacter.name} happily agrees to go on a date with you!`);
+      debouncedUpdateAffection(selectedCharacter.id, 10);
+    } else {
+      setCurrentDialogue(`${selectedCharacter.name} politely declines. They seem to want to know you better first.`);
+    }
+  }, [selectedCharacter, debouncedUpdateAffection]);
 
   if (!selectedCharacter) {
     return (
       <div className="min-h-screen bg-slate-800 flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-xl mb-4">No character selected!</p>
-          <button 
-            onClick={() => setScreen('main-hub')}
+          <button
+            onClick={() => navigateToScreen('main-hub')}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
           >
             Back to Hub
@@ -38,53 +98,6 @@ export const CharacterInteraction: React.FC = () => {
     );
   }
 
-  const handleDialogue = (option: DialogueOption) => {
-    if (!selectedCharacter) return;
-
-    const response = getContextualDialogue(
-      selectedCharacter.id,
-      option.topic,
-      selectedCharacter.mood,
-      selectedCharacter.affection
-    );
-
-    setCurrentDialogue(response.text);
-
-    if (response.affectionChange > 0) {
-      updateAffection(selectedCharacter.id, response.affectionChange);
-    }
-
-    // Handle consequences
-    if (response.consequence) {
-      const processedConsequence = processDialogueConsequence(response.consequence, selectedCharacter.id);
-      setConsequences(prev => [...prev.slice(-2), processedConsequence]); // Keep last 3 consequences
-    }
-
-    // Update available options after interaction
-    setTimeout(() => {
-      const newOptions = getAvailableDialogueOptions(
-        selectedCharacter.id,
-        selectedCharacter.affection + (response.affectionChange || 0),
-        selectedCharacter.mood
-      );
-      setAvailableOptions(newOptions);
-    }, 100);
-  };
-
-  const handleGift = () => {
-    setCurrentDialogue(`${selectedCharacter.name} appreciates your thoughtful gift!`);
-    updateAffection(selectedCharacter.id, 5);
-  };
-
-  const handleDate = () => {
-    if (selectedCharacter.affection >= 50) {
-      setCurrentDialogue(`${selectedCharacter.name} happily agrees to go on a date with you!`);
-      updateAffection(selectedCharacter.id, 10);
-    } else {
-      setCurrentDialogue(`${selectedCharacter.name} politely declines. They seem to want to know you better first.`);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
       <div className="container mx-auto px-4 py-8">
@@ -92,13 +105,12 @@ export const CharacterInteraction: React.FC = () => {
           {/* Character Display */}
           <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
             <div className="flex items-center space-x-6 mb-6">
-              <div className="w-32 h-32 rounded-lg overflow-hidden bg-slate-700">
-                <img 
-                  src={selectedCharacter.image} 
-                  alt={selectedCharacter.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <CharacterImage
+                characterId={selectedCharacter.id}
+                alt={selectedCharacter.name}
+                className="w-32 h-32 rounded-lg object-cover"
+                fallbackClassName="bg-slate-700"
+              />
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2">{selectedCharacter.name}</h3>
                 <p className="text-blue-300 mb-2">{selectedCharacter.species}</p>
@@ -217,8 +229,8 @@ export const CharacterInteraction: React.FC = () => {
             >
               Ask on Date
             </button>
-            <button 
-              onClick={() => setScreen('main-hub')}
+            <button
+              onClick={() => navigateToScreen('main-hub')}
               className="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors"
             >
               Back to Hub

@@ -425,6 +425,7 @@ export interface DailyInteractionData {
   lastResetDate: string; // YYYY-MM-DD format
   interactionsUsed: number;
   maxInteractions: number;
+  timezone?: string; // User's timezone (e.g., 'America/New_York')
 }
 
 export interface RelationshipTimeline {

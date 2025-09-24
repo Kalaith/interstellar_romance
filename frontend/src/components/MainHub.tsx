@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { MoodDisplay } from './ui/MoodDisplay';
+import { CharacterImage } from './AssetLoader';
 import { calculateCompatibility } from '../utils/compatibility';
 import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
 
@@ -131,10 +132,11 @@ export const MainHub: React.FC = () => {
                 >
                   {/* Character Portrait */}
                   <div className="aspect-video relative bg-[var(--bg-item)]">
-                    <img
-                      src={character.image}
+                    <CharacterImage
+                      characterId={character.id}
                       alt={character.name}
                       className="w-full h-full object-cover"
+                      fallbackClassName="bg-[var(--bg-item)]"
                     />
                     
                     {/* Compatibility Badge */}

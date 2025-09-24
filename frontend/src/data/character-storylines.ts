@@ -673,7 +673,7 @@ export const THALASSOS_STORYLINE: StorylineEvent[] = [
     id: 'thalassos_story_3',
     characterId: 'thalassos',
     requiredAffection: 56,
-    title: "The Ocean's Blessing",
+    title: 'The Ocean\'s Blessing',
     description: "The ancient waters reveal a profound truth about your connection.",
     dialogue: "*After the ritual, his eyes glow with otherworldly wisdom* The tides have shown me something remarkable... our connection transcends individual existence. Together, we become like the ocean itself—separate drops that create something infinite and eternal. The waters have blessed our union.",
     unlocked: false,
@@ -708,7 +708,7 @@ export const NIGHTSHADE_STORYLINE: StorylineEvent[] = [
     id: 'nightshade_story_1',
     characterId: 'nightshade',
     requiredAffection: 19,
-    title: "The Guardian's Burden",
+    title: 'The Guardian\'s Burden',
     description: "Nightshade reveals the cost of protecting the dimensional barriers.",
     dialogue: "*Nightshade's form flickers between solid and ethereal* You should know... what I do, who I am, it comes with a price. I've seen things that would shatter most minds. Dimensions where love leads to destruction, realities where connection means vulnerability. I've learned to keep others at a distance to protect them... and myself.",
     unlocked: false,
@@ -805,49 +805,88 @@ export const NIGHTSHADE_STORYLINE: StorylineEvent[] = [
 
 // Get storyline events for a character at current affection level
 export function getAvailableStorylines(characterId: string, affection: number): StorylineEvent[] {
-  let characterStorylines: StorylineEvent[] = [];
-
-  switch (characterId) {
-    case 'kyrathen':
-      characterStorylines = [...KYRATHEN_STORYLINE];
-      break;
-    case 'seraphina':
-      characterStorylines = [...SERAPHINA_STORYLINE];
-      break;
-    case 'kronos':
-      characterStorylines = [...KRONOS_STORYLINE];
-      break;
-    case 'thessarian':
-      characterStorylines = [...THESSARIAN_STORYLINE];
-      break;
-    case 'lyralynn':
-      characterStorylines = [...LYRALYNN_STORYLINE];
-      break;
-    case 'zarantha':
-      characterStorylines = [...ZARANTHA_STORYLINE];
-      break;
-    case 'thalassos':
-      characterStorylines = [...THALASSOS_STORYLINE];
-      break;
-    case 'nightshade':
-      characterStorylines = [...NIGHTSHADE_STORYLINE];
-      break;
-    default:
-      return [];
+  // Input validation
+  if (!characterId || typeof characterId !== 'string') {
+    console.warn('getAvailableStorylines: Invalid character ID provided', characterId);
+    return [];
   }
 
-  return characterStorylines.filter(storyline =>
-    affection >= storyline.requiredAffection && !storyline.completed
-  );
+  if (typeof affection !== 'number' || affection < 0 || affection > 100) {
+    console.warn('getAvailableStorylines: Invalid affection level provided', affection);
+    return [];
+  }
+
+  let characterStorylines: StorylineEvent[] = [];
+
+  try {
+    switch (characterId) {
+      case 'kyrathen':
+        characterStorylines = [...KYRATHEN_STORYLINE];
+        break;
+      case 'seraphina':
+        characterStorylines = [...SERAPHINA_STORYLINE];
+        break;
+      case 'kronos':
+        characterStorylines = [...KRONOS_STORYLINE];
+        break;
+      case 'thessarian':
+        characterStorylines = [...THESSARIAN_STORYLINE];
+        break;
+      case 'lyralynn':
+        characterStorylines = [...LYRALYNN_STORYLINE];
+        break;
+      case 'zarantha':
+        characterStorylines = [...ZARANTHA_STORYLINE];
+        break;
+      case 'thalassos':
+        characterStorylines = [...THALASSOS_STORYLINE];
+        break;
+      case 'nightshade':
+        characterStorylines = [...NIGHTSHADE_STORYLINE];
+        break;
+      default:
+        console.warn(`getAvailableStorylines: Unknown character ID: ${characterId}`);
+        return [];
+    }
+
+    return characterStorylines.filter(storyline => {
+      if (!storyline || typeof storyline.requiredAffection !== 'number') {
+        console.warn('getAvailableStorylines: Invalid storyline data found', storyline);
+        return false;
+      }
+      return affection >= storyline.requiredAffection && !storyline.completed;
+    });
+  } catch (error) {
+    console.error('getAvailableStorylines: Error processing storylines for character', characterId, error);
+    return [];
+  }
 }
 
 // Unlock storylines based on affection level
 export function checkStorylineUnlocks(characterId: string, affection: number): StorylineEvent[] {
-  const availableStorylines = getAvailableStorylines(characterId, affection);
-  return availableStorylines.map(storyline => ({
-    ...storyline,
-    unlocked: affection >= storyline.requiredAffection
-  }));
+  try {
+    const availableStorylines = getAvailableStorylines(characterId, affection);
+
+    if (!Array.isArray(availableStorylines)) {
+      console.warn('checkStorylineUnlocks: getAvailableStorylines did not return an array', availableStorylines);
+      return [];
+    }
+
+    return availableStorylines.map(storyline => {
+      if (!storyline) {
+        console.warn('checkStorylineUnlocks: Found null/undefined storyline');
+        return null;
+      }
+
+      return {
+        ...storyline,
+        unlocked: affection >= storyline.requiredAffection
+      };
+    }).filter(Boolean) as StorylineEvent[];
+  } catch (error) {
+    console.error('checkStorylineUnlocks: Error checking storyline unlocks', characterId, error);
+    return [];
+  }
 }
 
 // Process storyline choice and return consequences
@@ -856,30 +895,57 @@ export function processStorylineChoice(
   choiceId: string,
   _characterId?: string
 ): { affectionChange: number; consequence: string; unlockNext?: string } {
-  const storylines = [
-    ...KYRATHEN_STORYLINE,
-    ...SERAPHINA_STORYLINE,
-    ...KRONOS_STORYLINE,
-    ...THESSARIAN_STORYLINE,
-    ...LYRALYNN_STORYLINE,
-    ...ZARANTHA_STORYLINE,
-    ...THALASSOS_STORYLINE,
-    ...NIGHTSHADE_STORYLINE
-  ];
-
-  const storyline = storylines.find(s => s.id === storylineId);
-  if (!storyline || !storyline.choices) {
+  // Input validation
+  if (!storylineId || typeof storylineId !== 'string') {
+    console.warn('processStorylineChoice: Invalid storyline ID provided', storylineId);
     return { affectionChange: 0, consequence: '' };
   }
 
-  const choice = storyline.choices.find(c => c.id === choiceId);
-  if (!choice) {
+  if (!choiceId || typeof choiceId !== 'string') {
+    console.warn('processStorylineChoice: Invalid choice ID provided', choiceId);
     return { affectionChange: 0, consequence: '' };
   }
 
-  return {
-    affectionChange: choice.affectionChange,
-    consequence: choice.consequence,
-    unlockNext: choice.unlockNext
-  };
+  try {
+    const storylines = [
+      ...KYRATHEN_STORYLINE,
+      ...SERAPHINA_STORYLINE,
+      ...KRONOS_STORYLINE,
+      ...THESSARIAN_STORYLINE,
+      ...LYRALYNN_STORYLINE,
+      ...ZARANTHA_STORYLINE,
+      ...THALASSOS_STORYLINE,
+      ...NIGHTSHADE_STORYLINE
+    ];
+
+    const storyline = storylines.find(s => s.id === storylineId);
+    if (!storyline) {
+      console.warn(`processStorylineChoice: Storyline not found: ${storylineId}`);
+      return { affectionChange: 0, consequence: '' };
+    }
+
+    if (!storyline.choices || !Array.isArray(storyline.choices)) {
+      console.warn(`processStorylineChoice: Storyline has no choices: ${storylineId}`);
+      return { affectionChange: 0, consequence: '' };
+    }
+
+    const choice = storyline.choices.find(c => c && c.id === choiceId);
+    if (!choice) {
+      console.warn(`processStorylineChoice: Choice not found: ${choiceId} in storyline: ${storylineId}`);
+      return { affectionChange: 0, consequence: '' };
+    }
+
+    // Validate choice data
+    const affectionChange = typeof choice.affectionChange === 'number' ? choice.affectionChange : 0;
+    const consequence = typeof choice.consequence === 'string' ? choice.consequence : '';
+
+    return {
+      affectionChange,
+      consequence,
+      unlockNext: choice.unlockNext
+    };
+  } catch (error) {
+    console.error('processStorylineChoice: Error processing storyline choice', storylineId, choiceId, error);
+    return { affectionChange: 0, consequence: '' };
+  }
 }

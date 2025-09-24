@@ -8,6 +8,7 @@ import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
 import { checkPhotoUnlocks } from '../data/photo-galleries';
 import { updateRelationshipStatus } from '../utils/relationshipUtils';
 import { checkStorylineUnlocks, processStorylineChoice, StorylineEvent } from '../data/character-storylines';
+import { shouldResetDailyInteractions, getCurrentDateInTimezone, getUserTimezone } from '../utils/timezoneUtils';
 
 interface GameState {
   currentScreen: GameScreen;
@@ -34,6 +35,8 @@ interface GameState {
   incrementConversations: () => void;
   updateAchievements: () => void;
   canTalkToCharacterToday: (characterId: string) => boolean;
+  useDailyInteraction: (characterId: string) => boolean;
+  updateCharacter: (characterId: string, updates: Partial<Character>) => void;
   toggleActivity: (activityId: string) => void;
   confirmActivities: () => void;
   nextWeek: () => void;
@@ -45,6 +48,13 @@ interface GameState {
   // Storyline actions
   updateStorylines: (characterId: string) => void;
   completeStorylineChoice: (storylineId: string, choiceId: string) => void;
+
+  // Batch update system
+  batchUpdate: (characterId: string, updates: {
+    achievements?: boolean;
+    knowledge?: boolean;
+    storylines?: boolean;
+  }) => void;
 
   // Game reset actions
   resetGame: () => void;
@@ -127,11 +137,9 @@ export const useGameStore = create<GameState>()(
       ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
       : state.selectedCharacter;
 
-    // Update achievements, knowledge, and storylines after affection change
+    // Batch update achievements, knowledge, and storylines after affection change
     setTimeout(() => {
-      get().updateAchievements();
-      get().updateCharacterKnowledge(characterId);
-      get().updateStorylines(characterId);
+      get().batchUpdate(characterId, { achievements: true, knowledge: true, storylines: true });
     }, 0);
 
     return {
@@ -192,9 +200,78 @@ export const useGameStore = create<GameState>()(
     const character = state.characters.find(c => c.id === characterId);
     if (!character) return false;
 
-    const today = new Date().toISOString().split('T')[0];
-    return character.lastInteractionDate !== today;
+    // Check if daily interactions need to be reset based on timezone
+    const timezone = character.dailyInteractions.timezone || getUserTimezone().timezone;
+    if (shouldResetDailyInteractions(character.dailyInteractions.lastResetDate, timezone)) {
+      // Reset daily interactions if needed
+      const updatedCharacters = state.characters.map(c =>
+        c.id === characterId
+          ? {
+              ...c,
+              dailyInteractions: {
+                ...c.dailyInteractions,
+                lastResetDate: getCurrentDateInTimezone(timezone),
+                interactionsUsed: 0,
+                timezone
+              }
+            }
+          : c
+      );
+
+      // Update the store with reset data
+      set({ characters: updatedCharacters });
+
+      // Return true since interactions were reset
+      return true;
+    }
+
+    // Check if character has remaining daily interactions
+    return character.dailyInteractions.interactionsUsed < character.dailyInteractions.maxInteractions;
   },
+
+  useDailyInteraction: (characterId) => {
+    const state = get();
+    const character = state.characters.find(c => c.id === characterId);
+    if (!character) return false;
+
+    // Check if interaction is available
+    if (!get().canTalkToCharacterToday(characterId)) {
+      return false;
+    }
+
+    // Increment daily interaction usage
+    const timezone = character.dailyInteractions.timezone || getUserTimezone().timezone;
+    const updatedCharacters = state.characters.map(c =>
+      c.id === characterId
+        ? {
+            ...c,
+            dailyInteractions: {
+              ...c.dailyInteractions,
+              interactionsUsed: c.dailyInteractions.interactionsUsed + 1,
+              timezone
+            }
+          }
+        : c
+    );
+
+    set({ characters: updatedCharacters });
+    return true;
+  },
+
+  updateCharacter: (characterId, updates) => set((state) => {
+    const updatedCharacters = state.characters.map(character =>
+      character.id === characterId
+        ? { ...character, ...updates }
+        : character
+    );
+
+    return {
+      characters: updatedCharacters,
+      selectedCharacter: state.selectedCharacter?.id === characterId
+        ? { ...state.selectedCharacter, ...updates }
+        : state.selectedCharacter
+    };
+  }),
 
   addDateToHistory: (characterId, datePlanId, affectionGained, success) => set((state) => {
     const dateEntry: DateHistoryEntry = {
@@ -219,7 +296,7 @@ export const useGameStore = create<GameState>()(
       : state.selectedCharacter;
 
     // Update achievements after date
-    setTimeout(() => get().updateAchievements(), 0);
+    setTimeout(() => get().batchUpdate('', { achievements: true }), 0);
 
     return {
       characters: updatedCharacters,
@@ -230,7 +307,7 @@ export const useGameStore = create<GameState>()(
 
   incrementConversations: () => set((state) => {
     // Update achievements after conversation
-    setTimeout(() => get().updateAchievements(), 0);
+    setTimeout(() => get().batchUpdate('', { achievements: true }), 0);
     return { totalConversations: state.totalConversations + 1 };
   }),
 
@@ -272,7 +349,7 @@ export const useGameStore = create<GameState>()(
     }));
 
     // Update achievements after week progression
-    setTimeout(() => get().updateAchievements(), 0);
+    setTimeout(() => get().batchUpdate('', { achievements: true }), 0);
 
     return {
       selectedActivities: [],
@@ -385,10 +462,79 @@ export const useGameStore = create<GameState>()(
     return { availableStorylines: updatedStorylines };
   }),
 
+  // Batch update system to prevent race conditions
+  batchUpdate: (characterId, updates) => {
+    const state = get();
+    let updatedState: Partial<GameState> = {};
+
+    if (updates.achievements) {
+      if (state.player) {
+        const stats = {
+          totalAffection: state.characters.reduce((sum, char) => sum + char.affection, 0),
+          maxAffection: Math.max(...state.characters.map(char => char.affection)),
+          totalDates: state.totalDates,
+          totalConversations: state.totalConversations,
+          unlockedPhotos: state.characters.reduce((sum, char) => sum + char.photoGallery.filter(p => p.unlocked).length, 0),
+          maxCompatibility: 75,
+          unlockedMilestones: state.characters.reduce((sum, char) => sum + char.milestones.filter(m => m.achieved).length, 0),
+          characterAffections: state.characters.reduce((acc, char) => ({ ...acc, [char.id]: char.affection }), {} as Record<string, number>)
+        };
+        updatedState.achievements = checkAchievements(state.achievements, stats);
+      }
+    }
+
+    if (updates.knowledge) {
+      const character = state.characters.find(c => c.id === characterId);
+      if (character) {
+        const affection = character.affection;
+        const knownInfo = { ...character.knownInfo };
+
+        // Progressive knowledge unlock based on affection levels
+        if (affection >= 5) knownInfo.mood = true;
+        if (affection >= 10) knownInfo.interests = true;
+        if (affection >= 15) knownInfo.conversationStyle = true;
+        if (affection >= 25) knownInfo.values = true;
+        if (affection >= 35) knownInfo.background = true;
+        if (affection >= 50) knownInfo.goals = true;
+        if (affection >= 60) knownInfo.dealbreakers = true;
+        if (affection >= 70) knownInfo.favoriteTopics = true;
+
+        // Check for milestone unlocks
+        const achievedMilestones = character.milestones.filter(m => m.achieved);
+        if (achievedMilestones.length >= 2) knownInfo.deepPersonality = true;
+        if (achievedMilestones.length >= 4) knownInfo.secretTraits = true;
+
+        const updatedCharacters = state.characters.map(char =>
+          char.id === characterId ? { ...char, knownInfo } : char
+        );
+
+        updatedState.characters = updatedCharacters;
+        if (state.selectedCharacter?.id === characterId) {
+          updatedState.selectedCharacter = updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter;
+        }
+      }
+    }
+
+    if (updates.storylines) {
+      const character = state.characters.find(c => c.id === characterId);
+      if (character) {
+        const availableStorylines = checkStorylineUnlocks(characterId, character.affection);
+        updatedState.availableStorylines = {
+          ...state.availableStorylines,
+          [characterId]: availableStorylines
+        };
+      }
+    }
+
+    if (Object.keys(updatedState).length > 0) {
+      set((state) => ({ ...state, ...updatedState }));
+    }
+  },
+
   resetGame: () => {
     // Clear localStorage completely
     localStorage.removeItem('interstellar-romance-game');
-    
+
     // Reset the state
     set(() => ({
       ...initialState,

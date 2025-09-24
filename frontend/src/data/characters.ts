@@ -1,5 +1,6 @@
 import { Character, CharacterKnownInfo, DailyInteractionData } from '../types/game';
 import { getDefaultRelationshipStatus } from '../utils/relationshipUtils';
+import { getCharacterImage } from '../utils/assetManager';
 
 // Default knowledge state - everything starts as unknown except name and appearance
 const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
@@ -58,7 +59,7 @@ export const CHARACTERS: Character[] = [
     species: 'Aviari - Sky Warrior',
     gender: 'male',
     personality: 'Noble • Protective • Wise',
-    image: './images/characters/kyrathen.png',
+    image: getCharacterImage('kyrathen'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -79,7 +80,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/kyrathen.png', title: 'Tribal Portrait', description: 'In ceremonial feathered headdress', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('kyrathen'), title: 'Tribal Portrait', description: 'In ceremonial feathered headdress', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -103,7 +104,7 @@ export const CHARACTERS: Character[] = [
     species: 'Mystari - Dimensional Sage',
     gender: 'female',
     personality: 'Mystical • Intuitive • Enigmatic',
-    image: './images/characters/seraphina.png',
+    image: getCharacterImage('seraphina'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -124,7 +125,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/seraphina.png', title: 'Hooded Oracle', description: 'In traditional temple robes', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('seraphina'), title: 'Hooded Oracle', description: 'In traditional temple robes', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
@@ -148,7 +149,7 @@ export const CHARACTERS: Character[] = [
     species: 'Sylvani - Biotechnician',
     gender: 'non-binary',
     personality: 'Analytical • Innovative • Precise',
-    image: './images/characters/thessarian.png',
+    image: getCharacterImage('thessarian'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -169,12 +170,12 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/thessarian.png', title: 'Laboratory Portrait', description: 'In formal research attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('thessarian'), title: 'Laboratory Portrait', description: 'In formal research attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("Dr. Thessarian Brightleaf"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'analytical', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
@@ -193,7 +194,7 @@ export const CHARACTERS: Character[] = [
     species: 'Florani - Garden Keeper',
     gender: 'female',
     personality: 'Nurturing • Peaceful • Connected',
-    image: './images/characters/lyralynn.png',
+    image: getCharacterImage('lyralynn'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -214,12 +215,12 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/lyralynn.png', title: 'Forest Guardian', description: 'Among her beloved plants', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('lyralynn'), title: 'Forest Guardian', description: 'Among her beloved plants', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("Lyralynn Bloomheart"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'nurturing', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
@@ -238,7 +239,7 @@ export const CHARACTERS: Character[] = [
     species: 'Draconi - Elite Guard',
     gender: 'female',
     personality: 'Confident • Ambitious • Tactical',
-    image: './images/characters/zarantha.png',
+    image: getCharacterImage('zarantha'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -259,12 +260,12 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/zarantha.png', title: 'Command Portrait', description: 'In military dress uniform', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('zarantha'), title: 'Command Portrait', description: 'In military dress uniform', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("Commander Zarantha Scales"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'confident', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 6 },
@@ -283,7 +284,7 @@ export const CHARACTERS: Character[] = [
     species: 'Aquari - Deep Sage',
     gender: 'male',
     personality: 'Wise • Contemplative • Spiritual',
-    image: './images/characters/thalassos.png',
+    image: getCharacterImage('thalassos'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -304,12 +305,12 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/thalassos.png', title: 'Ceremonial Robes', description: 'In traditional temple attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('thalassos'), title: 'Ceremonial Robes', description: 'In traditional temple attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("High Priest Thalassos"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'wise', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
@@ -328,7 +329,7 @@ export const CHARACTERS: Character[] = [
     species: 'Umbra - Shadow Operative',
     gender: 'other',
     personality: 'Mysterious • Intense • Protective',
-    image: './images/characters/nightshade.png',
+    image: getCharacterImage('nightshade'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -349,12 +350,12 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/nightshade.png', title: 'Shadow Form', description: 'In operational attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('nightshade'), title: 'Shadow Form', description: 'In operational attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("Nightshade Voidwalker"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'mysterious', baseValue: 10, currentValue: 10, growthHistory: [], maxGrowth: 10, minGrowth: 8 },
@@ -373,7 +374,7 @@ export const CHARACTERS: Character[] = [
     species: 'Cephalopi - Neural Engineer',
     gender: 'male',
     personality: 'Brilliant • Curious • Complex',
-    image: './images/characters/kronos.png',
+    image: getCharacterImage('kronos'),
     affection: 0,
     mood: getRandomMood(),
     milestones: [...DEFAULT_MILESTONES],
@@ -394,7 +395,7 @@ export const CHARACTERS: Character[] = [
     },
     lastInteractionDate: undefined,
     photoGallery: [
-      { id: 'portrait', url: './images/characters/kronos.png', title: 'Research Station', description: 'In his laboratory', unlockedAt: 0, unlocked: true, rarity: 'common' }
+      { id: 'portrait', url: getCharacterImage('kronos'), title: 'Research Station', description: 'In his laboratory', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
