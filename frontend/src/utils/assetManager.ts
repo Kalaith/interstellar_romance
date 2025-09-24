@@ -39,7 +39,7 @@ class AssetManager {
         id: `character_${characterId}`,
         category: 'character',
         type: 'image',
-        path: `/images/characters/${characterId}.png`,
+        path: `./images/characters/${characterId}.png`,
         fallbackPath: this.fallbackImage,
         description: `Portrait image for ${characterId}`,
         preload: true
