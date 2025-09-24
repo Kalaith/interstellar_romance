@@ -15,6 +15,7 @@ const emotionStyles: Record<EmotionType, string> = {
   flirty: 'text-pink-400 font-semibold',
   thoughtful: 'text-green-400 font-light',
   surprised: 'text-red-400 font-bold',
+  hopeful: 'text-cyan-400 font-medium',
   neutral: 'text-gray-300'
 };
 
@@ -26,6 +27,7 @@ const emotionIcons: Record<EmotionType, string> = {
   flirty: '😘',
   thoughtful: '🤔',
   surprised: '😲',
+  hopeful: '🌟',
   neutral: '😐'
 };
 

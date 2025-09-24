@@ -174,7 +174,7 @@ export const CharacterInteraction: React.FC = () => {
                         ? 'bg-slate-600 opacity-60 cursor-not-allowed'
                         : 'bg-slate-700 hover:bg-slate-600'
                     }`}
-                    disabled={option.requiresAffection && selectedCharacter.affection < option.requiresAffection}
+                    disabled={!!(option.requiresAffection && selectedCharacter.affection < option.requiresAffection)}
                   >
                     <div className="flex justify-between items-center">
                       <span>{option.text}</span>

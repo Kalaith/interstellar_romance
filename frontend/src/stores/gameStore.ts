@@ -6,7 +6,7 @@ import { getRandomMood } from '../data/moods';
 import { checkMilestones } from '../data/milestones';
 import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
 import { checkPhotoUnlocks } from '../data/photo-galleries';
-import { updateRelationshipStatus, createRelationshipMemory } from '../utils/relationshipUtils';
+import { updateRelationshipStatus } from '../utils/relationshipUtils';
 import { checkStorylineUnlocks, processStorylineChoice, StorylineEvent } from '../data/character-storylines';
 
 interface GameState {
@@ -109,13 +109,15 @@ export const useGameStore = create<GameState>()(
           maxInteractions: calculateMaxInteractions(newAffection)
         };
         // Update relationship status
-        updatedChar.relationshipStatus = updateRelationshipStatus(
-          char.relationshipStatus,
-          newAffection,
-          char.name,
-          state.player,
-          char
-        );
+        if (state.player) {
+          updatedChar.relationshipStatus = updateRelationshipStatus(
+            char.relationshipStatus,
+            newAffection,
+            char.name,
+            state.player,
+            char
+          );
+        }
         return updatedChar;
       }
       return char;

@@ -129,7 +129,7 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...DEFAULT_KNOWN_INFO },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus("Character"),
+    relationshipStatus: getDefaultRelationshipStatus("Seraphina Voidwhisper"),
     relationshipMemories: [],
     personalityGrowth: [
       { trait: 'intuitive', baseValue: 9, currentValue: 9, growthHistory: [], maxGrowth: 10, minGrowth: 7 },

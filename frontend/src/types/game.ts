@@ -107,6 +107,7 @@ export type EmotionType =
   | 'flirty'
   | 'thoughtful'
   | 'surprised'
+  | 'hopeful'
   | 'neutral';
 
 export type CharacterMood =

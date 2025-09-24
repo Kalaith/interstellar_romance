@@ -731,7 +731,7 @@ export function getContextualDialogue(characterId: string, topic: string, mood: 
   }
 
   // Modify response based on mood and affection
-  let modifiedResponse = { ...baseResponse };
+  const modifiedResponse = { ...baseResponse };
 
   if (mood === 'romantic' && topic === 'flirt') {
     modifiedResponse.affectionChange += 1;
@@ -763,7 +763,7 @@ export function getAvailableDialogueOptions(characterId: string, affection: numb
 }
 
 // Dialogue consequences that affect future interactions
-export function processDialogueConsequence(consequence: string, characterId: string): string {
+export function processDialogueConsequence(consequence: string, _characterId?: string): string {
   const consequences: Record<string, string> = {
     "Kyra'then seems more open to romantic advances": "Kyra'then's traditional barriers are lowering. He trusts you more.",
     "Seraphina seems deeply moved by your words": "Seraphina's ethereal essence resonates with yours. A mystical bond is forming.",

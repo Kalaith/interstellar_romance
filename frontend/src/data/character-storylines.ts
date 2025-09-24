@@ -1,4 +1,4 @@
-import { Character } from '../types/game';
+// Character storyline definitions and utilities
 
 export interface StorylineEvent {
   id: string;
@@ -854,7 +854,7 @@ export function checkStorylineUnlocks(characterId: string, affection: number): S
 export function processStorylineChoice(
   storylineId: string,
   choiceId: string,
-  characterId: string
+  _characterId?: string
 ): { affectionChange: number; consequence: string; unlockNext?: string } {
   const storylines = [
     ...KYRATHEN_STORYLINE,
