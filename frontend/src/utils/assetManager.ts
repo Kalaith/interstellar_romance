@@ -1,4 +1,5 @@
 // Asset management system for game resources
+import { Logger } from '../services/Logger';
 
 export type AssetCategory = 'character' | 'background' | 'ui' | 'misc';
 export type AssetType = 'image' | 'video' | 'audio';
@@ -54,13 +55,13 @@ class AssetManager {
   getAssetPath(id: string): string {
     const asset = this.assets.get(id);
     if (!asset) {
-      console.warn(`Asset not found: ${id}`);
+      Logger.warn(`Asset not found: ${id}`);
       return this.fallbackImage;
     }
 
     // Check if the asset is actually loadable
     if (asset.type === 'image' && !this.isImageLoadable(asset.path)) {
-      console.warn(`Image asset not loadable: ${asset.path}, using fallback`);
+      Logger.warn(`Image asset not loadable: ${asset.path}, using fallback`);
       return asset.fallbackPath || this.fallbackImage;
     }
 
@@ -86,9 +87,9 @@ class AssetManager {
 
     try {
       await Promise.all(preloadPromises);
-      console.log(`Preloaded ${assetsToPreload.length} assets`);
+      Logger.info(`Preloaded ${assetsToPreload.length} assets`);
     } catch (error) {
-      console.warn('Some assets failed to preload:', error);
+      Logger.warn('Some assets failed to preload:', error);
     }
   }
 
@@ -102,7 +103,7 @@ class AssetManager {
       };
 
       img.onerror = () => {
-        console.warn(`Failed to preload image: ${asset.path}`);
+        Logger.warn(`Failed to preload image: ${asset.path}`);
         this.loadedAssets.set(asset.id, false);
         // Don't reject - we want to continue loading other assets
         resolve();

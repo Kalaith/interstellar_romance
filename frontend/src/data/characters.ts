@@ -1,6 +1,7 @@
 import { Character, CharacterKnownInfo, DailyInteractionData } from '../types/game';
 import { getDefaultRelationshipStatus } from '../utils/relationshipUtils';
 import { getCharacterImage } from '../utils/assetManager';
+import { AFFECTION_THRESHOLDS, INTERACTION_LIMITS, MILESTONE_THRESHOLDS } from '../constants/gameConstants';
 
 // Default knowledge state - everything starts as unknown except name and appearance
 const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
@@ -22,12 +23,12 @@ const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
 
 // Default milestones for all characters
 const DEFAULT_MILESTONES = [
-  { id: 'first_meeting', name: 'First Meeting', description: 'Your first encounter', unlockedAt: 0, achieved: false },
-  { id: 'first_conversation', name: 'First Real Conversation', description: 'A meaningful exchange', unlockedAt: 10, achieved: false },
-  { id: 'personal_sharing', name: 'Personal Sharing', description: 'Opening up about themselves', unlockedAt: 25, achieved: false },
-  { id: 'first_date', name: 'First Date', description: 'Your first romantic encounter', unlockedAt: 40, achieved: false },
-  { id: 'deeper_connection', name: 'Deeper Connection', description: 'Understanding each other better', unlockedAt: 60, achieved: false },
-  { id: 'commitment', name: 'Committed Relationship', description: 'Taking things to the next level', unlockedAt: 80, achieved: false }
+  { id: 'first_meeting', name: 'First Meeting', description: 'Your first encounter', unlockedAt: MILESTONE_THRESHOLDS.FIRST_MEETING, achieved: false },
+  { id: 'first_conversation', name: 'First Real Conversation', description: 'A meaningful exchange', unlockedAt: MILESTONE_THRESHOLDS.GETTING_CLOSER, achieved: false },
+  { id: 'personal_sharing', name: 'Personal Sharing', description: 'Opening up about themselves', unlockedAt: MILESTONE_THRESHOLDS.MUTUAL_INTEREST, achieved: false },
+  { id: 'first_date', name: 'First Date', description: 'Your first romantic encounter', unlockedAt: MILESTONE_THRESHOLDS.ROMANTIC_TENSION, achieved: false },
+  { id: 'deeper_connection', name: 'Deeper Connection', description: 'Understanding each other better', unlockedAt: MILESTONE_THRESHOLDS.DEEP_CONNECTION, achieved: false },
+  { id: 'commitment', name: 'Committed Relationship', description: 'Taking things to the next level', unlockedAt: MILESTONE_THRESHOLDS.COMMITMENT, achieved: false }
 ];
 
 // Random mood generator
@@ -45,11 +46,11 @@ const getDefaultDailyInteractions = (affection: number): DailyInteractionData =>
 
 // Calculate max interactions based on affection level
 export const calculateMaxInteractions = (affection: number): number => {
-  if (affection >= 80) return 8; // Very high affection
-  if (affection >= 60) return 6; // High affection
-  if (affection >= 40) return 5; // Medium affection
-  if (affection >= 20) return 4; // Low-medium affection
-  return 3; // Low affection (default)
+  if (affection >= AFFECTION_THRESHOLDS.VERY_HIGH) return INTERACTION_LIMITS.VERY_HIGH_AFFECTION;
+  if (affection >= AFFECTION_THRESHOLDS.HIGH) return INTERACTION_LIMITS.HIGH_AFFECTION;
+  if (affection >= AFFECTION_THRESHOLDS.MEDIUM) return INTERACTION_LIMITS.MEDIUM_AFFECTION;
+  if (affection >= AFFECTION_THRESHOLDS.LOW) return INTERACTION_LIMITS.LOW_MEDIUM_AFFECTION;
+  return INTERACTION_LIMITS.DEFAULT;
 };
 
 export const CHARACTERS: Character[] = [

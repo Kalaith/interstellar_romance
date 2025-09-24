@@ -1,31 +1,50 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
+import { useCharacterStore } from '../stores/characterStore';
 import { MoodDisplay } from './ui/MoodDisplay';
+import { ProgressBar } from './ui/ProgressBar';
+import { Avatar, CharacterAvatar } from './ui/Avatar';
+import { Button, PrimaryButton, SecondaryButton } from './ui/Button';
 import { CharacterImage } from './AssetLoader';
 import { calculateCompatibility } from '../utils/compatibility';
 import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
+import { AFFECTION_THRESHOLDS } from '../constants/gameConstants';
+import { Logger } from '../services/Logger';
+import { createCharacterId } from '../types/brandedTypes';
 
 export const MainHub: React.FC = () => {
   const {
     player,
-    characters,
     currentWeek,
-    setScreen,
+    setScreen
+  } = useGameStore();
+
+  const {
+    characters,
+    selectedCharacter,
     selectCharacter,
     canTalkToCharacterToday
-  } = useGameStore();
+  } = useCharacterStore();
+
+  React.useEffect(() => {
+    Logger.info('MainHub component mounted', {
+      playerName: player?.name,
+      characterCount: characters.length,
+      currentWeek
+    });
+  }, [player?.name, characters.length, currentWeek]);
 
   if (!player) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
           <p className="text-xl text-[var(--text-primary)] mb-4">No character found!</p>
-          <button
+          <PrimaryButton
             onClick={() => setScreen('character-creation')}
-            className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
+            size="lg"
           >
             Create Character
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     );
@@ -62,12 +81,13 @@ export const MainHub: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Cycle</div>
                 <div className="text-[var(--resource-energy)] font-semibold">{currentWeek}</div>
               </div>
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setScreen('main-menu')}
-                className="px-4 py-2 text-[var(--text-primary)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg transition-all duration-300"
+                iconLeft="🏠"
               >
-                🏠 Main Menu
-              </button>
+                Main Menu
+              </Button>
             </div>
           </div>
           
@@ -121,22 +141,23 @@ export const MainHub: React.FC = () => {
               </div>
             ) : (
               filteredCharacters.map((character) => {
-              const canTalkToday = canTalkToCharacterToday(character.id);
+              const canTalkToday = canTalkToCharacterToday(createCharacterId(character.id));
               const compatibility = player ? calculateCompatibility(player, character.profile) : null;
 
               return (
                 <div
                   key={character.id}
-                  onClick={() => selectCharacter(character.id)}
+                  onClick={() => selectCharacter(createCharacterId(character.id))}
                   className="bg-[var(--bg-section)] border-2 border-[var(--border-inner)] hover:border-[var(--accent-cyan)] cursor-pointer hover:shadow-[0_0_20px_rgba(0,212,255,0.2)] transform hover:scale-105 rounded-lg overflow-hidden transition-all duration-300"
                 >
                   {/* Character Portrait */}
                   <div className="aspect-video relative bg-[var(--bg-item)]">
-                    <CharacterImage
+                    <CharacterAvatar
                       characterId={character.id}
                       alt={character.name}
-                      className="w-full h-full object-cover"
-                      fallbackClassName="bg-[var(--bg-item)]"
+                      size="2xl"
+                      shape="rounded"
+                      className="w-full h-full"
                     />
                     
                     {/* Compatibility Badge */}
@@ -202,52 +223,51 @@ export const MainHub: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Affection Progress - Stellaris Style */}
+                    {/* Affection Progress */}
                     <div className="mb-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Affection</span>
-                        <span className="text-[var(--text-primary)] text-xs font-semibold">{character.affection}/100</span>
-                      </div>
-                      <div className="w-full bg-[var(--bg-item)] rounded-full h-2 border border-[var(--border-inner)]">
-                        <div 
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{ 
-                            width: `${character.affection}%`,
-                            background: `linear-gradient(90deg, var(--resource-minerals), var(--resource-energy))`
-                          }}
-                        ></div>
-                      </div>
+                      <ProgressBar
+                        variant="affection"
+                        value={character.affection}
+                        showValue={true}
+                        animated={true}
+                        size="sm"
+                        label="Affection"
+                      />
                     </div>
 
                     {/* Action Buttons Grid */}
                     <div className="grid grid-cols-2 gap-2">
-                      <button
+                      <PrimaryButton
+                        size="xs"
                         onClick={(e) => {
                           e.stopPropagation();
-                          selectCharacter(character.id);
+                          selectCharacter(createCharacterId(character.id));
                         }}
-                        className="px-3 py-2 text-xs font-semibold text-[var(--bg-space)] bg-[var(--accent-cyan)] hover:bg-[var(--accent-teal)] rounded-lg transition-all"
+                        iconLeft="📋"
                       >
-                        📋 Profile
-                      </button>
+                        Profile
+                      </PrimaryButton>
 
-                      {character.affection >= 10 ? (
-                        <button
+                      {character.affection >= AFFECTION_THRESHOLDS.HIGH ? (
+                        <SecondaryButton
+                          size="xs"
                           onClick={(e) => {
                             e.stopPropagation();
-                            selectCharacter(character.id);
+                            selectCharacter(createCharacterId(character.id));
                           }}
-                          className="px-3 py-2 text-xs font-semibold text-[var(--bg-space)] bg-[var(--resource-influence)] hover:bg-[var(--resource-energy)] rounded-lg transition-all"
+                          iconLeft="📅"
                         >
-                          📅 Date
-                        </button>
+                          Date
+                        </SecondaryButton>
                       ) : (
-                        <button
+                        <Button
+                          size="xs"
                           disabled
-                          className="px-3 py-2 text-xs font-semibold text-[var(--text-muted)] bg-[var(--state-locked)] rounded-lg cursor-not-allowed"
+                          variant="ghost"
+                          iconLeft="🔒"
                         >
-                          🔒 Locked
-                        </button>
+                          Locked
+                        </Button>
                       )}
                     </div>
 
