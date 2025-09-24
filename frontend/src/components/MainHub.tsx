@@ -152,12 +152,11 @@ export const MainHub: React.FC = () => {
                 >
                   {/* Character Portrait */}
                   <div className="aspect-video relative bg-[var(--bg-item)]">
-                    <CharacterAvatar
+                    <CharacterImage
                       characterId={character.id}
                       alt={character.name}
-                      size="2xl"
-                      shape="rounded"
-                      className="w-full h-full"
+                      className="w-full h-full object-cover"
+                      fallbackClassName="bg-[var(--bg-item)]"
                     />
                     
                     {/* Compatibility Badge */}
@@ -242,6 +241,7 @@ export const MainHub: React.FC = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           selectCharacter(createCharacterId(character.id));
+                          setScreen('character-profile');
                         }}
                         iconLeft="📋"
                       >
@@ -254,6 +254,7 @@ export const MainHub: React.FC = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             selectCharacter(createCharacterId(character.id));
+                            setScreen('character-interaction');
                           }}
                           iconLeft="📅"
                         >
