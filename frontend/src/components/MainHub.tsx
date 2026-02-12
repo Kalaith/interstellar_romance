@@ -3,7 +3,6 @@ import { useGameStore } from '../stores/gameStore';
 import { useCharacterStore } from '../stores/characterStore';
 import { MoodDisplay } from './ui/MoodDisplay';
 import { ProgressBar } from './ui/ProgressBar';
-import { Avatar, CharacterAvatar } from './ui/Avatar';
 import { Button, PrimaryButton, SecondaryButton } from './ui/Button';
 import { CharacterImage } from './AssetLoader';
 import { calculateCompatibility } from '../utils/compatibility';
@@ -21,7 +20,6 @@ export const MainHub: React.FC = () => {
 
   const {
     characters,
-    selectedCharacter,
     selectCharacter,
     canTalkToCharacterToday
   } = useCharacterStore();

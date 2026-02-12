@@ -3,8 +3,6 @@ import { CharacterId, AffectionLevel, createAffectionLevel } from '../../types/b
 import { Validators } from '../../utils/validators';
 import { Logger } from '../../services/Logger';
 import { calculateMaxInteractions } from '../characters';
-import { checkMilestones } from '../milestones';
-import { checkPhotoUnlocks } from '../photo-galleries';
 
 export class CharacterRepository {
   private static instance: CharacterRepository;

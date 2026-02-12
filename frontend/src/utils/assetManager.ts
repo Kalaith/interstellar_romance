@@ -94,7 +94,7 @@ class AssetManager {
   }
 
   private async preloadImage(asset: AssetMetadata): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const img = new Image();
 
       img.onload = () => {

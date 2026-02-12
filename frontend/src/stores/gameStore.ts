@@ -465,7 +465,7 @@ export const useGameStore = create<GameState>()(
   // Batch update system to prevent race conditions
   batchUpdate: (characterId, updates) => {
     const state = get();
-    let updatedState: Partial<GameState> = {};
+    const updatedState: Partial<GameState> = {};
 
     if (updates.achievements) {
       if (state.player) {

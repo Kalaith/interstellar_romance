@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import {
   getDailyResetInfo,
-  shouldResetDailyInteractions,
   getCurrentDateInTimezone,
   formatTimeUntilReset,
   getUserTimezone,

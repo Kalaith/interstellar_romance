@@ -42,7 +42,7 @@ export class AsyncOperationManager {
   
   static cancelAllOperations(): number {
     const count = this.pendingOperations.size;
-    for (const [key, timeoutId] of this.pendingOperations) {
+    for (const [, timeoutId] of this.pendingOperations) {
       clearTimeout(timeoutId);
     }
     this.pendingOperations.clear();

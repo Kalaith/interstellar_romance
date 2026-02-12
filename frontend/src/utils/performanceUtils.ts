@@ -215,8 +215,8 @@ export const StorageUtils = {
   // Check available storage space
   getStorageInfo: (): { used: number; available: number; total: number } => {
     let used = 0;
-    for (let key in localStorage) {
-      if (localStorage.hasOwnProperty(key)) {
+    for (const key in localStorage) {
+      if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
         used += localStorage[key].length;
       }
     }

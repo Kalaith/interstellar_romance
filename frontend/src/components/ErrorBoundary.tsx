@@ -97,7 +97,7 @@ export const GameErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ chi
         Logger.error('Game Error', error);
         Logger.debug('Game Error Info', errorInfo);
       }}
-      fallback={({ error, retry }) => (
+      fallback={({ error: _error, retry }) => (
         <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900 flex items-center justify-center">
           <div className="bg-slate-900 rounded-lg p-8 max-w-md text-center text-white">
             <div className="text-6xl mb-4">🎮</div>
@@ -123,7 +123,7 @@ export const GameErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ chi
 export const CharacterErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ErrorBoundary
-      fallback={({ error, retry }) => (
+      fallback={({ error: _error, retry }) => (
         <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-center">
           <div className="text-red-400 text-2xl mb-2">⚠️</div>
           <div className="text-red-300 text-sm mb-3">Character data error</div>

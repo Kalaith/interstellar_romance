@@ -1,6 +1,5 @@
 import React from 'react';
 import { ProgressBarProps, DEFAULT_PROGRESS_BAR_PROPS } from '../../types/componentProps';
-import { Validators } from '../../utils/validators';
 import { Logger } from '../../services/Logger';
 
 export const ProgressBar: React.FC<ProgressBarProps> = (props) => {

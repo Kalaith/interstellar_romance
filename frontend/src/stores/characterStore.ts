@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Character } from '../types/game';
-import { CharacterId, AffectionLevel } from '../types/brandedTypes';
+import { CharacterId } from '../types/brandedTypes';
 import { CHARACTERS } from '../data/characters';
 import { CharacterRepository } from '../data/repositories/CharacterRepository';
 import { Validators } from '../utils/validators';

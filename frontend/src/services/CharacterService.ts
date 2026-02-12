@@ -1,6 +1,6 @@
 import { Character, PlayerCharacter, SexualPreference, CompatibilityScore } from '../types/game';
-import { CharacterId, PercentageScore } from '../types/brandedTypes';
-import { calculateCompatibility, getCompatibilityColor, getCompatibilityLabel } from '../utils/compatibility';
+import { CharacterId } from '../types/brandedTypes';
+import { calculateCompatibility, getCompatibilityLabel } from '../utils/compatibility';
 import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
 import { Validators } from '../utils/validators';
 import { Logger } from '../services/Logger';
