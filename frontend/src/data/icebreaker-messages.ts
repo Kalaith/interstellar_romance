@@ -648,8 +648,9 @@ export function getAvailableIcebreakers(
 
   const available: IcebreakerMessage[] = [];
 
-  Object.values(characterTemplates).forEach((categoryMessages) => {
-    categoryMessages.forEach((message) => {
+  Object.values(characterTemplates).forEach(
+    (categoryMessages: IcebreakerMessage[]) => {
+      categoryMessages.forEach((message: IcebreakerMessage) => {
       if (
         !message.used &&
         currentAffection >= message.context.requiredAffection &&
@@ -657,8 +658,9 @@ export function getAvailableIcebreakers(
       ) {
         available.push(message);
       }
-    });
-  });
+      });
+    }
+  );
 
   // Sort by effectiveness (highest first)
   return available.sort((a, b) => b.effectiveness - a.effectiveness);

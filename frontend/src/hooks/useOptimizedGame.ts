@@ -128,7 +128,7 @@ export const usePerformanceMonitor = (componentName: string) => {
     const timeSinceLastRender = now - lastRenderTime.current;
     lastRenderTime.current = now;
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.debug(
         `${componentName} render #${renderCount.current}, time since last: ${timeSinceLastRender}ms`
       );

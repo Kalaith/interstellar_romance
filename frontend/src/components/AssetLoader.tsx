@@ -60,7 +60,7 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
           {hasErrors && (
             <div className="mt-4 text-yellow-400 text-sm">
               <p>Some assets are using fallbacks</p>
-              {process.env.NODE_ENV === 'development' &&
+              {import.meta.env.DEV &&
                 invalidAssets.length > 0 && (
                   <details className="mt-2">
                     <summary className="cursor-pointer">Debug Info</summary>

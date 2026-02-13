@@ -128,7 +128,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
         const dialogueTree = getDialogueTree(selectedCharacter.id);
         if (dialogueTree) {
           const nextBranchOptions = option.nextOptions.flatMap(
-            (branchId) => dialogueTree.branches[branchId] || []
+            (branchId: string) => dialogueTree.branches[branchId] || []
           );
           setAvailableOptions([
             ...dialogueTree.rootOptions,

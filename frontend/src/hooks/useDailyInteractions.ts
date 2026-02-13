@@ -38,7 +38,9 @@ export const useDailyInteractions = (characterId: string) => {
     timeUntilResetFormatted: 'Now',
   });
 
-  const [updateInterval, setUpdateInterval] = useState<NodeJS.Timeout | null>(
+  const [updateInterval, setUpdateInterval] = useState<
+    ReturnType<typeof setInterval> | null
+  >(
     null
   );
 
@@ -220,7 +222,7 @@ export const useDailyInteractions = (characterId: string) => {
 
     // Debug info (useful for development)
     debugInfo:
-      process.env.NODE_ENV === 'development'
+      import.meta.env.DEV
         ? {
             lastResetDate: character?.dailyInteractions.lastResetDate,
             timezone: character?.dailyInteractions.timezone || 'Not set',

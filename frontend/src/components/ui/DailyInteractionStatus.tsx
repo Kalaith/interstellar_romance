@@ -111,7 +111,7 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
                   {userTimezone.abbreviation}
                 </span>
               </div>
-              {debugInfo && process.env.NODE_ENV === 'development' && (
+              {debugInfo && import.meta.env.DEV && (
                 <details className="mt-2">
                   <summary className="text-xs text-gray-500 cursor-pointer">
                     Debug Info

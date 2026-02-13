@@ -64,7 +64,7 @@ export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
           main menu.
         </p>
 
-        {process.env.NODE_ENV === 'development' && (
+        {import.meta.env.DEV && (
           <details className="text-left bg-red-900 p-3 rounded mb-4">
             <summary className="cursor-pointer font-semibold">
               Error Details

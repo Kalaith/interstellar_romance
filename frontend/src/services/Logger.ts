@@ -9,7 +9,7 @@ export enum LogLevel {
 
 export class Logger {
   private static currentLevel =
-    process.env.NODE_ENV === 'development' ? LogLevel.DEBUG : LogLevel.ERROR;
+    import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.ERROR;
 
   private static formatMessage(level: string, message: string): string {
     return `[${new Date().toISOString()}] ${level}: ${message}`;
@@ -51,7 +51,7 @@ export class Logger {
 
   private static reportError(message: string, error?: Error | unknown): void {
     // In production, could send to Sentry, LogRocket, etc.
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // Example: window.errorReporter?.captureException(error || new Error(message));
       try {
         // Store error locally for debugging

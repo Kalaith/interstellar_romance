@@ -27,7 +27,8 @@ export const getUserTimezone = (): TimeZoneInfo => {
   });
   const parts = formatter.formatToParts(now);
   const abbreviation =
-    parts.find((part) => part.type === 'timeZoneName')?.value || 'UTC';
+    parts.find((part: Intl.DateTimeFormatPart) => part.type === 'timeZoneName')
+      ?.value || 'UTC';
 
   // Check if currently in DST
   const january = new Date(now.getFullYear(), 0, 1);

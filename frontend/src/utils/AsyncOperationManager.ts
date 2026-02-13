@@ -1,7 +1,10 @@
 import { Logger } from '../services/Logger';
 
 export class AsyncOperationManager {
-  private static pendingOperations = new Map<string, NodeJS.Timeout>();
+  private static pendingOperations = new Map<
+    string,
+    ReturnType<typeof setTimeout>
+  >();
 
   static scheduleOperation(
     key: string,

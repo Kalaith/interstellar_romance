@@ -100,13 +100,13 @@ export function memoize<Args extends readonly unknown[], Return>(
 }
 
 // Debounce utility for frequent updates
-export function debounce<T extends (...args: unknown[]) => void>(
-  func: T,
+export function debounce<Args extends unknown[]>(
+  func: (...args: Args) => void,
   delay: number
-): (...args: Parameters<T>) => void {
+): (...args: Args) => void {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  return (...args: Parameters<T>) => {
+  return (...args: Args) => {
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId);
     }
@@ -115,13 +115,13 @@ export function debounce<T extends (...args: unknown[]) => void>(
 }
 
 // Throttle utility for rate limiting
-export function throttle<T extends (...args: unknown[]) => void>(
-  func: T,
+export function throttle<Args extends unknown[]>(
+  func: (...args: Args) => void,
   delay: number
-): (...args: Parameters<T>) => void {
+): (...args: Args) => void {
   let lastCall = 0;
 
-  return (...args: Parameters<T>) => {
+  return (...args: Args) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;

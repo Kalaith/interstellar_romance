@@ -63,7 +63,7 @@ export const useAssetLoader = () => {
         }
 
         // Log results in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('Asset Loading Complete:', {
             valid: valid.length,
             invalid: invalid.length,
