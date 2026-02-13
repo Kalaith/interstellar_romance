@@ -10,7 +10,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'relationship',
     condition: { type: 'conversation_count', target: 1 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'friend_zone',
@@ -20,7 +20,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'relationship',
     condition: { type: 'affection', target: 25 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'romantic_interest',
@@ -30,7 +30,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'relationship',
     condition: { type: 'affection', target: 50 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'deep_connection',
@@ -40,7 +40,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'relationship',
     condition: { type: 'affection', target: 75 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'true_love',
@@ -49,77 +49,105 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💗',
     category: 'relationship',
     condition: { type: 'affection', target: 100 },
-    reward: { type: 'photo', id: 'legendary_photo', description: 'Unlock a special legendary photo' },
+    reward: {
+      type: 'photo',
+      id: 'legendary_photo',
+      description: 'Unlock a special legendary photo',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Character-Specific Achievements
   {
     id: 'nature_lover',
     name: 'Nature Lover',
-    description: 'Reach 50 affection with Zara\'thul',
+    description: "Reach 50 affection with Zara'thul",
     icon: '🌿',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'zarath' },
-    reward: { type: 'dialogue_option', id: 'nature_wisdom', description: 'Unlock special nature-themed conversations' },
+    reward: {
+      type: 'dialogue_option',
+      id: 'nature_wisdom',
+      description: 'Unlock special nature-themed conversations',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'space_explorer',
     name: 'Space Explorer',
-    description: 'Reach 50 affection with Captain Vel\'nari',
+    description: "Reach 50 affection with Captain Vel'nari",
     icon: '🚀',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'velnari' },
-    reward: { type: 'date_plan', id: 'exclusive_nebula_tour', description: 'Unlock exclusive space exploration dates' },
+    reward: {
+      type: 'date_plan',
+      id: 'exclusive_nebula_tour',
+      description: 'Unlock exclusive space exploration dates',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'ocean_depths',
     name: 'Ocean Depths',
-    description: 'Reach 50 affection with Dr. Keth\'ra',
+    description: "Reach 50 affection with Dr. Keth'ra",
     icon: '🌊',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'kethra' },
-    reward: { type: 'photo', id: 'underwater_paradise', description: 'Unlock exclusive underwater photos' },
+    reward: {
+      type: 'photo',
+      id: 'underwater_paradise',
+      description: 'Unlock exclusive underwater photos',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'warrior_bond',
-    name: 'Warrior\'s Bond',
-    description: 'Reach 50 affection with Commander Ryx\'tal',
+    name: "Warrior's Bond",
+    description: "Reach 50 affection with Commander Ryx'tal",
     icon: '⚔️',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'ryxtal' },
-    reward: { type: 'dialogue_option', id: 'honor_code', description: 'Learn about ancient warrior traditions' },
+    reward: {
+      type: 'dialogue_option',
+      id: 'honor_code',
+      description: 'Learn about ancient warrior traditions',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'empathic_connection',
     name: 'Empathic Connection',
-    description: 'Reach 50 affection with Sage Mor\'geth',
+    description: "Reach 50 affection with Sage Mor'geth",
     icon: '🧠',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'morgeth' },
-    reward: { type: 'photo', id: 'collective_consciousness', description: 'Unlock empathic art photos' },
+    reward: {
+      type: 'photo',
+      id: 'collective_consciousness',
+      description: 'Unlock empathic art photos',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'tech_harmony',
     name: 'Technological Harmony',
-    description: 'Reach 50 affection with Engineer Thex\'ik',
+    description: "Reach 50 affection with Engineer Thex'ik",
     icon: '⚙️',
     category: 'relationship',
     condition: { type: 'affection', target: 50, characterId: 'thexik' },
-    reward: { type: 'date_plan', id: 'quantum_workshop', description: 'Unlock advanced technology dates' },
+    reward: {
+      type: 'date_plan',
+      id: 'quantum_workshop',
+      description: 'Unlock advanced technology dates',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Dating Achievements
@@ -131,7 +159,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'dating',
     condition: { type: 'date_count', target: 1 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'serial_dater',
@@ -141,7 +169,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'dating',
     condition: { type: 'date_count', target: 10 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'romantic_master',
@@ -150,9 +178,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '👑',
     category: 'dating',
     condition: { type: 'date_count', target: 25 },
-    reward: { type: 'cosmetic', id: 'romantic_title', description: 'Earn the "Galactic Romantic" title' },
+    reward: {
+      type: 'cosmetic',
+      id: 'romantic_title',
+      description: 'Earn the "Galactic Romantic" title',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Conversation Achievements
@@ -164,7 +196,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'conversation',
     condition: { type: 'conversation_count', target: 50 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'master_conversationalist',
@@ -173,9 +205,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎭',
     category: 'conversation',
     condition: { type: 'conversation_count', target: 100 },
-    reward: { type: 'dialogue_option', id: 'master_charm', description: 'Unlock special charm dialogue options' },
+    reward: {
+      type: 'dialogue_option',
+      id: 'master_charm',
+      description: 'Unlock special charm dialogue options',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Collection Achievements
@@ -187,7 +223,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'collection',
     condition: { type: 'photo_unlock', target: 10 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'memory_keeper',
@@ -197,7 +233,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'collection',
     condition: { type: 'photo_unlock', target: 25 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'legendary_collector',
@@ -206,9 +242,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🏆',
     category: 'collection',
     condition: { type: 'photo_unlock', target: 6 }, // 6 legendary photos (1 per character)
-    reward: { type: 'cosmetic', id: 'collector_badge', description: 'Exclusive collector badge' },
+    reward: {
+      type: 'cosmetic',
+      id: 'collector_badge',
+      description: 'Exclusive collector badge',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Compatibility Achievements
@@ -220,7 +260,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'mastery',
     condition: { type: 'compatibility', target: 90 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'universal_charm',
@@ -229,9 +269,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌟',
     category: 'mastery',
     condition: { type: 'compatibility', target: 70 },
-    reward: { type: 'cosmetic', id: 'universal_charm_title', description: 'Earn the "Universal Charmer" title' },
+    reward: {
+      type: 'cosmetic',
+      id: 'universal_charm_title',
+      description: 'Earn the "Universal Charmer" title',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Milestone Achievements
@@ -243,7 +287,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'relationship',
     condition: { type: 'milestone', target: 10 },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
   {
     id: 'relationship_expert',
@@ -252,9 +296,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💎',
     category: 'relationship',
     condition: { type: 'milestone', target: 6 }, // 6 milestones per character
-    reward: { type: 'photo', id: 'relationship_master', description: 'Unlock exclusive relationship expert photo' },
+    reward: {
+      type: 'photo',
+      id: 'relationship_master',
+      description: 'Unlock exclusive relationship expert photo',
+    },
     achieved: false,
-    progress: 0
+    progress: 0,
   },
 
   // Exploration Achievements
@@ -266,8 +314,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'exploration',
     condition: { type: 'date_count', target: 15 }, // Approximate number of unique locations
     achieved: false,
-    progress: 0
-  }
+    progress: 0,
+  },
 ];
 
 export function checkAchievements(
@@ -283,7 +331,7 @@ export function checkAchievements(
     characterAffections: Record<string, number>;
   }
 ): Achievement[] {
-  return achievements.map(achievement => {
+  return achievements.map((achievement) => {
     if (achievement.achieved) return achievement;
 
     let progress = 0;
@@ -292,37 +340,59 @@ export function checkAchievements(
     switch (achievement.condition.type) {
       case 'affection':
         if (achievement.condition.characterId) {
-          const characterAffection = stats.characterAffections[achievement.condition.characterId] || 0;
-          progress = Math.min(100, (characterAffection / achievement.condition.target) * 100);
+          const characterAffection =
+            stats.characterAffections[achievement.condition.characterId] || 0;
+          progress = Math.min(
+            100,
+            (characterAffection / achievement.condition.target) * 100
+          );
           isAchieved = characterAffection >= achievement.condition.target;
         } else {
-          progress = Math.min(100, (stats.maxAffection / achievement.condition.target) * 100);
+          progress = Math.min(
+            100,
+            (stats.maxAffection / achievement.condition.target) * 100
+          );
           isAchieved = stats.maxAffection >= achievement.condition.target;
         }
         break;
 
       case 'date_count':
-        progress = Math.min(100, (stats.totalDates / achievement.condition.target) * 100);
+        progress = Math.min(
+          100,
+          (stats.totalDates / achievement.condition.target) * 100
+        );
         isAchieved = stats.totalDates >= achievement.condition.target;
         break;
 
       case 'conversation_count':
-        progress = Math.min(100, (stats.totalConversations / achievement.condition.target) * 100);
+        progress = Math.min(
+          100,
+          (stats.totalConversations / achievement.condition.target) * 100
+        );
         isAchieved = stats.totalConversations >= achievement.condition.target;
         break;
 
       case 'photo_unlock':
-        progress = Math.min(100, (stats.unlockedPhotos / achievement.condition.target) * 100);
+        progress = Math.min(
+          100,
+          (stats.unlockedPhotos / achievement.condition.target) * 100
+        );
         isAchieved = stats.unlockedPhotos >= achievement.condition.target;
         break;
 
       case 'compatibility':
-        progress = Math.min(100, (stats.maxCompatibility / achievement.condition.target) * 100);
+        progress = Math.min(
+          100,
+          (stats.maxCompatibility / achievement.condition.target) * 100
+        );
         isAchieved = stats.maxCompatibility >= achievement.condition.target;
         break;
 
       case 'milestone':
-        progress = Math.min(100, (stats.unlockedMilestones / achievement.condition.target) * 100);
+        progress = Math.min(
+          100,
+          (stats.unlockedMilestones / achievement.condition.target) * 100
+        );
         isAchieved = stats.unlockedMilestones >= achievement.condition.target;
         break;
     }
@@ -331,22 +401,34 @@ export function checkAchievements(
       ...achievement,
       progress: Math.round(progress),
       achieved: isAchieved,
-      achievedDate: isAchieved && !achievement.achieved ? new Date() : achievement.achievedDate
+      achievedDate:
+        isAchieved && !achievement.achieved
+          ? new Date()
+          : achievement.achievedDate,
     };
   });
 }
 
-export function getAchievementsByCategory(achievements: Achievement[], category: AchievementCategory): Achievement[] {
-  return achievements.filter(achievement => achievement.category === category);
+export function getAchievementsByCategory(
+  achievements: Achievement[],
+  category: AchievementCategory
+): Achievement[] {
+  return achievements.filter(
+    (achievement) => achievement.category === category
+  );
 }
 
-export function getRecentAchievements(achievements: Achievement[], days: number = 7): Achievement[] {
+export function getRecentAchievements(
+  achievements: Achievement[],
+  days: number = 7
+): Achievement[] {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
 
-  return achievements.filter(achievement =>
-    achievement.achieved &&
-    achievement.achievedDate &&
-    achievement.achievedDate >= cutoffDate
+  return achievements.filter(
+    (achievement) =>
+      achievement.achieved &&
+      achievement.achievedDate &&
+      achievement.achievedDate >= cutoffDate
   );
 }

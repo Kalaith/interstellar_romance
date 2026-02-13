@@ -7,7 +7,7 @@ import { CharacterLookup, memoize, debounce } from '../utils/performanceUtils';
 
 // Optimized character selection with memoization
 export const useOptimizedCharacters = () => {
-  const characters = useGameStore(state => state.characters);
+  const characters = useGameStore((state) => state.characters);
   const characterLookupRef = useRef<CharacterLookup | null>(null);
 
   // Create or update character lookup map
@@ -20,13 +20,19 @@ export const useOptimizedCharacters = () => {
     return characterLookupRef.current;
   }, [characters]);
 
-  const getCharacter = useCallback((id: string): Character | undefined => {
-    return characterLookup.getCharacter(id);
-  }, [characterLookup]);
+  const getCharacter = useCallback(
+    (id: string): Character | undefined => {
+      return characterLookup.getCharacter(id);
+    },
+    [characterLookup]
+  );
 
-  const getCharactersByAffectionRange = useCallback((min: number, max: number): Character[] => {
-    return characterLookup.getCharactersByAffectionRange(min, max);
-  }, [characterLookup]);
+  const getCharactersByAffectionRange = useCallback(
+    (min: number, max: number): Character[] => {
+      return characterLookup.getCharactersByAffectionRange(min, max);
+    },
+    [characterLookup]
+  );
 
   const getHighestAffectionCharacter = useCallback((): Character | null => {
     return characterLookup.getHighestAffectionCharacter();
@@ -42,13 +48,13 @@ export const useOptimizedCharacters = () => {
     getCharactersByAffectionRange,
     getHighestAffectionCharacter,
     getTotalAffection,
-    hasCharacter: characterLookup.hasCharacter.bind(characterLookup)
+    hasCharacter: characterLookup.hasCharacter.bind(characterLookup),
   };
 };
 
 // Memoized dialogue options calculation
 export const useDialogueOptions = () => {
-  const selectedCharacter = useGameStore(state => state.selectedCharacter);
+  const selectedCharacter = useGameStore((state) => state.selectedCharacter);
 
   // Memoize expensive dialogue calculations
   const getAvailableOptions = useMemo(() => {
@@ -60,7 +66,8 @@ export const useDialogueOptions = () => {
         // For now, return empty array as placeholder
         return [];
       },
-      (character) => `${character?.id || 'none'}-${character?.affection || 0}-${character?.mood || 'none'}`
+      (character) =>
+        `${character?.id || 'none'}-${character?.affection || 0}-${character?.mood || 'none'}`
     );
   }, []);
 
@@ -71,7 +78,7 @@ export const useDialogueOptions = () => {
 
 // Debounced affection updates
 export const useDebouncedAffectionUpdate = (delay: number = 300) => {
-  const updateAffection = useGameStore(state => state.updateAffection);
+  const updateAffection = useGameStore((state) => state.updateAffection);
 
   const debouncedUpdate = useMemo(() => {
     return debounce((characterId: string, amount: number) => {
@@ -84,23 +91,29 @@ export const useDebouncedAffectionUpdate = (delay: number = 300) => {
 
 // Optimized screen navigation
 export const useOptimizedNavigation = () => {
-  const setScreen = useGameStore(state => state.setScreen);
-  const currentScreen = useGameStore(state => state.currentScreen);
+  const setScreen = useGameStore((state) => state.setScreen);
+  const currentScreen = useGameStore((state) => state.currentScreen);
 
-  const navigateToScreen = useCallback((screen: GameScreen) => {
-    if (currentScreen !== screen) {
-      setScreen(screen);
-    }
-  }, [setScreen, currentScreen]);
+  const navigateToScreen = useCallback(
+    (screen: GameScreen) => {
+      if (currentScreen !== screen) {
+        setScreen(screen);
+      }
+    },
+    [setScreen, currentScreen]
+  );
 
-  const canNavigate = useCallback((screen: GameScreen) => {
-    return currentScreen !== screen;
-  }, [currentScreen]);
+  const canNavigate = useCallback(
+    (screen: GameScreen) => {
+      return currentScreen !== screen;
+    },
+    [currentScreen]
+  );
 
   return {
     navigateToScreen,
     canNavigate,
-    currentScreen
+    currentScreen,
   };
 };
 
@@ -116,24 +129,34 @@ export const usePerformanceMonitor = (componentName: string) => {
     lastRenderTime.current = now;
 
     if (process.env.NODE_ENV === 'development') {
-      console.debug(`${componentName} render #${renderCount.current}, time since last: ${timeSinceLastRender}ms`);
+      console.debug(
+        `${componentName} render #${renderCount.current}, time since last: ${timeSinceLastRender}ms`
+      );
     }
   });
 
-  const logSlowOperation = useCallback((operationName: string, startTime: number) => {
-    const duration = Date.now() - startTime;
-    if (duration > 16) { // Slower than 60fps
-      console.warn(`Slow operation in ${componentName}: ${operationName} took ${duration}ms`);
-    }
-  }, [componentName]);
+  const logSlowOperation = useCallback(
+    (operationName: string, startTime: number) => {
+      const duration = Date.now() - startTime;
+      if (duration > 16) {
+        // Slower than 60fps
+        console.warn(
+          `Slow operation in ${componentName}: ${operationName} took ${duration}ms`
+        );
+      }
+    },
+    [componentName]
+  );
 
   return { logSlowOperation };
 };
 
 // Optimized storyline management
 export const useOptimizedStorylines = () => {
-  const availableStorylines = useGameStore(state => state.availableStorylines);
-  const selectedCharacter = useGameStore(state => state.selectedCharacter);
+  const availableStorylines = useGameStore(
+    (state) => state.availableStorylines
+  );
+  const selectedCharacter = useGameStore((state) => state.selectedCharacter);
 
   const characterStorylines = useMemo(() => {
     if (!selectedCharacter) return [];
@@ -141,11 +164,13 @@ export const useOptimizedStorylines = () => {
   }, [availableStorylines, selectedCharacter?.id]);
 
   const unlockedStorylines = useMemo(() => {
-    return characterStorylines.filter(storyline => storyline.unlocked && !storyline.completed);
+    return characterStorylines.filter(
+      (storyline) => storyline.unlocked && !storyline.completed
+    );
   }, [characterStorylines]);
 
   const completedStorylines = useMemo(() => {
-    return characterStorylines.filter(storyline => storyline.completed);
+    return characterStorylines.filter((storyline) => storyline.completed);
   }, [characterStorylines]);
 
   return {
@@ -153,24 +178,28 @@ export const useOptimizedStorylines = () => {
     unlockedStorylines,
     completedStorylines,
     hasUnlockedStorylines: unlockedStorylines.length > 0,
-    completionRate: characterStorylines.length > 0
-      ? (completedStorylines.length / characterStorylines.length) * 100
-      : 0
+    completionRate:
+      characterStorylines.length > 0
+        ? (completedStorylines.length / characterStorylines.length) * 100
+        : 0,
   };
 };
 
 // Memoized achievement calculations
 export const useOptimizedAchievements = () => {
-  const achievements = useGameStore(state => state.achievements);
-  const characters = useGameStore(state => state.characters);
-  const totalDates = useGameStore(state => state.totalDates);
-  const totalConversations = useGameStore(state => state.totalConversations);
+  const achievements = useGameStore((state) => state.achievements);
+  const characters = useGameStore((state) => state.characters);
+  const totalDates = useGameStore((state) => state.totalDates);
+  const totalConversations = useGameStore((state) => state.totalConversations);
 
   const achievementStats = useMemo(() => {
-    const unlockedAchievements = achievements.filter(a => a.achieved);
+    const unlockedAchievements = achievements.filter((a) => a.achieved);
     // Note: points system not implemented yet, setting to 0
     const totalPoints = 0;
-    const completionRate = achievements.length > 0 ? (unlockedAchievements.length / achievements.length) * 100 : 0;
+    const completionRate =
+      achievements.length > 0
+        ? (unlockedAchievements.length / achievements.length) * 100
+        : 0;
 
     return {
       unlocked: unlockedAchievements,
@@ -178,14 +207,18 @@ export const useOptimizedAchievements = () => {
       totalPoints,
       completionRate,
       unlockedCount: unlockedAchievements.length,
-      totalCount: achievements.length
+      totalCount: achievements.length,
     };
   }, [achievements]);
 
   const gameStats = useMemo(() => {
-    const totalAffection = characters.reduce((sum, char) => sum + char.affection, 0);
-    const maxAffection = Math.max(...characters.map(char => char.affection));
-    const averageAffection = characters.length > 0 ? totalAffection / characters.length : 0;
+    const totalAffection = characters.reduce(
+      (sum, char) => sum + char.affection,
+      0
+    );
+    const maxAffection = Math.max(...characters.map((char) => char.affection));
+    const averageAffection =
+      characters.length > 0 ? totalAffection / characters.length : 0;
 
     return {
       totalAffection,
@@ -193,12 +226,13 @@ export const useOptimizedAchievements = () => {
       averageAffection,
       totalDates,
       totalConversations,
-      charactersAtMaxAffection: characters.filter(c => c.affection >= 100).length
+      charactersAtMaxAffection: characters.filter((c) => c.affection >= 100)
+        .length,
     };
   }, [characters, totalDates, totalConversations]);
 
   return {
     achievements: achievementStats,
-    gameStats
+    gameStats,
   };
 };

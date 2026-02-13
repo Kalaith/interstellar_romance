@@ -1,17 +1,20 @@
 import React from 'react';
-import { ProgressBarProps, defaultProgressBarProps } from '../../types/componentProps';
+import {
+  ProgressBarProps,
+  defaultProgressBarProps,
+} from '../../types/componentProps';
 import { Logger } from '../../services/Logger';
 
 export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
-  const { 
-    value, 
-    variant, 
-    size, 
-    showValue, 
-    animated, 
-    label, 
+  const {
+    value,
+    variant,
+    size,
+    showValue,
+    animated,
+    label,
     className,
-    ...restProps 
+    ...restProps
   } = { ...defaultProgressBarProps({}), ...props };
 
   const safeValue = React.useMemo(() => {
@@ -24,31 +27,37 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
     }
   }, [value]);
 
-  const sizeClasses = React.useMemo(() => ({
-    xs: 'h-1',
-    sm: 'h-2',
-    md: 'h-3',
-    lg: 'h-4'
-  }), []);
+  const sizeClasses = React.useMemo(
+    () => ({
+      xs: 'h-1',
+      sm: 'h-2',
+      md: 'h-3',
+      lg: 'h-4',
+    }),
+    []
+  );
 
-  const variantClasses = React.useMemo(() => ({
-    affection: 'bg-gradient-to-r from-pink-500 to-red-500',
-    compatibility: 'bg-gradient-to-r from-blue-500 to-purple-500',
-    progress: 'bg-blue-500',
-    health: 'bg-gradient-to-r from-green-500 to-emerald-500'
-  }), []);
+  const variantClasses = React.useMemo(
+    () => ({
+      affection: 'bg-gradient-to-r from-pink-500 to-red-500',
+      compatibility: 'bg-gradient-to-r from-blue-500 to-purple-500',
+      progress: 'bg-blue-500',
+      health: 'bg-gradient-to-r from-green-500 to-emerald-500',
+    }),
+    []
+  );
 
   const progressClasses = React.useMemo(() => {
     const baseClasses = [
       sizeClasses[size],
       'rounded-full',
-      variantClasses[variant]
+      variantClasses[variant],
     ];
-    
+
     if (animated) {
       baseClasses.push('transition-all', 'duration-500', 'ease-out');
     }
-    
+
     return baseClasses.join(' ');
   }, [size, variant, animated, sizeClasses, variantClasses]);
 
@@ -64,9 +73,11 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
           )}
         </div>
       )}
-      
-      <div className={`w-full bg-gray-700 rounded-full ${sizeClasses[size]} overflow-hidden`}>
-        <div 
+
+      <div
+        className={`w-full bg-gray-700 rounded-full ${sizeClasses[size]} overflow-hidden`}
+      >
+        <div
           className={progressClasses}
           style={{ width: `${safeValue}%` }}
           role="progressbar"
@@ -76,7 +87,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
           aria-label={label || 'Progress'}
         />
       </div>
-      
+
       {showValue && !label && (
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-xs font-semibold text-white drop-shadow-sm">
@@ -89,14 +100,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
 };
 
 // Specific progress bar variants
-export const AffectionBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (props) => (
-  <ProgressBar {...props} variant="affection" />
-);
+export const AffectionBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
+  props
+) => <ProgressBar {...props} variant="affection" />;
 
-export const CompatibilityBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (props) => (
-  <ProgressBar {...props} variant="compatibility" />
-);
+export const CompatibilityBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
+  props
+) => <ProgressBar {...props} variant="compatibility" />;
 
-export const HealthBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (props) => (
-  <ProgressBar {...props} variant="health" />
-);
+export const HealthBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
+  props
+) => <ProgressBar {...props} variant="health" />;

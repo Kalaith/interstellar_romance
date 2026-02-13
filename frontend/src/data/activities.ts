@@ -8,7 +8,7 @@ export const ACTIVITIES: Activity[] = [
     reward: '+1 Random Stat, +50 Credits',
     type: 'weekly',
     category: 'social',
-    statBonus: { charisma: 1 }
+    statBonus: { charisma: 1 },
   },
   {
     id: 'social',
@@ -17,7 +17,7 @@ export const ACTIVITIES: Activity[] = [
     reward: '+1 Charisma, Meet characters',
     type: 'weekly',
     category: 'social',
-    statBonus: { charisma: 1 }
+    statBonus: { charisma: 1 },
   },
   {
     id: 'research',
@@ -26,7 +26,7 @@ export const ACTIVITIES: Activity[] = [
     reward: '+2 Intelligence, +1 Technology',
     type: 'weekly',
     category: 'exploration',
-    statBonus: { intelligence: 2, technology: 1 }
+    statBonus: { intelligence: 2, technology: 1 },
   },
   {
     id: 'exploration',
@@ -35,7 +35,7 @@ export const ACTIVITIES: Activity[] = [
     reward: '+2 Adventure, Rare items',
     type: 'weekly',
     category: 'exploration',
-    statBonus: { adventure: 2 }
+    statBonus: { adventure: 2 },
   },
   {
     id: 'meditation',
@@ -44,7 +44,7 @@ export const ACTIVITIES: Activity[] = [
     reward: '+2 Empathy, +1 Charisma',
     type: 'weekly',
     category: 'personal',
-    statBonus: { empathy: 2, charisma: 1 }
+    statBonus: { empathy: 2, charisma: 1 },
   },
   {
     id: 'training',
@@ -53,6 +53,6 @@ export const ACTIVITIES: Activity[] = [
     reward: '+1 to chosen stat',
     type: 'weekly',
     category: 'personal',
-    statBonus: { charisma: 1 }
-  }
+    statBonus: { charisma: 1 },
+  },
 ];

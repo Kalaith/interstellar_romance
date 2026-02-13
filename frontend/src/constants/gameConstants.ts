@@ -4,7 +4,7 @@ export const affectionThresholds = {
   HIGH: 60,
   MEDIUM: 40,
   LOW: 20,
-  NONE: 0
+  NONE: 0,
 } as const;
 
 export const interactionLimits = {
@@ -12,7 +12,7 @@ export const interactionLimits = {
   HIGH_AFFECTION: 6,
   MEDIUM_AFFECTION: 5,
   LOW_MEDIUM_AFFECTION: 4,
-  DEFAULT: 3
+  DEFAULT: 3,
 } as const;
 
 export const compatibilityScores = {
@@ -20,14 +20,14 @@ export const compatibilityScores = {
   VERY_GOOD: 80,
   GOOD: 70,
   AVERAGE: 60,
-  POOR: 50
+  POOR: 50,
 } as const;
 
 export const statThresholds = {
   VERY_HIGH: 80,
   HIGH: 70,
   MEDIUM: 60,
-  LOW: 50
+  LOW: 50,
 } as const;
 
 export const milestoneThresholds = {
@@ -36,20 +36,20 @@ export const milestoneThresholds = {
   MUTUAL_INTEREST: 30,
   ROMANTIC_TENSION: 50,
   DEEP_CONNECTION: 65,
-  COMMITMENT: 80
+  COMMITMENT: 80,
 } as const;
 
 export const personalityGrowthLimits = {
   MAX_GROWTH: 10,
   MIN_GROWTH: 0,
   DEFAULT_BASE: 5,
-  MAJOR_CHANGE_THRESHOLD: 5
+  MAJOR_CHANGE_THRESHOLD: 5,
 } as const;
 
 export const performanceThresholds = {
   SLOW_OPERATION: 100, // milliseconds
   VERY_SLOW_OPERATION: 500,
-  HIGH_RENDER_COUNT: 50
+  HIGH_RENDER_COUNT: 50,
 } as const;
 
 export const validationLimits = {
@@ -58,7 +58,7 @@ export const validationLimits = {
   MIN_COMPATIBILITY: 0,
   MAX_COMPATIBILITY: 100,
   MIN_STAT_VALUE: 0,
-  MAX_STAT_VALUE: 100
+  MAX_STAT_VALUE: 100,
 } as const;
 
 export const uiConstants = {
@@ -66,7 +66,7 @@ export const uiConstants = {
     XS: 'h-1',
     SM: 'h-2',
     MD: 'h-3',
-    LG: 'h-4'
+    LG: 'h-4',
   },
   AVATAR_SIZES: {
     XS: 'w-6 h-6',
@@ -74,22 +74,22 @@ export const uiConstants = {
     MD: 'w-12 h-12',
     LG: 'w-16 h-16',
     XL: 'w-24 h-24',
-    '2XL': 'w-32 h-32'
+    '2XL': 'w-32 h-32',
   },
   BORDER_RADIUS: {
     NONE: 'rounded-none',
     SM: 'rounded',
     MD: 'rounded-lg',
     LG: 'rounded-xl',
-    FULL: 'rounded-full'
-  }
+    FULL: 'rounded-full',
+  },
 } as const;
 
 export const asyncDelays = {
   IMMEDIATE: 0,
   DEBOUNCE_SHORT: 150,
   DEBOUNCE_MEDIUM: 300,
-  DEBOUNCE_LONG: 500
+  DEBOUNCE_LONG: 500,
 } as const;
 
 export const asyncOperationKeys = {

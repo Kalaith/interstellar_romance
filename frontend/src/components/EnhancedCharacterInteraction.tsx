@@ -7,11 +7,24 @@ import { EmotionalText } from './ui/EmotionalText';
 import { MoodDisplay } from './ui/MoodDisplay';
 
 export const EnhancedCharacterInteraction: React.FC = () => {
-  const { selectedCharacter, setScreen, updateAffection, updateLastInteractionDate, incrementConversations, canTalkToCharacterToday } = useGameStore();
-  const [currentDialogue, setCurrentDialogue] = useState<string>('Choose how to start your conversation...');
+  const {
+    selectedCharacter,
+    setScreen,
+    updateAffection,
+    updateLastInteractionDate,
+    incrementConversations,
+    canTalkToCharacterToday,
+  } = useGameStore();
+  const [currentDialogue, setCurrentDialogue] = useState<string>(
+    'Choose how to start your conversation...'
+  );
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
-  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
-  const [dialogueHistory, setDialogueHistory] = useState<{ player: string; character: string; emotion: string }[]>([]);
+  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>(
+    []
+  );
+  const [dialogueHistory, setDialogueHistory] = useState<
+    { player: string; character: string; emotion: string }[]
+  >([]);
   // const [currentBranch, setCurrentBranch] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,7 +38,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
           { id: 'greeting', text: 'General Chat', topic: 'greeting' },
           { id: 'interests', text: 'Ask About Interests', topic: 'interests' },
           { id: 'backstory', text: 'Learn About Past', topic: 'backstory' },
-          { id: 'flirt', text: 'Flirt', topic: 'flirt', requiresAffection: 20 }
+          { id: 'flirt', text: 'Flirt', topic: 'flirt', requiresAffection: 20 },
         ]);
       }
     }
@@ -35,7 +48,9 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">No character selected!</p>
+          <p className="text-xl text-[var(--text-primary)] mb-4">
+            No character selected!
+          </p>
           <button
             onClick={() => setScreen('main-hub')}
             className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
@@ -50,20 +65,29 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   const handleDialogueChoice = (option: DialogueOption) => {
     // Check if we can talk today (once per day limit)
     if (!canTalkToCharacterToday(selectedCharacter.id)) {
-      setCurrentDialogue(`You've already had your daily conversation with ${selectedCharacter.name}. Come back tomorrow for another chat!`);
+      setCurrentDialogue(
+        `You've already had your daily conversation with ${selectedCharacter.name}. Come back tomorrow for another chat!`
+      );
       setCurrentEmotion('neutral');
       return;
     }
 
     // Check requirements
-    if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
-      setCurrentDialogue(`${selectedCharacter.name} seems uncomfortable with that approach. Perhaps build more trust first.`);
+    if (
+      option.requiresAffection &&
+      selectedCharacter.affection < option.requiresAffection
+    ) {
+      setCurrentDialogue(
+        `${selectedCharacter.name} seems uncomfortable with that approach. Perhaps build more trust first.`
+      );
       setCurrentEmotion('nervous');
       return;
     }
 
     if (option.requiresMood && selectedCharacter.mood !== option.requiresMood) {
-      setCurrentDialogue(`${selectedCharacter.name} doesn't seem to be in the right mood for that conversation.`);
+      setCurrentDialogue(
+        `${selectedCharacter.name} doesn't seem to be in the right mood for that conversation.`
+      );
       setCurrentEmotion('neutral');
       return;
     }
@@ -78,7 +102,10 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       setCurrentEmotion(response.emotion);
 
       // Calculate affection change with mood modifier
-      const moodModifier = getMoodModifier(selectedCharacter.mood, option.topic);
+      const moodModifier = getMoodModifier(
+        selectedCharacter.mood,
+        option.topic
+      );
       const totalAffectionChange = response.affectionChange + moodModifier;
 
       if (totalAffectionChange !== 0) {
@@ -87,20 +114,26 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       }
 
       // Add to dialogue history
-      setDialogueHistory(prev => [...prev, {
-        player: option.text,
-        character: response.text,
-        emotion: response.emotion
-      }]);
+      setDialogueHistory((prev) => [
+        ...prev,
+        {
+          player: option.text,
+          character: response.text,
+          emotion: response.emotion,
+        },
+      ]);
 
       // Update available options based on branches
       if (option.nextOptions) {
         const dialogueTree = getDialogueTree(selectedCharacter.id);
         if (dialogueTree) {
-          const nextBranchOptions = option.nextOptions.flatMap(branchId =>
-            dialogueTree.branches[branchId] || []
+          const nextBranchOptions = option.nextOptions.flatMap(
+            (branchId) => dialogueTree.branches[branchId] || []
           );
-          setAvailableOptions([...dialogueTree.rootOptions, ...nextBranchOptions]);
+          setAvailableOptions([
+            ...dialogueTree.rootOptions,
+            ...nextBranchOptions,
+          ]);
           // setCurrentBranch(option.nextOptions[0] || null);
         }
       }
@@ -159,8 +192,11 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     }
   };
 
-  const filteredOptions = availableOptions.filter(option => {
-    if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
+  const filteredOptions = availableOptions.filter((option) => {
+    if (
+      option.requiresAffection &&
+      selectedCharacter.affection < option.requiresAffection
+    ) {
       return false;
     }
     return true;
@@ -168,8 +204,10 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
   const canTalkToday = canTalkToCharacterToday(selectedCharacter.id);
 
-  const unlockedMilestones = selectedCharacter.milestones.filter(m => m.achieved);
-  const nextMilestone = selectedCharacter.milestones.find(m => !m.achieved);
+  const unlockedMilestones = selectedCharacter.milestones.filter(
+    (m) => m.achieved
+  );
+  const nextMilestone = selectedCharacter.milestones.find((m) => !m.achieved);
 
   return (
     <div className="min-h-screen">
@@ -195,28 +233,46 @@ export const EnhancedCharacterInteraction: React.FC = () => {
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{selectedCharacter.name}</h3>
+                    <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+                      {selectedCharacter.name}
+                    </h3>
                     {selectedCharacter.knownInfo.species ? (
-                      <p className="text-[var(--accent-teal)] font-medium mb-1">{selectedCharacter.species}</p>
+                      <p className="text-[var(--accent-teal)] font-medium mb-1">
+                        {selectedCharacter.species}
+                      </p>
                     ) : (
-                      <p className="text-[var(--text-muted)] font-medium mb-1">Unknown Species</p>
+                      <p className="text-[var(--text-muted)] font-medium mb-1">
+                        Unknown Species
+                      </p>
                     )}
                     {selectedCharacter.knownInfo.basicPersonality ? (
-                      <p className="text-[var(--text-muted)] text-sm">{selectedCharacter.personality}</p>
+                      <p className="text-[var(--text-muted)] text-sm">
+                        {selectedCharacter.personality}
+                      </p>
                     ) : (
-                      <p className="text-[var(--text-muted)] text-sm">Personality Unknown</p>
+                      <p className="text-[var(--text-muted)] text-sm">
+                        Personality Unknown
+                      </p>
                     )}
                   </div>
 
                   {/* Communication Status */}
                   <div className="text-right space-y-2">
                     <div>
-                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Comm Status</div>
-                      <div className="text-[var(--state-available)] font-semibold">ONLINE</div>
+                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                        Comm Status
+                      </div>
+                      <div className="text-[var(--state-available)] font-semibold">
+                        ONLINE
+                      </div>
                     </div>
                     <div>
-                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Daily Chat</div>
-                      <div className={`font-semibold ${canTalkToday ? 'text-[var(--state-available)]' : 'text-[var(--state-deficit)]'}`}>
+                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                        Daily Chat
+                      </div>
+                      <div
+                        className={`font-semibold ${canTalkToday ? 'text-[var(--state-available)]' : 'text-[var(--state-deficit)]'}`}
+                      >
                         {canTalkToday ? 'AVAILABLE' : 'USED'}
                       </div>
                     </div>
@@ -233,7 +289,10 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                   </div>
                 ) : (
                   <div className="mb-4">
-                    <div className="text-[var(--text-muted)] text-sm">Current mood is unknown - spend more time with them to learn their emotional state.</div>
+                    <div className="text-[var(--text-muted)] text-sm">
+                      Current mood is unknown - spend more time with them to
+                      learn their emotional state.
+                    </div>
                   </div>
                 )}
 
@@ -241,15 +300,19 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Affection</span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">{selectedCharacter.affection}/100</span>
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
+                        Affection
+                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        {selectedCharacter.affection}/100
+                      </span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
-                      <div 
+                      <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ 
+                        style={{
                           width: `${selectedCharacter.affection}%`,
-                          background: `linear-gradient(90deg, var(--resource-minerals), var(--resource-energy))`
+                          background: `linear-gradient(90deg, var(--resource-minerals), var(--resource-energy))`,
                         }}
                       ></div>
                     </div>
@@ -257,15 +320,19 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
                   <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Trust</span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">75/100</span>
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
+                        Trust
+                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        75/100
+                      </span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
-                      <div 
+                      <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ 
+                        style={{
                           width: `75%`,
-                          background: `linear-gradient(90deg, var(--accent-teal), var(--accent-cyan))`
+                          background: `linear-gradient(90deg, var(--accent-teal), var(--accent-cyan))`,
                         }}
                       ></div>
                     </div>
@@ -273,15 +340,19 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
                   <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">Compatibility</span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">85%</span>
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
+                        Compatibility
+                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        85%
+                      </span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
-                      <div 
+                      <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ 
+                        style={{
                           width: `85%`,
-                          background: `linear-gradient(90deg, var(--state-available), var(--resource-food))`
+                          background: `linear-gradient(90deg, var(--state-available), var(--resource-food))`,
                         }}
                       ></div>
                     </div>
@@ -291,13 +362,17 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 {/* Milestones */}
                 <div className="flex flex-wrap gap-2">
                   {unlockedMilestones.map((milestone, index) => (
-                    <div key={index} className="px-3 py-1 bg-[var(--state-available)] text-[var(--bg-space)] rounded-full text-xs font-semibold">
+                    <div
+                      key={index}
+                      className="px-3 py-1 bg-[var(--state-available)] text-[var(--bg-space)] rounded-full text-xs font-semibold"
+                    >
                       ✨ {milestone.name}
                     </div>
                   ))}
                   {nextMilestone && (
                     <div className="px-3 py-1 bg-[var(--state-locked)] text-[var(--text-muted)] rounded-full text-xs">
-                      🔒 {nextMilestone.name} ({nextMilestone.unlockedAt} affection)
+                      🔒 {nextMilestone.name} ({nextMilestone.unlockedAt}{' '}
+                      affection)
                     </div>
                   )}
                 </div>
@@ -308,10 +383,14 @@ export const EnhancedCharacterInteraction: React.FC = () => {
           {/* Communication Console */}
           <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-[var(--accent-cyan)] font-bold uppercase tracking-wide">Communication Interface</h4>
+              <h4 className="text-[var(--accent-cyan)] font-bold uppercase tracking-wide">
+                Communication Interface
+              </h4>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[var(--state-available)] rounded-full animate-pulse"></div>
-                <span className="text-[var(--text-muted)] text-xs">ACTIVE CHANNEL</span>
+                <span className="text-[var(--text-muted)] text-xs">
+                  ACTIVE CHANNEL
+                </span>
               </div>
             </div>
 
@@ -332,9 +411,13 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">💬</span>
                   <div>
-                    <div className="text-[var(--state-deficit)] font-semibold">Daily conversation completed</div>
+                    <div className="text-[var(--state-deficit)] font-semibold">
+                      Daily conversation completed
+                    </div>
                     <div className="text-[var(--text-muted)] text-sm">
-                      You've already had your daily chat with {selectedCharacter.name}. Come back tomorrow for another conversation!
+                      You've already had your daily chat with{' '}
+                      {selectedCharacter.name}. Come back tomorrow for another
+                      conversation!
                     </div>
                   </div>
                 </div>
@@ -344,7 +427,9 @@ export const EnhancedCharacterInteraction: React.FC = () => {
             {/* Response Options Grid */}
             <div className="grid grid-cols-1 gap-3">
               {filteredOptions.map((option) => {
-                const isLocked = option.requiresAffection && selectedCharacter.affection < option.requiresAffection;
+                const isLocked =
+                  option.requiresAffection &&
+                  selectedCharacter.affection < option.requiresAffection;
                 const isDisabled = isLocked || !canTalkToday;
 
                 return (
@@ -375,17 +460,30 @@ export const EnhancedCharacterInteraction: React.FC = () => {
           {/* Conversation Log */}
           {dialogueHistory.length > 0 && (
             <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-              <h4 className="text-[var(--accent-teal)] font-bold uppercase tracking-wide mb-4">Recent Exchange Log</h4>
+              <h4 className="text-[var(--accent-teal)] font-bold uppercase tracking-wide mb-4">
+                Recent Exchange Log
+              </h4>
               <div className="space-y-3 max-h-40 overflow-y-auto">
                 {dialogueHistory.slice(-3).map((exchange, index) => (
-                  <div key={index} className="space-y-2 border-b border-[var(--border-inner)] pb-3 last:border-b-0">
+                  <div
+                    key={index}
+                    className="space-y-2 border-b border-[var(--border-inner)] pb-3 last:border-b-0"
+                  >
                     <div className="flex items-start gap-3">
-                      <span className="text-[var(--accent-cyan)] text-xs font-semibold uppercase">You:</span>
-                      <span className="text-[var(--text-secondary)] text-sm">{exchange.player}</span>
+                      <span className="text-[var(--accent-cyan)] text-xs font-semibold uppercase">
+                        You:
+                      </span>
+                      <span className="text-[var(--text-secondary)] text-sm">
+                        {exchange.player}
+                      </span>
                     </div>
                     <div className="flex items-start gap-3 pl-4">
-                      <span className="text-[var(--accent-teal)] text-xs font-semibold uppercase">{selectedCharacter.name}:</span>
-                      <span className="text-[var(--text-primary)] text-sm">{exchange.character}</span>
+                      <span className="text-[var(--accent-teal)] text-xs font-semibold uppercase">
+                        {selectedCharacter.name}:
+                      </span>
+                      <span className="text-[var(--text-primary)] text-sm">
+                        {exchange.character}
+                      </span>
                     </div>
                   </div>
                 ))}

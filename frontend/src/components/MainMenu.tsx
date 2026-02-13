@@ -28,9 +28,7 @@ export const MainMenu: React.FC = () => {
             <p className="text-xl md:text-2xl text-cyan-300 mb-2 font-semibold">
               A Stellaris Inspired Dating Simulator
             </p>
-            <p className="text-lg text-cyan-100">
-              Find love among the stars
-            </p>
+            <p className="text-lg text-cyan-100">Find love among the stars</p>
           </div>
         </div>
 
@@ -130,9 +128,12 @@ export const MainMenu: React.FC = () => {
         {showResetConfirm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-slate-800 border border-red-500/50 rounded-lg p-6 max-w-md mx-4">
-              <h3 className="text-xl font-bold text-red-300 mb-4">⚠️ Confirm Reset</h3>
+              <h3 className="text-xl font-bold text-red-300 mb-4">
+                ⚠️ Confirm Reset
+              </h3>
               <p className="text-cyan-100 mb-6">
-                Are you sure you want to reset all game data? This will permanently delete all stored data including:
+                Are you sure you want to reset all game data? This will
+                permanently delete all stored data including:
               </p>
               <ul className="text-cyan-200 text-sm mb-6 list-disc list-inside space-y-1">
                 <li>Your character ({player?.name})</li>

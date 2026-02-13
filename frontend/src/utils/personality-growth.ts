@@ -9,7 +9,7 @@ export function calculatePersonalityGrowth(
   const triggers = personalityGrowthTriggers[trigger];
   const updatedTraits = [...currentTraits];
 
-  updatedTraits.forEach(trait => {
+  updatedTraits.forEach((trait) => {
     const change = triggers[trait.trait as keyof typeof triggers] || 0;
 
     if (change !== 0) {
@@ -24,7 +24,7 @@ export function calculatePersonalityGrowth(
           date: new Date(),
           trigger,
           change: newValue - trait.currentValue,
-          reason
+          reason,
         };
 
         trait.currentValue = newValue;
@@ -39,15 +39,20 @@ export function calculatePersonalityGrowth(
 export function getPersonalityDescription(traits: PersonalityGrowth[]): string {
   const descriptions: string[] = [];
 
-  traits.forEach(trait => {
+  traits.forEach((trait) => {
     const change = trait.currentValue - trait.baseValue;
-    const changePercent = Math.abs(change) / trait.baseValue * 100;
+    const changePercent = (Math.abs(change) / trait.baseValue) * 100;
 
-    if (changePercent >= 15) { // Significant change
+    if (changePercent >= 15) {
+      // Significant change
       if (change > 0) {
-        descriptions.push(getPositiveTraitDescription(trait.trait, changePercent));
+        descriptions.push(
+          getPositiveTraitDescription(trait.trait, changePercent)
+        );
       } else {
-        descriptions.push(getNegativeTraitDescription(trait.trait, changePercent));
+        descriptions.push(
+          getNegativeTraitDescription(trait.trait, changePercent)
+        );
       }
     }
   });
@@ -57,7 +62,10 @@ export function getPersonalityDescription(traits: PersonalityGrowth[]): string {
     : 'Personality remains largely unchanged from initial impression.';
 }
 
-function getPositiveTraitDescription(trait: string, changePercent: number): string {
+function getPositiveTraitDescription(
+  trait: string,
+  changePercent: number
+): string {
   const intensity = changePercent >= 30 ? 'significantly' : 'noticeably';
 
   const descriptions: Record<string, string> = {
@@ -77,13 +85,16 @@ function getPositiveTraitDescription(trait: string, changePercent: number): stri
     emotional_stability: `is ${intensity} more emotionally stable`,
     flexibility: `has become ${intensity} more flexible and adaptable`,
     assertiveness: `is ${intensity} more assertive about their needs`,
-    adventure_seeking: `seeks ${intensity} more adventurous experiences`
+    adventure_seeking: `seeks ${intensity} more adventurous experiences`,
   };
 
   return descriptions[trait] || `has improved in ${trait}`;
 }
 
-function getNegativeTraitDescription(trait: string, changePercent: number): string {
+function getNegativeTraitDescription(
+  trait: string,
+  changePercent: number
+): string {
   const intensity = changePercent >= 30 ? 'significantly' : 'noticeably';
 
   const descriptions: Record<string, string> = {
@@ -103,7 +114,7 @@ function getNegativeTraitDescription(trait: string, changePercent: number): stri
     emotional_stability: `is ${intensity} less emotionally stable`,
     flexibility: `has become ${intensity} more rigid`,
     assertiveness: `is ${intensity} less assertive`,
-    adventure_seeking: `seeks ${intensity} less adventurous experiences`
+    adventure_seeking: `seeks ${intensity} less adventurous experiences`,
   };
 
   return descriptions[trait] || `has declined in ${trait}`;
@@ -115,7 +126,7 @@ export function getPersonalityChangeIndicator(trait: PersonalityGrowth): {
   description: string;
 } {
   const change = trait.currentValue - trait.baseValue;
-  const changePercent = Math.abs(change) / trait.baseValue * 100;
+  const changePercent = (Math.abs(change) / trait.baseValue) * 100;
 
   let status: 'improved' | 'declined' | 'stable';
   if (change > 5) status = 'improved';
@@ -127,11 +138,12 @@ export function getPersonalityChangeIndicator(trait: PersonalityGrowth): {
   else if (changePercent < 25) intensity = 'moderate';
   else intensity = 'major';
 
-  const description = status === 'stable'
-    ? 'No significant change'
-    : status === 'improved'
-    ? `+${change} improvement`
-    : `${change} decline`;
+  const description =
+    status === 'stable'
+      ? 'No significant change'
+      : status === 'improved'
+        ? `+${change} improvement`
+        : `${change} decline`;
 
   return { status, intensity, description };
 }
@@ -143,7 +155,7 @@ export function calculatePersonalityCompatibility(
   // Calculate how well current personality aligns with player's demonstrated preferences
   let compatibility = 70; // base compatibility
 
-  characterTraits.forEach(trait => {
+  characterTraits.forEach((trait) => {
     const growth = trait.currentValue - trait.baseValue;
 
     // Positive growth generally improves compatibility

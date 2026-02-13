@@ -13,7 +13,7 @@ import { RelationshipTimeline } from '../components/RelationshipTimeline';
 import { SelfImprovementScreen } from '../components/SelfImprovementScreen';
 
 export function GamePage() {
-  const currentScreen = useGameStore(state => state.currentScreen);
+  const currentScreen = useGameStore((state) => state.currentScreen);
 
   const renderScreen = () => {
     switch (currentScreen) {

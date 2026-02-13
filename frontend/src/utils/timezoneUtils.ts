@@ -23,21 +23,24 @@ export const getUserTimezone = (): TimeZoneInfo => {
   // Get timezone abbreviation
   const formatter = new Intl.DateTimeFormat('en', {
     timeZoneName: 'short',
-    timeZone: timezone
+    timeZone: timezone,
   });
   const parts = formatter.formatToParts(now);
-  const abbreviation = parts.find(part => part.type === 'timeZoneName')?.value || 'UTC';
+  const abbreviation =
+    parts.find((part) => part.type === 'timeZoneName')?.value || 'UTC';
 
   // Check if currently in DST
   const january = new Date(now.getFullYear(), 0, 1);
   const july = new Date(now.getFullYear(), 6, 1);
-  const isDST = Math.max(january.getTimezoneOffset(), july.getTimezoneOffset()) !== now.getTimezoneOffset();
+  const isDST =
+    Math.max(january.getTimezoneOffset(), july.getTimezoneOffset()) !==
+    now.getTimezoneOffset();
 
   return {
     timezone,
     offset: -offset, // Convert to positive for east of UTC
     abbreviation,
-    isDST
+    isDST,
   };
 };
 
@@ -51,7 +54,7 @@ export const getCurrentDateInTimezone = (timezone?: string): string => {
     timeZone: userTimezone,
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit'
+    day: '2-digit',
   });
 
   return formatter.format(now); // Returns YYYY-MM-DD format
@@ -67,7 +70,9 @@ export const getNextResetTime = (timezone?: string): Date => {
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   // Format as ISO string and parse to get midnight in user's timezone
-  const tomorrowMidnight = new Date(tomorrow.toLocaleDateString('en-CA') + 'T00:00:00');
+  const tomorrowMidnight = new Date(
+    tomorrow.toLocaleDateString('en-CA') + 'T00:00:00'
+  );
 
   // Adjust for timezone offset
   const timezoneOffset = new Date().getTimezoneOffset() * 60000; // Convert to milliseconds
@@ -79,19 +84,27 @@ export const getNextResetTime = (timezone?: string): Date => {
 // Get timezone offset in minutes for a specific timezone
 const getUserTimezoneOffset = (timezone: string): number => {
   const now = new Date();
-  const utc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-  const targetTime = new Date(utc.toLocaleString("en-US", {timeZone: timezone}));
+  const utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+  const targetTime = new Date(
+    utc.toLocaleString('en-US', { timeZone: timezone })
+  );
   return (utc.getTime() - targetTime.getTime()) / 60000;
 };
 
 // Check if daily interactions should be reset
-export const shouldResetDailyInteractions = (lastResetDate: string, timezone?: string): boolean => {
+export const shouldResetDailyInteractions = (
+  lastResetDate: string,
+  timezone?: string
+): boolean => {
   const currentDate = getCurrentDateInTimezone(timezone);
   return lastResetDate !== currentDate;
 };
 
 // Get comprehensive daily reset information
-export const getDailyResetInfo = (lastResetDate: string, timezone?: string): DailyResetInfo => {
+export const getDailyResetInfo = (
+  lastResetDate: string,
+  timezone?: string
+): DailyResetInfo => {
   const currentDate = getCurrentDateInTimezone(timezone);
   const hasReset = shouldResetDailyInteractions(lastResetDate, timezone);
   const nextResetTime = getNextResetTime(timezone);
@@ -101,7 +114,7 @@ export const getDailyResetInfo = (lastResetDate: string, timezone?: string): Dai
     lastResetDate: hasReset ? currentDate : lastResetDate,
     nextResetTime,
     timeUntilReset: Math.max(0, timeUntilReset),
-    hasReset
+    hasReset,
   };
 };
 
@@ -135,7 +148,11 @@ export interface EnhancedDailyInteractionData {
 export const createEnhancedDailyInteractions = (
   affection: number,
   calculateMaxInteractions: (affection: number) => number,
-  existingData?: { lastResetDate?: string; interactionsUsed?: number; timezone?: string }
+  existingData?: {
+    lastResetDate?: string;
+    interactionsUsed?: number;
+    timezone?: string;
+  }
 ): EnhancedDailyInteractionData => {
   const userTimezone = getUserTimezone();
   const timezone = existingData?.timezone || userTimezone.timezone;
@@ -147,16 +164,22 @@ export const createEnhancedDailyInteractions = (
 
   return {
     lastResetDate: resetInfo.hasReset ? currentDate : lastResetDate,
-    interactionsUsed: resetInfo.hasReset ? 0 : (existingData?.interactionsUsed || 0),
+    interactionsUsed: resetInfo.hasReset
+      ? 0
+      : existingData?.interactionsUsed || 0,
     maxInteractions: calculateMaxInteractions(affection),
     timezone,
-    resetInfo
+    resetInfo,
   };
 };
 
 // Validate and migrate old daily interaction data
 export const migrateDailyInteractionData = (
-  oldData: { lastResetDate: string; interactionsUsed: number; maxInteractions: number },
+  oldData: {
+    lastResetDate: string;
+    interactionsUsed: number;
+    maxInteractions: number;
+  },
   affection: number,
   calculateMaxInteractions: (affection: number) => number
 ): EnhancedDailyInteractionData => {
@@ -168,11 +191,13 @@ export const migrateDailyInteractionData = (
   const resetInfo = getDailyResetInfo(oldData.lastResetDate, timezone);
 
   return {
-    lastResetDate: resetInfo.hasReset ? getCurrentDateInTimezone(timezone) : oldData.lastResetDate,
+    lastResetDate: resetInfo.hasReset
+      ? getCurrentDateInTimezone(timezone)
+      : oldData.lastResetDate,
     interactionsUsed: resetInfo.hasReset ? 0 : oldData.interactionsUsed,
     maxInteractions: calculateMaxInteractions(affection),
     timezone,
-    resetInfo
+    resetInfo,
   };
 };
 
@@ -182,7 +207,8 @@ export const useResetTimer = (lastResetDate: string, timezone?: string) => {
 
   return {
     getResetInfo,
-    formatTimeUntilReset: (timeUntilReset: number) => formatTimeUntilReset(timeUntilReset),
-    getCurrentDate: () => getCurrentDateInTimezone(timezone)
+    formatTimeUntilReset: (timeUntilReset: number) =>
+      formatTimeUntilReset(timeUntilReset),
+    getCurrentDate: () => getCurrentDateInTimezone(timezone),
   };
 };

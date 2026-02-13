@@ -1,6 +1,12 @@
 import React from 'react';
 import { CharacterId, PercentageScore } from './brandedTypes';
-import { Character, PlayerCharacter, CharacterMood, EmotionType, GameScreen } from './game';
+import {
+  Character,
+  PlayerCharacter,
+  CharacterMood,
+  EmotionType,
+  GameScreen,
+} from './game';
 
 // Standard component props that all components should extend
 export interface StandardComponentProps {
@@ -157,7 +163,7 @@ export const createDefaultProps = <T extends Record<string, unknown>>(
 ) => {
   return (props: Partial<T>): T => ({
     ...defaults,
-    ...props
+    ...props,
   });
 };
 

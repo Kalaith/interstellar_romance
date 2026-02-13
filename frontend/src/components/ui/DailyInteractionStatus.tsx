@@ -13,7 +13,7 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
   characterId,
   showDetails = false,
   compact = false,
-  className = ''
+  className = '',
 }) => {
   const {
     interactionsUsed,
@@ -22,7 +22,7 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
     remainingInteractions,
     timeUntilResetFormatted,
     interactionProgress,
-    debugInfo
+    debugInfo,
   } = useDailyInteractions(characterId);
 
   const userTimezone = getUserTimezone();
@@ -46,13 +46,19 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
   }
 
   return (
-    <div className={`bg-slate-800 rounded-lg p-4 border border-slate-600 ${className}`}>
+    <div
+      className={`bg-slate-800 rounded-lg p-4 border border-slate-600 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-white">Daily Interactions</h3>
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${canInteract ? 'bg-green-400' : 'bg-red-400'}`}></div>
-          <span className={`text-sm font-medium ${canInteract ? 'text-green-400' : 'text-red-400'}`}>
+          <div
+            className={`w-2 h-2 rounded-full ${canInteract ? 'bg-green-400' : 'bg-red-400'}`}
+          ></div>
+          <span
+            className={`text-sm font-medium ${canInteract ? 'text-green-400' : 'text-red-400'}`}
+          >
             {canInteract ? 'Available' : 'Exhausted'}
           </span>
         </div>
@@ -80,7 +86,9 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-400">Remaining:</span>
-          <span className={`text-sm font-medium ${canInteract ? 'text-blue-400' : 'text-gray-500'}`}>
+          <span
+            className={`text-sm font-medium ${canInteract ? 'text-blue-400' : 'text-gray-500'}`}
+          >
             {remainingInteractions} interactions
           </span>
         </div>
@@ -99,11 +107,15 @@ export const DailyInteractionStatus: React.FC<DailyInteractionStatusProps> = ({
             <div className="border-t border-slate-600 pt-2 mt-2">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-gray-500">Timezone:</span>
-                <span className="text-xs text-gray-400">{userTimezone.abbreviation}</span>
+                <span className="text-xs text-gray-400">
+                  {userTimezone.abbreviation}
+                </span>
               </div>
               {debugInfo && process.env.NODE_ENV === 'development' && (
                 <details className="mt-2">
-                  <summary className="text-xs text-gray-500 cursor-pointer">Debug Info</summary>
+                  <summary className="text-xs text-gray-500 cursor-pointer">
+                    Debug Info
+                  </summary>
                   <div className="text-xs text-gray-400 mt-1 space-y-1">
                     <div>Last Reset: {debugInfo.lastResetDate}</div>
                     <div>Current Date: {debugInfo.currentDate}</div>
@@ -128,14 +140,19 @@ interface InteractionCounterProps {
 
 export const InteractionCounter: React.FC<InteractionCounterProps> = ({
   characterId,
-  className = ''
+  className = '',
 }) => {
-  const { remainingInteractions, maxInteractions, canInteract } = useDailyInteractions(characterId);
+  const { remainingInteractions, maxInteractions, canInteract } =
+    useDailyInteractions(characterId);
 
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
-      <div className={`w-1.5 h-1.5 rounded-full ${canInteract ? 'bg-green-400' : 'bg-red-400'}`}></div>
-      <span className={`text-xs ${canInteract ? 'text-green-400' : 'text-red-400'}`}>
+      <div
+        className={`w-1.5 h-1.5 rounded-full ${canInteract ? 'bg-green-400' : 'bg-red-400'}`}
+      ></div>
+      <span
+        className={`text-xs ${canInteract ? 'text-green-400' : 'text-red-400'}`}
+      >
         {remainingInteractions}/{maxInteractions}
       </span>
     </div>
@@ -150,9 +167,10 @@ interface ResetCountdownProps {
 
 export const ResetCountdown: React.FC<ResetCountdownProps> = ({
   characterId,
-  className = ''
+  className = '',
 }) => {
-  const { timeUntilResetFormatted, canInteract } = useDailyInteractions(characterId);
+  const { timeUntilResetFormatted, canInteract } =
+    useDailyInteractions(characterId);
 
   if (canInteract) return null;
 

@@ -18,27 +18,36 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
 
-  const sizeClasses = React.useMemo(() => ({
-    xs: 'w-6 h-6',
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16',
-    xl: 'w-24 h-24',
-    '2xl': 'w-32 h-32'
-  }), []);
+  const sizeClasses = React.useMemo(
+    () => ({
+      xs: 'w-6 h-6',
+      sm: 'w-8 h-8',
+      md: 'w-12 h-12',
+      lg: 'w-16 h-16',
+      xl: 'w-24 h-24',
+      '2xl': 'w-32 h-32',
+    }),
+    []
+  );
 
-  const shapeClasses = React.useMemo(() => ({
-    square: 'rounded-none',
-    circle: 'rounded-full',
-    rounded: 'rounded-lg'
-  }), []);
+  const shapeClasses = React.useMemo(
+    () => ({
+      square: 'rounded-none',
+      circle: 'rounded-full',
+      rounded: 'rounded-lg',
+    }),
+    []
+  );
 
-  const statusColors = React.useMemo(() => ({
-    online: 'bg-green-500',
-    offline: 'bg-gray-500',
-    busy: 'bg-red-500',
-    away: 'bg-yellow-500'
-  }), []);
+  const statusColors = React.useMemo(
+    () => ({
+      online: 'bg-green-500',
+      offline: 'bg-gray-500',
+      busy: 'bg-red-500',
+      away: 'bg-yellow-500',
+    }),
+    []
+  );
 
   const handleImageError = React.useCallback(() => {
     setImageError(true);
@@ -59,7 +68,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
       'flex',
       'items-center',
       'justify-center',
-      'relative'
+      'relative',
     ];
 
     if (showBorder) {
@@ -103,7 +112,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
     <div className={`relative inline-block ${className || ''}`} {...restProps}>
       <div className={avatarClasses}>
         {renderContent()}
-        
+
         {/* Loading placeholder */}
         {src && !imageLoaded && !imageError && (
           <div className="absolute inset-0 bg-gray-700 animate-pulse flex items-center justify-center">
@@ -132,7 +141,10 @@ interface CharacterAvatarProps extends Omit<AvatarProps, 'src'> {
   readonly characterId: string;
 }
 
-export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({ characterId, ...props }) => {
+export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
+  characterId,
+  ...props
+}) => {
   const [imageSrc, setImageSrc] = React.useState<string>('');
 
   React.useEffect(() => {

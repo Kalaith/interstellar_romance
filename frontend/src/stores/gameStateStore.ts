@@ -11,7 +11,7 @@ interface GameStateStore {
   player: PlayerCharacter | null;
   totalConversations: number;
   totalDates: number;
-  
+
   // Actions
   setScreen: (screen: GameScreen) => void;
   createPlayer: (player: PlayerCharacter) => void;
@@ -19,7 +19,7 @@ interface GameStateStore {
   incrementConversations: () => void;
   incrementDates: () => void;
   resetGame: () => void;
-  
+
   // Queries
   isPlayerCreated: () => boolean;
   getGameStats: () => {
@@ -55,11 +55,11 @@ export const useGameStateStore = create<GameStateStore>()(
         try {
           Validators.validatePlayerExists(player);
           Validators.validateStringNotEmpty(player.name, 'player.name');
-          
+
           Logger.info(`Player created: ${player.name} (${player.species})`);
-          set({ 
+          set({
             player,
-            currentScreen: 'main-hub'
+            currentScreen: 'main-hub',
           });
         } catch (error) {
           Logger.error('Failed to create player', error);
@@ -99,13 +99,13 @@ export const useGameStateStore = create<GameStateStore>()(
       resetGame: () => {
         try {
           Logger.info('Resetting game state');
-          
+
           // Clear localStorage completely
           localStorage.removeItem('character-store');
           localStorage.removeItem('game-state-store');
           localStorage.removeItem('achievement-store');
           localStorage.removeItem('interstellar-romance-game');
-          
+
           set(initialState);
         } catch (error) {
           Logger.error('Failed to reset game', error);
@@ -122,9 +122,9 @@ export const useGameStateStore = create<GameStateStore>()(
         return {
           totalConversations: state.totalConversations,
           totalDates: state.totalDates,
-          currentWeek: state.currentWeek
+          currentWeek: state.currentWeek,
         };
-      }
+      },
     }),
     {
       name: 'game-state-store',

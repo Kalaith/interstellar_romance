@@ -10,7 +10,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'fitness',
     energyCost: 2,
     timeSlots: 1,
-    statBonus: { charisma: 1, adventure: 1 }
+    statBonus: { charisma: 1, adventure: 1 },
   },
   {
     id: 'study',
@@ -21,7 +21,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'study',
     energyCost: 2,
     timeSlots: 1,
-    statBonus: { intelligence: 2, technology: 1 }
+    statBonus: { intelligence: 2, technology: 1 },
   },
   {
     id: 'diplomacy',
@@ -32,7 +32,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'social',
     energyCost: 1,
     timeSlots: 1,
-    statBonus: { charisma: 2, empathy: 1 }
+    statBonus: { charisma: 2, empathy: 1 },
   },
   {
     id: 'meditation',
@@ -43,7 +43,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'personal',
     energyCost: 1,
     timeSlots: 1,
-    statBonus: { empathy: 2, charisma: 1 }
+    statBonus: { empathy: 2, charisma: 1 },
   },
   {
     id: 'workshop',
@@ -54,7 +54,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'study',
     energyCost: 2,
     timeSlots: 1,
-    statBonus: { technology: 2, intelligence: 1 }
+    statBonus: { technology: 2, intelligence: 1 },
   },
   {
     id: 'simulator',
@@ -65,7 +65,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'leisure',
     energyCost: 2,
     timeSlots: 1,
-    statBonus: { adventure: 2, technology: 1 }
+    statBonus: { adventure: 2, technology: 1 },
   },
   {
     id: 'social_hour',
@@ -76,7 +76,7 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'social',
     energyCost: 1,
     timeSlots: 1,
-    statBonus: { charisma: 1 }
+    statBonus: { charisma: 1 },
   },
   {
     id: 'research',
@@ -87,6 +87,6 @@ export const selfImprovementActivities: SelfImprovementActivity[] = [
     category: 'study',
     energyCost: 1,
     timeSlots: 1,
-    statBonus: { intelligence: 1, empathy: 1 }
-  }
+    statBonus: { intelligence: 1, empathy: 1 },
+  },
 ];

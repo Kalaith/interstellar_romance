@@ -20,7 +20,7 @@ export class CharacterLookup {
     }
 
     this.characterMap.clear();
-    characters.forEach(char => {
+    characters.forEach((char) => {
       if (char && char.id) {
         this.characterMap.set(char.id, char);
       }
@@ -43,7 +43,7 @@ export class CharacterLookup {
 
   getCharactersByAffectionRange(min: number, max: number): Character[] {
     return Array.from(this.characterMap.values()).filter(
-      char => char.affection >= min && char.affection <= max
+      (char) => char.affection >= min && char.affection <= max
     );
   }
 
@@ -133,7 +133,10 @@ export function throttle<T extends (...args: unknown[]) => void>(
 // Optimized array operations
 export const ArrayUtils = {
   // Find character by ID with early exit
-  findCharacterById: (characters: Character[], id: string): Character | undefined => {
+  findCharacterById: (
+    characters: Character[],
+    id: string
+  ): Character | undefined => {
     for (let i = 0; i < characters.length; i++) {
       if (characters[i].id === id) {
         return characters[i];
@@ -143,7 +146,11 @@ export const ArrayUtils = {
   },
 
   // Update character immutably with minimal copying
-  updateCharacter: (characters: Character[], id: string, updater: (char: Character) => Character): Character[] => {
+  updateCharacter: (
+    characters: Character[],
+    id: string,
+    updater: (char: Character) => Character
+  ): Character[] => {
     for (let i = 0; i < characters.length; i++) {
       if (characters[i].id === id) {
         const newCharacter = updater(characters[i]);
@@ -179,7 +186,7 @@ export const ArrayUtils = {
     });
 
     return hasChanges ? newCharacters : characters;
-  }
+  },
 };
 
 // Local storage optimization
@@ -228,5 +235,5 @@ export const StorageUtils = {
     const available = total - used;
 
     return { used, available, total };
-  }
+  },
 };

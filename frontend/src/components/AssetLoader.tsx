@@ -10,7 +10,7 @@ interface AssetLoaderProps {
 export const AssetLoader: React.FC<AssetLoaderProps> = ({
   children,
   showProgress = false,
-  fallback
+  fallback,
 }) => {
   const {
     isLoading,
@@ -20,7 +20,7 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
     errors,
     invalidAssets,
     loaded,
-    total
+    total,
   } = useAssetLoader();
 
   // If loading is complete or we don't want to show loading state, render children
@@ -41,7 +41,9 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
           <div className="mb-6">
             <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
             <h2 className="text-2xl font-bold mb-2">Loading Game Assets</h2>
-            <p className="text-blue-200">Preparing your interstellar romance adventure...</p>
+            <p className="text-blue-200">
+              Preparing your interstellar romance adventure...
+            </p>
           </div>
 
           <div className="w-80 bg-slate-700 rounded-full h-3 mx-auto">
@@ -58,19 +60,20 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
           {hasErrors && (
             <div className="mt-4 text-yellow-400 text-sm">
               <p>Some assets are using fallbacks</p>
-              {process.env.NODE_ENV === 'development' && invalidAssets.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer">Debug Info</summary>
-                  <div className="text-xs text-left bg-slate-800 rounded p-2 mt-1">
-                    <p>Invalid assets: {invalidAssets.join(', ')}</p>
-                    {errors.map((error, index) => (
-                      <p key={index} className="text-red-400">
-                        {error}
-                      </p>
-                    ))}
-                  </div>
-                </details>
-              )}
+              {process.env.NODE_ENV === 'development' &&
+                invalidAssets.length > 0 && (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer">Debug Info</summary>
+                    <div className="text-xs text-left bg-slate-800 rounded p-2 mt-1">
+                      <p>Invalid assets: {invalidAssets.join(', ')}</p>
+                      {errors.map((error, index) => (
+                        <p key={index} className="text-red-400">
+                          {error}
+                        </p>
+                      ))}
+                    </div>
+                  </details>
+                )}
             </div>
           )}
         </div>
@@ -94,7 +97,7 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   characterId,
   alt,
   className = '',
-  fallbackClassName = 'bg-slate-600'
+  fallbackClassName = 'bg-slate-600',
 }) => {
   const [imageState, setImageState] = React.useState<{
     loaded: boolean;
@@ -103,7 +106,7 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   }>({
     loaded: false,
     error: false,
-    src: ''
+    src: '',
   });
 
   const [imageSrc, setImageSrc] = React.useState<string>('');
@@ -113,22 +116,24 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
     import('../utils/assetManager').then(({ getCharacterImage }) => {
       const src = getCharacterImage(characterId);
       setImageSrc(src);
-      setImageState(prev => ({ ...prev, src }));
+      setImageState((prev) => ({ ...prev, src }));
     });
   }, [characterId]);
 
   const handleImageLoad = () => {
-    setImageState(prev => ({ ...prev, loaded: true, error: false }));
+    setImageState((prev) => ({ ...prev, loaded: true, error: false }));
   };
 
   const handleImageError = () => {
-    setImageState(prev => ({ ...prev, loaded: false, error: true }));
+    setImageState((prev) => ({ ...prev, loaded: false, error: true }));
   };
 
   // Show loading placeholder while image source is being determined
   if (!imageSrc) {
     return (
-      <div className={`${className} ${fallbackClassName} flex items-center justify-center`}>
+      <div
+        className={`${className} ${fallbackClassName} flex items-center justify-center`}
+      >
         <div className="animate-pulse text-gray-400 text-xs">Loading...</div>
       </div>
     );
@@ -137,7 +142,9 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   // Show error placeholder if image failed to load
   if (imageState.error) {
     return (
-      <div className={`${className} ${fallbackClassName} flex items-center justify-center text-center p-2`}>
+      <div
+        className={`${className} ${fallbackClassName} flex items-center justify-center text-center p-2`}
+      >
         <div className="text-gray-400 text-xs">
           <div className="mb-1">📷</div>
           <div>Image Unavailable</div>

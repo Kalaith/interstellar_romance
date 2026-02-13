@@ -51,7 +51,13 @@ export interface Activity {
   description: string;
   reward: string;
   type: 'weekly' | 'daily';
-  category?: 'social' | 'exploration' | 'personal' | 'fitness' | 'study' | 'leisure';
+  category?:
+    | 'social'
+    | 'exploration'
+    | 'personal'
+    | 'fitness'
+    | 'study'
+    | 'leisure';
   statBonus?: Partial<PlayerStats>;
 }
 
@@ -187,11 +193,7 @@ export type PersonalValue =
   | 'empathy'
   | 'efficiency';
 
-export type Gender =
-  | 'male'
-  | 'female'
-  | 'non-binary'
-  | 'other';
+export type Gender = 'male' | 'female' | 'non-binary' | 'other';
 
 export type SexualPreference =
   | 'men'
@@ -258,7 +260,13 @@ export type AchievementCategory =
   | 'mastery';
 
 export interface AchievementCondition {
-  type: 'affection' | 'milestone' | 'date_count' | 'conversation_count' | 'photo_unlock' | 'compatibility';
+  type:
+    | 'affection'
+    | 'milestone'
+    | 'date_count'
+    | 'conversation_count'
+    | 'photo_unlock'
+    | 'compatibility';
   target: number;
   characterId?: string;
   specificMilestone?: string;
@@ -346,7 +354,13 @@ export type ConflictType =
 export type ConflictSeverity = 'minor' | 'moderate' | 'major' | 'critical';
 
 export interface ConflictResolution {
-  method: 'apologize' | 'discuss' | 'compromise' | 'gift' | 'time_apart' | 'ignore';
+  method:
+    | 'apologize'
+    | 'discuss'
+    | 'compromise'
+    | 'gift'
+    | 'time_apart'
+    | 'ignore';
   effectiveness: number; // 0-100
   affectionRecovery: number;
   personalityGrowth?: PersonalityGrowth[];
@@ -401,8 +415,16 @@ export type MoodState = CharacterMood;
 
 export interface TemporaryBoost {
   id: string;
-  type: 'super_like' | 'successful_resolution' | 'perfect_date' | 'milestone_bonus';
-  effect: 'compatibility_bonus' | 'affection_multiplier' | 'mood_boost' | 'interaction_bonus';
+  type:
+    | 'super_like'
+    | 'successful_resolution'
+    | 'perfect_date'
+    | 'milestone_bonus';
+  effect:
+    | 'compatibility_bonus'
+    | 'affection_multiplier'
+    | 'mood_boost'
+    | 'interaction_bonus';
   value: number;
   startDate: Date;
   duration: number; // hours
@@ -435,7 +457,13 @@ export interface RelationshipTimeline {
 
 export interface TimelineEvent {
   id: string;
-  type: 'first_meeting' | 'milestone' | 'date' | 'conversation' | 'photo_unlock' | 'achievement';
+  type:
+    | 'first_meeting'
+    | 'milestone'
+    | 'date'
+    | 'conversation'
+    | 'photo_unlock'
+    | 'achievement';
   date: Date;
   title: string;
   description: string;
@@ -495,14 +523,14 @@ export interface RelationshipStatus {
 }
 
 export type RelationshipLevel =
-  | 'stranger'           // 0-10 affection
-  | 'acquaintance'       // 11-20 affection
-  | 'friend'             // 21-35 affection
-  | 'close_friend'       // 36-50 affection
-  | 'romantic_interest'  // 51-65 affection
-  | 'dating'             // 66-80 affection
-  | 'committed_partner'  // 81-95 affection
-  | 'soulmate';          // 96-100 affection
+  | 'stranger' // 0-10 affection
+  | 'acquaintance' // 11-20 affection
+  | 'friend' // 21-35 affection
+  | 'close_friend' // 36-50 affection
+  | 'romantic_interest' // 51-65 affection
+  | 'dating' // 66-80 affection
+  | 'committed_partner' // 81-95 affection
+  | 'soulmate'; // 96-100 affection
 
 export interface CommunicationStyleMatch {
   compatibility: number; // How well your styles mesh

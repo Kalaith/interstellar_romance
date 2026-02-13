@@ -5,7 +5,9 @@ import { getAchievementsByCategory } from '../data/achievements';
 
 export const Achievements: React.FC = () => {
   const { player, setScreen, achievements } = useGameStore();
-  const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<
+    AchievementCategory | 'all'
+  >('all');
 
   if (!player || !achievements) {
     return (
@@ -23,21 +25,26 @@ export const Achievements: React.FC = () => {
     );
   }
 
-  const filteredAchievements = selectedCategory === 'all'
-    ? achievements
-    : getAchievementsByCategory(achievements, selectedCategory);
+  const filteredAchievements =
+    selectedCategory === 'all'
+      ? achievements
+      : getAchievementsByCategory(achievements, selectedCategory);
 
-  const achievedCount = achievements.filter(a => a.achieved).length;
+  const achievedCount = achievements.filter((a) => a.achieved).length;
   const totalCount = achievements.length;
 
-  const categories: { key: AchievementCategory | 'all'; name: string; icon: string }[] = [
+  const categories: {
+    key: AchievementCategory | 'all';
+    name: string;
+    icon: string;
+  }[] = [
     { key: 'all', name: 'All', icon: '🏆' },
     { key: 'relationship', name: 'Relationships', icon: '💕' },
     { key: 'dating', name: 'Dating', icon: '🌹' },
     { key: 'conversation', name: 'Social', icon: '💬' },
     { key: 'collection', name: 'Collection', icon: '📸' },
     { key: 'exploration', name: 'Exploration', icon: '🗺️' },
-    { key: 'mastery', name: 'Mastery', icon: '⭐' }
+    { key: 'mastery', name: 'Mastery', icon: '⭐' },
   ];
 
   return (
@@ -49,7 +56,8 @@ export const Achievements: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-white">Achievements</h1>
               <p className="text-gray-300">
-                {achievedCount} of {totalCount} achievements unlocked ({Math.round((achievedCount / totalCount) * 100)}%)
+                {achievedCount} of {totalCount} achievements unlocked (
+                {Math.round((achievedCount / totalCount) * 100)}%)
               </p>
             </div>
             <button
@@ -62,7 +70,9 @@ export const Achievements: React.FC = () => {
 
           {/* Overall Progress */}
           <div className="bg-slate-900 rounded-lg p-6 mb-8 text-white">
-            <h3 className="text-lg font-semibold mb-4 text-purple-300">Overall Progress</h3>
+            <h3 className="text-lg font-semibold mb-4 text-purple-300">
+              Overall Progress
+            </h3>
             <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
               <div
                 className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
@@ -76,11 +86,17 @@ export const Achievements: React.FC = () => {
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map(category => {
-              const categoryAchievements = category.key === 'all'
-                ? achievements
-                : getAchievementsByCategory(achievements, category.key as AchievementCategory);
-              const categoryAchieved = categoryAchievements.filter(a => a.achieved).length;
+            {categories.map((category) => {
+              const categoryAchievements =
+                category.key === 'all'
+                  ? achievements
+                  : getAchievementsByCategory(
+                      achievements,
+                      category.key as AchievementCategory
+                    );
+              const categoryAchieved = categoryAchievements.filter(
+                (a) => a.achieved
+              ).length;
 
               return (
                 <button
@@ -114,20 +130,28 @@ export const Achievements: React.FC = () => {
                 }`}
               >
                 <div className="flex items-start space-x-4">
-                  <div className={`text-4xl flex-shrink-0 ${
-                    achievement.achieved ? 'grayscale-0' : 'grayscale opacity-50'
-                  }`}>
+                  <div
+                    className={`text-4xl flex-shrink-0 ${
+                      achievement.achieved
+                        ? 'grayscale-0'
+                        : 'grayscale opacity-50'
+                    }`}
+                  >
                     {achievement.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className={`text-lg font-semibold mb-2 ${
-                      achievement.achieved ? 'text-white' : 'text-gray-300'
-                    }`}>
+                    <h3
+                      className={`text-lg font-semibold mb-2 ${
+                        achievement.achieved ? 'text-white' : 'text-gray-300'
+                      }`}
+                    >
                       {achievement.name}
                     </h3>
-                    <p className={`text-sm mb-3 ${
-                      achievement.achieved ? 'text-gray-200' : 'text-gray-400'
-                    }`}>
+                    <p
+                      className={`text-sm mb-3 ${
+                        achievement.achieved ? 'text-gray-200' : 'text-gray-400'
+                      }`}
+                    >
                       {achievement.description}
                     </p>
 
@@ -150,19 +174,24 @@ export const Achievements: React.FC = () => {
                     {/* Achievement Date */}
                     {achievement.achieved && achievement.achievedDate && (
                       <div className="text-xs text-purple-300 mb-2">
-                        ✨ Unlocked: {achievement.achievedDate.toLocaleDateString()}
+                        ✨ Unlocked:{' '}
+                        {achievement.achievedDate.toLocaleDateString()}
                       </div>
                     )}
 
                     {/* Reward */}
                     {achievement.reward && (
-                      <div className={`text-xs p-2 rounded border-l-4 ${
-                        achievement.achieved
-                          ? 'bg-green-900/30 border-green-400 text-green-300'
-                          : 'bg-yellow-900/30 border-yellow-400 text-yellow-300'
-                      }`}>
+                      <div
+                        className={`text-xs p-2 rounded border-l-4 ${
+                          achievement.achieved
+                            ? 'bg-green-900/30 border-green-400 text-green-300'
+                            : 'bg-yellow-900/30 border-yellow-400 text-yellow-300'
+                        }`}
+                      >
                         <div className="font-semibold mb-1">
-                          {achievement.achieved ? '🎁 Reward Unlocked:' : '🎁 Reward:'}
+                          {achievement.achieved
+                            ? '🎁 Reward Unlocked:'
+                            : '🎁 Reward:'}
                         </div>
                         <div>{achievement.reward.description}</div>
                       </div>
@@ -184,8 +213,12 @@ export const Achievements: React.FC = () => {
           {filteredAchievements.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🏆</div>
-              <h3 className="text-xl font-semibold text-white mb-2">No achievements in this category</h3>
-              <p className="text-gray-400">Try a different category to see more achievements.</p>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No achievements in this category
+              </h3>
+              <p className="text-gray-400">
+                Try a different category to see more achievements.
+              </p>
             </div>
           )}
         </div>

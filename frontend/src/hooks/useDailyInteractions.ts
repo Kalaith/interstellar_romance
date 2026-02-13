@@ -8,7 +8,7 @@ import {
   createEnhancedDailyInteractions,
   migrateDailyInteractionData,
   type DailyResetInfo,
-  type EnhancedDailyInteractionData
+  type EnhancedDailyInteractionData,
 } from '../utils/timezoneUtils';
 import { calculateMaxInteractions } from '../data/characters';
 
@@ -23,7 +23,7 @@ interface DailyInteractionState {
 // Hook for managing daily interactions with timezone support
 export const useDailyInteractions = (characterId: string) => {
   const { characters, updateCharacter } = useGameStore();
-  const character = characters.find(c => c.id === characterId);
+  const character = characters.find((c) => c.id === characterId);
 
   const [state, setState] = useState<DailyInteractionState>({
     interactionsUsed: 0,
@@ -33,12 +33,14 @@ export const useDailyInteractions = (characterId: string) => {
       lastResetDate: getCurrentDateInTimezone(),
       nextResetTime: new Date(),
       timeUntilReset: 0,
-      hasReset: false
+      hasReset: false,
     },
-    timeUntilResetFormatted: 'Now'
+    timeUntilResetFormatted: 'Now',
   });
 
-  const [updateInterval, setUpdateInterval] = useState<NodeJS.Timeout | null>(null);
+  const [updateInterval, setUpdateInterval] = useState<NodeJS.Timeout | null>(
+    null
+  );
 
   // Initialize or update daily interaction state
   const updateDailyInteractionState = useCallback(() => {
@@ -62,20 +64,23 @@ export const useDailyInteractions = (characterId: string) => {
         {
           lastResetDate: character.dailyInteractions.lastResetDate,
           interactionsUsed: character.dailyInteractions.interactionsUsed,
-          timezone: character.dailyInteractions.timezone
+          timezone: character.dailyInteractions.timezone,
         }
       );
     }
 
     // Update character if reset occurred or migration happened
-    if (enhancedData.resetInfo.hasReset || !character.dailyInteractions.timezone) {
+    if (
+      enhancedData.resetInfo.hasReset ||
+      !character.dailyInteractions.timezone
+    ) {
       updateCharacter(characterId, {
         dailyInteractions: {
           lastResetDate: enhancedData.lastResetDate,
           interactionsUsed: enhancedData.interactionsUsed,
           maxInteractions: enhancedData.maxInteractions,
-          timezone: enhancedData.timezone
-        }
+          timezone: enhancedData.timezone,
+        },
       });
     }
 
@@ -85,7 +90,9 @@ export const useDailyInteractions = (characterId: string) => {
       maxInteractions: enhancedData.maxInteractions,
       canInteract: enhancedData.interactionsUsed < enhancedData.maxInteractions,
       resetInfo: enhancedData.resetInfo,
-      timeUntilResetFormatted: formatTimeUntilReset(enhancedData.resetInfo.timeUntilReset)
+      timeUntilResetFormatted: formatTimeUntilReset(
+        enhancedData.resetInfo.timeUntilReset
+      ),
     });
   }, [character, characterId, updateCharacter]);
 
@@ -100,18 +107,24 @@ export const useDailyInteractions = (characterId: string) => {
     updateCharacter(characterId, {
       dailyInteractions: {
         ...character.dailyInteractions,
-        interactionsUsed: newInteractionsUsed
-      }
+        interactionsUsed: newInteractionsUsed,
+      },
     });
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       interactionsUsed: newInteractionsUsed,
-      canInteract: newInteractionsUsed < prev.maxInteractions
+      canInteract: newInteractionsUsed < prev.maxInteractions,
     }));
 
     return true;
-  }, [character, characterId, state.interactionsUsed, state.maxInteractions, updateCharacter]);
+  }, [
+    character,
+    characterId,
+    state.interactionsUsed,
+    state.maxInteractions,
+    updateCharacter,
+  ]);
 
   // Get remaining interactions
   const getRemainingInteractions = useCallback(() => {
@@ -157,10 +170,12 @@ export const useDailyInteractions = (characterId: string) => {
         updateDailyInteractionState();
       } else {
         // Just update the countdown
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           resetInfo,
-          timeUntilResetFormatted: formatTimeUntilReset(resetInfo.timeUntilReset)
+          timeUntilResetFormatted: formatTimeUntilReset(
+            resetInfo.timeUntilReset
+          ),
         }));
       }
     }, 1000);
@@ -170,7 +185,11 @@ export const useDailyInteractions = (characterId: string) => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [character?.dailyInteractions.lastResetDate, character?.dailyInteractions.timezone, updateDailyInteractionState]);
+  }, [
+    character?.dailyInteractions.lastResetDate,
+    character?.dailyInteractions.timezone,
+    updateDailyInteractionState,
+  ]);
 
   // Clean up interval on unmount
   useEffect(() => {
@@ -200,12 +219,15 @@ export const useDailyInteractions = (characterId: string) => {
     interactionProgress: getInteractionProgress(),
 
     // Debug info (useful for development)
-    debugInfo: process.env.NODE_ENV === 'development' ? {
-      lastResetDate: character?.dailyInteractions.lastResetDate,
-      timezone: character?.dailyInteractions.timezone || 'Not set',
-      hasReset: state.resetInfo.hasReset,
-      currentDate: getCurrentDateInTimezone()
-    } : undefined
+    debugInfo:
+      process.env.NODE_ENV === 'development'
+        ? {
+            lastResetDate: character?.dailyInteractions.lastResetDate,
+            timezone: character?.dailyInteractions.timezone || 'Not set',
+            hasReset: state.resetInfo.hasReset,
+            currentDate: getCurrentDateInTimezone(),
+          }
+        : undefined,
   };
 };
 
@@ -216,13 +238,13 @@ export const useDailyInteractionSettings = () => {
 
   // Update all characters to use current timezone
   const updateAllCharacterTimezones = useCallback(() => {
-    characters.forEach(character => {
+    characters.forEach((character) => {
       if (!character.dailyInteractions.timezone) {
         updateCharacter(character.id, {
           dailyInteractions: {
             ...character.dailyInteractions,
-            timezone: userTimezone.timezone
-          }
+            timezone: userTimezone.timezone,
+          },
         });
       }
     });
@@ -231,14 +253,14 @@ export const useDailyInteractionSettings = () => {
   // Reset all daily interactions (for testing purposes)
   const resetAllDailyInteractions = useCallback(() => {
     const currentDate = getCurrentDateInTimezone();
-    characters.forEach(character => {
+    characters.forEach((character) => {
       updateCharacter(character.id, {
         dailyInteractions: {
           lastResetDate: currentDate,
           interactionsUsed: 0,
           maxInteractions: calculateMaxInteractions(character.affection),
-          timezone: userTimezone.timezone
-        }
+          timezone: userTimezone.timezone,
+        },
       });
     });
   }, [characters, updateCharacter, userTimezone.timezone]);
@@ -250,11 +272,13 @@ export const useDailyInteractionSettings = () => {
 
     // Character counts for overview
     totalCharacters: characters.length,
-    charactersWithInteractions: characters.filter(c =>
-      c.dailyInteractions.interactionsUsed > 0
+    charactersWithInteractions: characters.filter(
+      (c) => c.dailyInteractions.interactionsUsed > 0
     ).length,
-    charactersAtMaxInteractions: characters.filter(c =>
-      c.dailyInteractions.interactionsUsed >= c.dailyInteractions.maxInteractions
-    ).length
+    charactersAtMaxInteractions: characters.filter(
+      (c) =>
+        c.dailyInteractions.interactionsUsed >=
+        c.dailyInteractions.maxInteractions
+    ).length,
   };
 };

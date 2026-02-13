@@ -1,57 +1,60 @@
 import { PersonalityGrowth, GrowthTrigger } from '../types/game';
 
-export const personalityGrowthTriggers: Record<GrowthTrigger, Record<string, number>> = {
-  'positive_interaction': {
+export const personalityGrowthTriggers: Record<
+  GrowthTrigger,
+  Record<string, number>
+> = {
+  positive_interaction: {
     confidence: 2,
     trust: 3,
     openness: 2,
     empathy: 1,
-    warmth: 2
+    warmth: 2,
   },
-  'negative_interaction': {
+  negative_interaction: {
     confidence: -1,
     trust: -3,
     openness: -2,
-    warmth: -1
+    warmth: -1,
   },
-  'milestone_achievement': {
+  milestone_achievement: {
     confidence: 4,
     trust: 2,
-    emotional_stability: 3
+    emotional_stability: 3,
   },
-  'date_success': {
+  date_success: {
     confidence: 3,
     trust: 2,
     openness: 2,
-    playfulness: 1
+    playfulness: 1,
   },
-  'date_failure': {
+  date_failure: {
     confidence: -2,
     trust: -1,
-    openness: -1
+    openness: -1,
   },
-  'conversation_choice': {
+  conversation_choice: {
     trust: 1,
     openness: 1,
-    empathy: 1
+    empathy: 1,
   },
-  'conflict_resolution': {
+  conflict_resolution: {
     trust: 4,
     emotional_stability: 3,
     patience: 2,
-    empathy: 2
-  }
+    empathy: 2,
+  },
 };
 
 export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
-  'aerarfin': [
+  aerarfin: [
     {
       trait: 'confidence',
       baseValue: 85,
       currentValue: 85,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 60
+      minGrowth: 60,
     },
     {
       trait: 'openness',
@@ -59,7 +62,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 90,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 70
+      minGrowth: 70,
     },
     {
       trait: 'trust',
@@ -67,7 +70,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 55,
       growthHistory: [],
       maxGrowth: 85,
-      minGrowth: 30
+      minGrowth: 30,
     },
     {
       trait: 'empathy',
@@ -75,7 +78,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 70,
       growthHistory: [],
       maxGrowth: 90,
-      minGrowth: 50
+      minGrowth: 50,
     },
     {
       trait: 'playfulness',
@@ -83,17 +86,17 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 80
-    }
+      minGrowth: 80,
+    },
   ],
-  'bellasnor': [
+  bellasnor: [
     {
       trait: 'confidence',
       baseValue: 80,
       currentValue: 80,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 65
+      minGrowth: 65,
     },
     {
       trait: 'openness',
@@ -101,7 +104,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 75,
       growthHistory: [],
       maxGrowth: 90,
-      minGrowth: 60
+      minGrowth: 60,
     },
     {
       trait: 'trust',
@@ -109,7 +112,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 70,
       growthHistory: [],
       maxGrowth: 90,
-      minGrowth: 50
+      minGrowth: 50,
     },
     {
       trait: 'empathy',
@@ -117,7 +120,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 85
+      minGrowth: 85,
     },
     {
       trait: 'wisdom',
@@ -125,17 +128,17 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 90,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 75
-    }
+      minGrowth: 75,
+    },
   ],
-  'celanlas': [
+  celanlas: [
     {
       trait: 'confidence',
       baseValue: 75,
       currentValue: 75,
       growthHistory: [],
       maxGrowth: 90,
-      minGrowth: 60
+      minGrowth: 60,
     },
     {
       trait: 'openness',
@@ -143,7 +146,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 60,
       growthHistory: [],
       maxGrowth: 85,
-      minGrowth: 40
+      minGrowth: 40,
     },
     {
       trait: 'trust',
@@ -151,7 +154,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 45,
       growthHistory: [],
       maxGrowth: 80,
-      minGrowth: 25
+      minGrowth: 25,
     },
     {
       trait: 'empathy',
@@ -159,7 +162,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 90,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 75
+      minGrowth: 75,
     },
     {
       trait: 'patience',
@@ -167,17 +170,17 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 80
-    }
+      minGrowth: 80,
+    },
   ],
-  'lyraiel': [
+  lyraiel: [
     {
       trait: 'confidence',
       baseValue: 80,
       currentValue: 80,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 60
+      minGrowth: 60,
     },
     {
       trait: 'openness',
@@ -185,7 +188,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 85,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 70
+      minGrowth: 70,
     },
     {
       trait: 'trust',
@@ -193,7 +196,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 60,
       growthHistory: [],
       maxGrowth: 85,
-      minGrowth: 40
+      minGrowth: 40,
     },
     {
       trait: 'empathy',
@@ -201,7 +204,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 90,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 75
+      minGrowth: 75,
     },
     {
       trait: 'creativity',
@@ -209,17 +212,17 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 85
-    }
+      minGrowth: 85,
+    },
   ],
-  'moriaion': [
+  moriaion: [
     {
       trait: 'confidence',
       baseValue: 90,
       currentValue: 90,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 75
+      minGrowth: 75,
     },
     {
       trait: 'openness',
@@ -227,7 +230,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 40,
       growthHistory: [],
       maxGrowth: 70,
-      minGrowth: 20
+      minGrowth: 20,
     },
     {
       trait: 'trust',
@@ -235,7 +238,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 30,
       growthHistory: [],
       maxGrowth: 70,
-      minGrowth: 15
+      minGrowth: 15,
     },
     {
       trait: 'empathy',
@@ -243,7 +246,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 75,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 60
+      minGrowth: 60,
     },
     {
       trait: 'loyalty',
@@ -251,17 +254,17 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 85
-    }
+      minGrowth: 85,
+    },
   ],
-  'quinaelmir': [
+  quinaelmir: [
     {
       trait: 'confidence',
       baseValue: 85,
       currentValue: 85,
       growthHistory: [],
       maxGrowth: 95,
-      minGrowth: 70
+      minGrowth: 70,
     },
     {
       trait: 'openness',
@@ -269,7 +272,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 70,
       growthHistory: [],
       maxGrowth: 85,
-      minGrowth: 55
+      minGrowth: 55,
     },
     {
       trait: 'trust',
@@ -277,7 +280,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 50,
       growthHistory: [],
       maxGrowth: 75,
-      minGrowth: 30
+      minGrowth: 30,
     },
     {
       trait: 'empathy',
@@ -285,7 +288,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 60,
       growthHistory: [],
       maxGrowth: 80,
-      minGrowth: 40
+      minGrowth: 40,
     },
     {
       trait: 'logic',
@@ -293,7 +296,7 @@ export const initialPersonalityTraits: Record<string, PersonalityGrowth[]> = {
       currentValue: 95,
       growthHistory: [],
       maxGrowth: 100,
-      minGrowth: 85
-    }
-  ]
+      minGrowth: 85,
+    },
+  ],
 };

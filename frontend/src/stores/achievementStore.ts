@@ -8,7 +8,7 @@ import { asyncOperationKeys, asyncDelays } from '../constants/gameConstants';
 
 interface AchievementStore {
   achievements: Achievement[];
-  
+
   // Actions
   updateAchievements: (gameStats: {
     totalAffection: number;
@@ -21,7 +21,7 @@ interface AchievementStore {
     characterAffections: Record<string, number>;
   }) => void;
   resetAchievements: () => void;
-  
+
   // Queries
   getUnlockedAchievements: () => Achievement[];
   getLockedAchievements: () => Achievement[];
@@ -40,20 +40,24 @@ export const useAchievementStore = create<AchievementStore>()(
           AsyncOperationManager.scheduleOperation(
             asyncOperationKeys.ACHIEVEMENT_UPDATE,
             () => {
-              const updatedAchievements = checkAchievements(get().achievements, gameStats);
-              
+              const updatedAchievements = checkAchievements(
+                get().achievements,
+                gameStats
+              );
+
               // Check for newly unlocked achievements
               const previousAchievements = get().achievements;
-              const newlyUnlocked = updatedAchievements.filter((achievement, index) => 
-                achievement.achieved && !previousAchievements[index].achieved
+              const newlyUnlocked = updatedAchievements.filter(
+                (achievement, index) =>
+                  achievement.achieved && !previousAchievements[index].achieved
               );
-              
+
               if (newlyUnlocked.length > 0) {
-                newlyUnlocked.forEach(achievement => {
+                newlyUnlocked.forEach((achievement) => {
                   Logger.info(`Achievement unlocked: ${achievement.name}`);
                 });
               }
-              
+
               set({ achievements: updatedAchievements });
             },
             asyncDelays.DEBOUNCE_SHORT
@@ -74,22 +78,32 @@ export const useAchievementStore = create<AchievementStore>()(
 
       // Query methods
       getUnlockedAchievements: () => {
-        return get().achievements.filter(achievement => achievement.achieved);
+        return get().achievements.filter((achievement) => achievement.achieved);
       },
 
       getLockedAchievements: () => {
-        return get().achievements.filter(achievement => !achievement.achieved);
+        return get().achievements.filter(
+          (achievement) => !achievement.achieved
+        );
       },
 
       getAchievementById: (id) => {
-        return get().achievements.find(achievement => achievement.id === id) || null;
+        return (
+          get().achievements.find((achievement) => achievement.id === id) ||
+          null
+        );
       },
 
       getTotalAchievementProgress: () => {
         const achievements = get().achievements;
-        const totalProgress = achievements.reduce((sum, achievement) => sum + achievement.progress, 0);
-        return achievements.length > 0 ? Math.round(totalProgress / achievements.length) : 0;
-      }
+        const totalProgress = achievements.reduce(
+          (sum, achievement) => sum + achievement.progress,
+          0
+        );
+        return achievements.length > 0
+          ? Math.round(totalProgress / achievements.length)
+          : 0;
+      },
     }),
     {
       name: 'achievement-store',

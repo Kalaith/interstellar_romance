@@ -47,7 +47,10 @@ export const Modal: React.FC<ModalProps> = (props) => {
 
     // Return focus when modal closes
     return () => {
-      if (previousActiveElement.current && 'focus' in previousActiveElement.current) {
+      if (
+        previousActiveElement.current &&
+        'focus' in previousActiveElement.current
+      ) {
         (previousActiveElement.current as HTMLElement).focus();
       }
     };
@@ -66,19 +69,25 @@ export const Modal: React.FC<ModalProps> = (props) => {
     };
   }, [isOpen]);
 
-  const sizeClasses = React.useMemo(() => ({
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    full: 'max-w-full mx-4'
-  }), []);
+  const sizeClasses = React.useMemo(
+    () => ({
+      sm: 'max-w-md',
+      md: 'max-w-lg',
+      lg: 'max-w-2xl',
+      xl: 'max-w-4xl',
+      full: 'max-w-full mx-4',
+    }),
+    []
+  );
 
-  const handleOverlayClick = React.useCallback((event: React.MouseEvent) => {
-    if (closeOnOverlay && event.target === event.currentTarget) {
-      onClose();
-    }
-  }, [closeOnOverlay, onClose]);
+  const handleOverlayClick = React.useCallback(
+    (event: React.MouseEvent) => {
+      if (closeOnOverlay && event.target === event.currentTarget) {
+        onClose();
+      }
+    },
+    [closeOnOverlay, onClose]
+  );
 
   if (!isOpen) return null;
 
@@ -89,7 +98,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
     >
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm" />
-      
+
       {/* Modal */}
       <div
         ref={modalRef}
@@ -111,7 +120,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
+        aria-labelledby={title ? 'modal-title' : undefined}
         {...restProps}
       >
         {/* Header */}
@@ -166,7 +175,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const variantStyles = {
     danger: 'text-red-400',
     warning: 'text-yellow-400',
-    info: 'text-blue-400'
+    info: 'text-blue-400',
   };
 
   const handleConfirm = React.useCallback(() => {
@@ -184,7 +193,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <Button variant="ghost" onClick={onClose}>
             {cancelText}
           </Button>
-          <Button 
+          <Button
             variant={variant === 'danger' ? 'danger' : 'primary'}
             onClick={handleConfirm}
           >
@@ -213,14 +222,14 @@ export const AlertModal: React.FC<AlertModalProps> = ({
     success: 'text-green-400',
     error: 'text-red-400',
     warning: 'text-yellow-400',
-    info: 'text-blue-400'
+    info: 'text-blue-400',
   };
 
   const variantIcons = {
     success: '✓',
     error: '✗',
     warning: '⚠',
-    info: 'ℹ'
+    info: 'ℹ',
   };
 
   return (
@@ -229,9 +238,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
         <div className={`text-4xl mb-4 ${variantStyles[variant]}`}>
           {variantIcons[variant]}
         </div>
-        <div className="text-lg font-medium mb-6 text-gray-200">
-          {message}
-        </div>
+        <div className="text-lg font-medium mb-6 text-gray-200">{message}</div>
         <Button onClick={onClose} fullWidth>
           {buttonText}
         </Button>

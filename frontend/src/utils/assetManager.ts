@@ -17,7 +17,8 @@ interface AssetMetadata {
 class AssetManager {
   private assets = new Map<string, AssetMetadata>();
   private loadedAssets = new Map<string, boolean>();
-  private fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzMzMzMzMyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjNjY2NjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0cHgiPkltYWdlIFVuYXZhaWxhYmxlPC90ZXh0Pgo8L3N2Zz4K';
+  private fallbackImage =
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzMzMzMzMyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjNjY2NjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0cHgiPkltYWdlIFVuYXZhaWxhYmxlPC90ZXh0Pgo8L3N2Zz4K';
 
   constructor() {
     this.initializeCharacterAssets();
@@ -32,10 +33,10 @@ class AssetManager {
       'zarantha',
       'thalassos',
       'nightshade',
-      'kronos'
+      'kronos',
     ];
 
-    characterIds.forEach(characterId => {
+    characterIds.forEach((characterId) => {
       this.registerAsset({
         id: `character_${characterId}`,
         category: 'character',
@@ -43,7 +44,7 @@ class AssetManager {
         path: `./images/characters/${characterId}.png`,
         fallbackPath: this.fallbackImage,
         description: `Portrait image for ${characterId}`,
-        preload: true
+        preload: true,
       });
     });
   }
@@ -75,15 +76,25 @@ class AssetManager {
   private isImageLoadable(imagePath: string): boolean {
     // For now, assume all paths starting with / are valid
     // In a more sophisticated system, this would check if the file exists
-    return imagePath.startsWith('/') || imagePath.startsWith('./') || imagePath.startsWith('http') || imagePath.startsWith('data:');
+    return (
+      imagePath.startsWith('/') ||
+      imagePath.startsWith('./') ||
+      imagePath.startsWith('http') ||
+      imagePath.startsWith('data:')
+    );
   }
 
   async preloadAssets(category?: AssetCategory): Promise<void> {
-    const assetsToPreload = Array.from(this.assets.values()).filter(asset =>
-      asset.preload && (!category || asset.category === category) && asset.type === 'image'
+    const assetsToPreload = Array.from(this.assets.values()).filter(
+      (asset) =>
+        asset.preload &&
+        (!category || asset.category === category) &&
+        asset.type === 'image'
     );
 
-    const preloadPromises = assetsToPreload.map(asset => this.preloadImage(asset));
+    const preloadPromises = assetsToPreload.map((asset) =>
+      this.preloadImage(asset)
+    );
 
     try {
       await Promise.all(preloadPromises);
@@ -119,7 +130,9 @@ class AssetManager {
 
   getAllAssets(category?: AssetCategory): AssetMetadata[] {
     const assets = Array.from(this.assets.values());
-    return category ? assets.filter(asset => asset.category === category) : assets;
+    return category
+      ? assets.filter((asset) => asset.category === category)
+      : assets;
   }
 
   getAssetInfo(id: string): AssetMetadata | undefined {
@@ -127,7 +140,7 @@ class AssetManager {
   }
 
   // Utility method for development - validates that all registered assets exist
-  async validateAssets(): Promise<{ valid: string[], invalid: string[] }> {
+  async validateAssets(): Promise<{ valid: string[]; invalid: string[] }> {
     const valid: string[] = [];
     const invalid: string[] = [];
 
@@ -162,7 +175,10 @@ export const preloadCharacterAssets = async (): Promise<void> => {
   return assetManager.preloadAssets('character');
 };
 
-export const validateAllAssets = async (): Promise<{ valid: string[], invalid: string[] }> => {
+export const validateAllAssets = async (): Promise<{
+  valid: string[];
+  invalid: string[];
+}> => {
   return assetManager.validateAssets();
 };
 
@@ -170,6 +186,6 @@ export const validateAllAssets = async (): Promise<{ valid: string[], invalid: s
 export const useAssetStatus = (assetId: string) => {
   return {
     isLoaded: assetManager.isAssetLoaded(assetId),
-    path: assetManager.getAssetPath(assetId)
+    path: assetManager.getAssetPath(assetId),
   };
 };
