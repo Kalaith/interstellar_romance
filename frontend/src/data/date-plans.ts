@@ -1,6 +1,6 @@
 import { DatePlan, ActivityType } from '../types/game';
 
-export const DATE_PLANS: DatePlan[] = [
+export const datePlans: DatePlan[] = [
   // Intellectual Activities
   {
     id: 'observatory_visit',
@@ -226,13 +226,13 @@ export const DATE_PLANS: DatePlan[] = [
 ];
 
 export function getDatePlansByActivity(activityType: ActivityType): DatePlan[] {
-  return DATE_PLANS.filter(plan => plan.activityType === activityType);
+  return datePlans.filter(plan => plan.activityType === activityType);
 }
 
 export function getAvailableDatePlans(affection: number): DatePlan[] {
-  return DATE_PLANS.filter(plan => affection >= plan.requiredAffection);
+  return datePlans.filter(plan => affection >= plan.requiredAffection);
 }
 
 export function getDatePlanById(id: string): DatePlan | undefined {
-  return DATE_PLANS.find(plan => plan.id === id);
+  return datePlans.find(plan => plan.id === id);
 }

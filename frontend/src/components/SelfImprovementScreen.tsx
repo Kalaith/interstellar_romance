@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { SELF_IMPROVEMENT_ACTIVITIES } from '../data/self-improvement';
+import { selfImprovementActivities } from '../data/self-improvement';
 
 export const SelfImprovementScreen: React.FC = () => {
   const {
@@ -25,7 +25,7 @@ export const SelfImprovementScreen: React.FC = () => {
   }
 
   const handleActivityClick = (activityId: string) => {
-    const activity = SELF_IMPROVEMENT_ACTIVITIES.find(a => a.id === activityId);
+    const activity = selfImprovementActivities.find(a => a.id === activityId);
     if (activity?.statBonus) {
       // Apply stat bonuses (this would be handled by game store in real implementation)
       // console.log(`Applied bonuses from ${activity.name}:`, activity.statBonus);
@@ -82,7 +82,7 @@ export const SelfImprovementScreen: React.FC = () => {
           <h3 className="text-xl font-bold text-[var(--accent-cyan)] uppercase tracking-wide mb-6">Available Activities</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SELF_IMPROVEMENT_ACTIVITIES.map((activity) => (
+            {selfImprovementActivities.map((activity) => (
               <div
                 key={activity.id}
                 onClick={() => handleActivityClick(activity.id)}

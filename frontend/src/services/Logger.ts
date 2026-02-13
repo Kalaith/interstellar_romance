@@ -24,19 +24,19 @@ export class Logger {
     }
   }
   
-  static warn(message: string, ...args: any[]): void {
+  static warn(message: string, ...args: unknown[]): void {
     if (this.currentLevel >= LogLevel.WARN) {
       console.warn(this.formatMessage('WARN', message), ...args);
     }
   }
   
-  static info(message: string, ...args: any[]): void {
+  static info(message: string, ...args: unknown[]): void {
     if (this.currentLevel >= LogLevel.INFO) {
       console.info(this.formatMessage('INFO', message), ...args);
     }
   }
   
-  static debug(message: string, ...args: any[]): void {
+  static debug(message: string, ...args: unknown[]): void {
     if (this.currentLevel >= LogLevel.DEBUG) {
       console.debug(this.formatMessage('DEBUG', message), ...args);
     }
@@ -85,10 +85,11 @@ export class Logger {
   }
   
   // Utility method to get stored errors for debugging
-  static getStoredErrors(): any[] {
+  static getStoredErrors(): unknown[] {
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
-        return JSON.parse(localStorage.getItem('app_errors') || '[]');
+        const parsed: unknown = JSON.parse(localStorage.getItem('app_errors') || '[]');
+        return Array.isArray(parsed) ? parsed : [];
       } catch {
         return [];
       }

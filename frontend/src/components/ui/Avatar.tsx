@@ -1,5 +1,5 @@
 import React from 'react';
-import { AvatarProps, DEFAULT_AVATAR_PROPS } from '../../types/componentProps';
+import { AvatarProps, defaultAvatarProps } from '../../types/componentProps';
 import { Logger } from '../../services/Logger';
 
 export const Avatar: React.FC<AvatarProps> = (props) => {
@@ -13,7 +13,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
     fallbackIcon,
     className,
     ...restProps
-  } = { ...DEFAULT_AVATAR_PROPS({}), ...props };
+  } = { ...defaultAvatarProps({}), ...props };
 
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);

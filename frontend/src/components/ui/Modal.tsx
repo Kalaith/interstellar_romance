@@ -1,5 +1,5 @@
 import React from 'react';
-import { ModalProps, DEFAULT_MODAL_PROPS } from '../../types/componentProps';
+import { ModalProps, defaultModalProps } from '../../types/componentProps';
 import { Button } from './Button';
 
 export const Modal: React.FC<ModalProps> = (props) => {
@@ -14,7 +14,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
     closeOnEscape,
     className,
     ...restProps
-  } = { ...DEFAULT_MODAL_PROPS({}), ...props };
+  } = { ...defaultModalProps({}), ...props };
 
   const modalRef = React.useRef<HTMLDivElement>(null);
   const previousActiveElement = React.useRef<Element | null>(null);

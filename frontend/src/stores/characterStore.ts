@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Character } from '../types/game';
+import type { Character, CharacterMood } from '../types/game';
 import { CharacterId } from '../types/brandedTypes';
 import { CHARACTERS } from '../data/characters';
 import { CharacterRepository } from '../data/repositories/CharacterRepository';
 import { Validators } from '../utils/validators';
 import { Logger } from '../services/Logger';
 import { AsyncOperationManager } from '../utils/AsyncOperationManager';
-import { ASYNC_OPERATION_KEYS, ASYNC_DELAYS } from '../constants/gameConstants';
+import { asyncOperationKeys, asyncDelays } from '../constants/gameConstants';
 
 interface CharacterStore {
   characters: Character[];
@@ -16,7 +16,7 @@ interface CharacterStore {
   // Actions
   selectCharacter: (id: CharacterId) => void;
   updateAffection: (id: CharacterId, amount: number) => void;
-  updateMood: (id: CharacterId, mood: string) => void;
+  updateMood: (id: CharacterId, mood: CharacterMood) => void;
   updateCharacter: (id: CharacterId, updates: Partial<Character>) => void;
   updateLastInteractionDate: (id: CharacterId) => void;
   canTalkToCharacterToday: (id: CharacterId) => boolean;
@@ -46,7 +46,7 @@ export const useCharacterStore = create<CharacterStore>()(
           // Schedule async info unlock
           if (character) {
             AsyncOperationManager.scheduleOperation(
-              ASYNC_OPERATION_KEYS.CHARACTER_INFO_UNLOCK(validId),
+              asyncOperationKeys.CHARACTER_INFO_UNLOCK(validId),
               () => {
                 // Unlock basic info on first interaction
                 const updatedCharacters = get().characters.map(c => 
@@ -66,7 +66,7 @@ export const useCharacterStore = create<CharacterStore>()(
                   selectedCharacter: updatedCharacters.find(c => c.id === validId) || null
                 });
               },
-              ASYNC_DELAYS.IMMEDIATE
+              asyncDelays.IMMEDIATE
             );
           }
         } catch (error) {
@@ -92,12 +92,12 @@ export const useCharacterStore = create<CharacterStore>()(
           
           // Schedule related updates
           AsyncOperationManager.scheduleOperation(
-            ASYNC_OPERATION_KEYS.BATCH_UPDATE(`affection-${validId}`),
+            asyncOperationKeys.BATCH_UPDATE(`affection-${validId}`),
             () => {
               // Trigger knowledge and storyline updates
               Logger.debug(`Batch updating after affection change for character ${validId}`);
             },
-            ASYNC_DELAYS.DEBOUNCE_SHORT
+            asyncDelays.DEBOUNCE_SHORT
           );
           
         } catch (error) {

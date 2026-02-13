@@ -1,6 +1,6 @@
 import { ValidationError, CharacterId, AffectionLevel, PercentageScore, createCharacterId, createAffectionLevel } from '../types/brandedTypes';
 import { Character, PlayerCharacter } from '../types/game';
-import { VALIDATION_LIMITS } from '../constants/gameConstants';
+import { validationLimits } from '../constants/gameConstants';
 
 export class Validators {
   static validateCharacterId(id: unknown): CharacterId {
@@ -14,9 +14,9 @@ export class Validators {
     if (typeof amount !== 'number' || isNaN(amount)) {
       throw new ValidationError('Affection amount must be a number', 'amount');
     }
-    if (amount < -VALIDATION_LIMITS.MAX_AFFECTION || amount > VALIDATION_LIMITS.MAX_AFFECTION) {
+    if (amount < -validationLimits.MAX_AFFECTION || amount > validationLimits.MAX_AFFECTION) {
       throw new ValidationError(
-        `Affection amount must be between -${VALIDATION_LIMITS.MAX_AFFECTION} and ${VALIDATION_LIMITS.MAX_AFFECTION}`, 
+        `Affection amount must be between -${validationLimits.MAX_AFFECTION} and ${validationLimits.MAX_AFFECTION}`, 
         'amount'
       );
     }
@@ -27,9 +27,9 @@ export class Validators {
     if (typeof level !== 'number' || isNaN(level)) {
       throw new ValidationError('Affection level must be a number', 'affection');
     }
-    if (level < VALIDATION_LIMITS.MIN_AFFECTION || level > VALIDATION_LIMITS.MAX_AFFECTION) {
+    if (level < validationLimits.MIN_AFFECTION || level > validationLimits.MAX_AFFECTION) {
       throw new ValidationError(
-        `Affection level must be between ${VALIDATION_LIMITS.MIN_AFFECTION} and ${VALIDATION_LIMITS.MAX_AFFECTION}`, 
+        `Affection level must be between ${validationLimits.MIN_AFFECTION} and ${validationLimits.MAX_AFFECTION}`, 
         'affection'
       );
     }
@@ -54,9 +54,9 @@ export class Validators {
     if (typeof score !== 'number' || isNaN(score)) {
       throw new ValidationError('Compatibility score must be a number', 'compatibility');
     }
-    if (score < VALIDATION_LIMITS.MIN_COMPATIBILITY || score > VALIDATION_LIMITS.MAX_COMPATIBILITY) {
+    if (score < validationLimits.MIN_COMPATIBILITY || score > validationLimits.MAX_COMPATIBILITY) {
       throw new ValidationError(
-        `Compatibility score must be between ${VALIDATION_LIMITS.MIN_COMPATIBILITY} and ${VALIDATION_LIMITS.MAX_COMPATIBILITY}`,
+        `Compatibility score must be between ${validationLimits.MIN_COMPATIBILITY} and ${validationLimits.MAX_COMPATIBILITY}`,
         'compatibility'
       );
     }
@@ -67,9 +67,9 @@ export class Validators {
     if (typeof value !== 'number' || isNaN(value)) {
       throw new ValidationError(`${statName} must be a number`, statName);
     }
-    if (value < VALIDATION_LIMITS.MIN_STAT_VALUE || value > VALIDATION_LIMITS.MAX_STAT_VALUE) {
+    if (value < validationLimits.MIN_STAT_VALUE || value > validationLimits.MAX_STAT_VALUE) {
       throw new ValidationError(
-        `${statName} must be between ${VALIDATION_LIMITS.MIN_STAT_VALUE} and ${VALIDATION_LIMITS.MAX_STAT_VALUE}`,
+        `${statName} must be between ${validationLimits.MIN_STAT_VALUE} and ${validationLimits.MAX_STAT_VALUE}`,
         statName
       );
     }

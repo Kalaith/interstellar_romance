@@ -1,6 +1,6 @@
 import { SelfImprovementActivity } from '../types/game';
 
-export const SELF_IMPROVEMENT_ACTIVITIES: SelfImprovementActivity[] = [
+export const selfImprovementActivities: SelfImprovementActivity[] = [
   {
     id: 'gym',
     name: 'Physical Training',

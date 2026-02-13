@@ -1,10 +1,10 @@
 import { Character, CharacterKnownInfo, DailyInteractionData } from '../types/game';
 import { getDefaultRelationshipStatus } from '../utils/relationshipUtils';
 import { getCharacterImage } from '../utils/assetManager';
-import { AFFECTION_THRESHOLDS, INTERACTION_LIMITS, MILESTONE_THRESHOLDS } from '../constants/gameConstants';
+import { affectionThresholds, interactionLimits, milestoneThresholds } from '../constants/gameConstants';
 
 // Default knowledge state - everything starts as unknown except name and appearance
-const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
+const defaultKnownInfo: CharacterKnownInfo = {
   name: true,
   appearance: true,
   species: false,
@@ -22,13 +22,13 @@ const DEFAULT_KNOWN_INFO: CharacterKnownInfo = {
 };
 
 // Default milestones for all characters
-const DEFAULT_MILESTONES = [
-  { id: 'first_meeting', name: 'First Meeting', description: 'Your first encounter', unlockedAt: MILESTONE_THRESHOLDS.FIRST_MEETING, achieved: false },
-  { id: 'first_conversation', name: 'First Real Conversation', description: 'A meaningful exchange', unlockedAt: MILESTONE_THRESHOLDS.GETTING_CLOSER, achieved: false },
-  { id: 'personal_sharing', name: 'Personal Sharing', description: 'Opening up about themselves', unlockedAt: MILESTONE_THRESHOLDS.MUTUAL_INTEREST, achieved: false },
-  { id: 'first_date', name: 'First Date', description: 'Your first romantic encounter', unlockedAt: MILESTONE_THRESHOLDS.ROMANTIC_TENSION, achieved: false },
-  { id: 'deeper_connection', name: 'Deeper Connection', description: 'Understanding each other better', unlockedAt: MILESTONE_THRESHOLDS.DEEP_CONNECTION, achieved: false },
-  { id: 'commitment', name: 'Committed Relationship', description: 'Taking things to the next level', unlockedAt: MILESTONE_THRESHOLDS.COMMITMENT, achieved: false }
+const defaultMilestones = [
+  { id: 'first_meeting', name: 'First Meeting', description: 'Your first encounter', unlockedAt: milestoneThresholds.FIRST_MEETING, achieved: false },
+  { id: 'first_conversation', name: 'First Real Conversation', description: 'A meaningful exchange', unlockedAt: milestoneThresholds.GETTING_CLOSER, achieved: false },
+  { id: 'personal_sharing', name: 'Personal Sharing', description: 'Opening up about themselves', unlockedAt: milestoneThresholds.MUTUAL_INTEREST, achieved: false },
+  { id: 'first_date', name: 'First Date', description: 'Your first romantic encounter', unlockedAt: milestoneThresholds.ROMANTIC_TENSION, achieved: false },
+  { id: 'deeper_connection', name: 'Deeper Connection', description: 'Understanding each other better', unlockedAt: milestoneThresholds.DEEP_CONNECTION, achieved: false },
+  { id: 'commitment', name: 'Committed Relationship', description: 'Taking things to the next level', unlockedAt: milestoneThresholds.COMMITMENT, achieved: false }
 ];
 
 // Random mood generator
@@ -46,11 +46,11 @@ const getDefaultDailyInteractions = (affection: number): DailyInteractionData =>
 
 // Calculate max interactions based on affection level
 export const calculateMaxInteractions = (affection: number): number => {
-  if (affection >= AFFECTION_THRESHOLDS.VERY_HIGH) return INTERACTION_LIMITS.VERY_HIGH_AFFECTION;
-  if (affection >= AFFECTION_THRESHOLDS.HIGH) return INTERACTION_LIMITS.HIGH_AFFECTION;
-  if (affection >= AFFECTION_THRESHOLDS.MEDIUM) return INTERACTION_LIMITS.MEDIUM_AFFECTION;
-  if (affection >= AFFECTION_THRESHOLDS.LOW) return INTERACTION_LIMITS.LOW_MEDIUM_AFFECTION;
-  return INTERACTION_LIMITS.DEFAULT;
+  if (affection >= affectionThresholds.VERY_HIGH) return interactionLimits.VERY_HIGH_AFFECTION;
+  if (affection >= affectionThresholds.HIGH) return interactionLimits.HIGH_AFFECTION;
+  if (affection >= affectionThresholds.MEDIUM) return interactionLimits.MEDIUM_AFFECTION;
+  if (affection >= affectionThresholds.LOW) return interactionLimits.LOW_MEDIUM_AFFECTION;
+  return interactionLimits.DEFAULT;
 };
 
 export const CHARACTERS: Character[] = [
@@ -63,7 +63,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('kyrathen'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'flight', name: 'Aerial Navigation', category: 'adventure', intensity: 5 },
@@ -84,7 +84,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('kyrathen'), title: 'Tribal Portrait', description: 'In ceremonial feathered headdress', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Kyra'then"),
     relationshipMemories: [],
@@ -108,7 +108,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('seraphina'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'meditation', name: 'Dimensional Meditation', category: 'philosophy', intensity: 5 },
@@ -129,7 +129,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('seraphina'), title: 'Hooded Oracle', description: 'In traditional temple robes', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Seraphina Voidwhisper"),
     relationshipMemories: [],
@@ -153,7 +153,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('thessarian'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'biotech', name: 'Biotechnology', category: 'technology', intensity: 5 },
@@ -174,7 +174,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('thessarian'), title: 'Laboratory Portrait', description: 'In formal research attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Dr. Thessarian Brightleaf"),
     relationshipMemories: [],
@@ -198,7 +198,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('lyralynn'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'botany', name: 'Plant Biology', category: 'nature', intensity: 5 },
@@ -219,7 +219,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('lyralynn'), title: 'Forest Guardian', description: 'Among her beloved plants', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Lyralynn Bloomheart"),
     relationshipMemories: [],
@@ -243,7 +243,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('zarantha'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'strategy', name: 'Military Strategy', category: 'technology', intensity: 5 },
@@ -264,7 +264,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('zarantha'), title: 'Command Portrait', description: 'In military dress uniform', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Commander Zarantha Scales"),
     relationshipMemories: [],
@@ -288,7 +288,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('thalassos'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'spirituality', name: 'Ancient Rituals', category: 'philosophy', intensity: 5 },
@@ -309,7 +309,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('thalassos'), title: 'Ceremonial Robes', description: 'In traditional temple attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("High Priest Thalassos"),
     relationshipMemories: [],
@@ -333,7 +333,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('nightshade'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'stealth', name: 'Shadow Arts', category: 'adventure', intensity: 5 },
@@ -354,7 +354,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('nightshade'), title: 'Shadow Form', description: 'In operational attire', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Nightshade Voidwalker"),
     relationshipMemories: [],
@@ -378,7 +378,7 @@ export const CHARACTERS: Character[] = [
     image: getCharacterImage('kronos'),
     affection: 0,
     mood: getRandomMood(),
-    milestones: [...DEFAULT_MILESTONES],
+    milestones: [...defaultMilestones],
     profile: {
       interests: [
         { id: 'neuroscience', name: 'Neural Networks', category: 'science', intensity: 5 },
@@ -399,7 +399,7 @@ export const CHARACTERS: Character[] = [
       { id: 'portrait', url: getCharacterImage('kronos'), title: 'Research Station', description: 'In his laboratory', unlockedAt: 0, unlocked: true, rarity: 'common' }
     ],
     dateHistory: [],
-    knownInfo: { ...DEFAULT_KNOWN_INFO },
+    knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
     relationshipStatus: getDefaultRelationshipStatus("Dr. Kronos Mindweave"),
     relationshipMemories: [],

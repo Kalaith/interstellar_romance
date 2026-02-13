@@ -71,7 +71,7 @@ export class CharacterLookup {
 }
 
 // Simple memoization utility for expensive calculations
-export function memoize<Args extends any[], Return>(
+export function memoize<Args extends readonly unknown[], Return>(
   fn: (...args: Args) => Return,
   getKey?: (...args: Args) => string
 ): (...args: Args) => Return {
@@ -100,32 +100,34 @@ export function memoize<Args extends any[], Return>(
 }
 
 // Debounce utility for frequent updates
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
-): T {
-  let timeoutId: NodeJS.Timeout;
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  return ((...args: any[]) => {
-    clearTimeout(timeoutId);
+  return (...args: Parameters<T>) => {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
     timeoutId = setTimeout(() => func(...args), delay);
-  }) as T;
+  };
 }
 
 // Throttle utility for rate limiting
-export function throttle<T extends (...args: any[]) => void>(
+export function throttle<T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
-): T {
+): (...args: Parameters<T>) => void {
   let lastCall = 0;
 
-  return ((...args: any[]) => {
+  return (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
       func(...args);
     }
-  }) as T;
+  };
 }
 
 // Optimized array operations
@@ -183,7 +185,7 @@ export const ArrayUtils = {
 // Local storage optimization
 export const StorageUtils = {
   // Compress and store game state
-  saveGameState: (key: string, data: any): void => {
+  saveGameState: (key: string, data: unknown): void => {
     try {
       const compressed = JSON.stringify(data);
       localStorage.setItem(key, compressed);
@@ -200,7 +202,7 @@ export const StorageUtils = {
   },
 
   // Load and decompress game state
-  loadGameState: (key: string): any | null => {
+  loadGameState: (key: string): unknown | null => {
     try {
       const stored = localStorage.getItem(key);
       if (!stored) return null;

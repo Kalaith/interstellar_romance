@@ -1,4 +1,4 @@
-import { Character, RelationshipMilestone, CharacterPhoto } from '../../types/game';
+import type { Character, RelationshipMilestone, CharacterPhoto, CharacterMood } from '../../types/game';
 import { CharacterId, AffectionLevel, createAffectionLevel } from '../../types/brandedTypes';
 import { Validators } from '../../utils/validators';
 import { Logger } from '../../services/Logger';
@@ -66,14 +66,14 @@ export class CharacterRepository {
     }
   }
   
-  updateMood(characters: Character[], id: CharacterId, mood: string): Character[] {
+  updateMood(characters: Character[], id: CharacterId, mood: CharacterMood): Character[] {
     try {
       const validId = Validators.validateCharacterId(id);
       
       return characters.map(character => {
         if (character.id === validId) {
           Logger.debug(`Updated mood for ${character.name}: ${character.mood} -> ${mood}`);
-          return { ...character, mood: mood as any };
+          return { ...character, mood };
         }
         return character;
       });

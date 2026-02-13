@@ -28,7 +28,7 @@ export interface StorylineReward {
 }
 
 // Kyra'then's Storyline - The Noble's Heart
-export const KYRATHEN_STORYLINE: StorylineEvent[] = [
+export const kyrathenStoryline: StorylineEvent[] = [
   {
     id: 'kyrathen_story_1',
     characterId: 'kyrathen',
@@ -128,7 +128,7 @@ export const KYRATHEN_STORYLINE: StorylineEvent[] = [
 ];
 
 // Seraphina's Storyline - The Oracle's Vision
-export const SERAPHINA_STORYLINE: StorylineEvent[] = [
+export const seraphinaStoryline: StorylineEvent[] = [
   {
     id: 'seraphina_story_1',
     characterId: 'seraphina',
@@ -198,7 +198,7 @@ export const SERAPHINA_STORYLINE: StorylineEvent[] = [
 ];
 
 // Kronos's Storyline - The Mind's Heart
-export const KRONOS_STORYLINE: StorylineEvent[] = [
+export const kronosStoryline: StorylineEvent[] = [
   {
     id: 'kronos_story_1',
     characterId: 'kronos',
@@ -299,7 +299,7 @@ export const KRONOS_STORYLINE: StorylineEvent[] = [
 ];
 
 // Thessarian's Storyline - The Ethical Engineer
-export const THESSARIAN_STORYLINE: StorylineEvent[] = [
+export const thessarianStoryline: StorylineEvent[] = [
   {
     id: 'thessarian_story_1',
     characterId: 'thessarian',
@@ -400,7 +400,7 @@ export const THESSARIAN_STORYLINE: StorylineEvent[] = [
 ];
 
 // Lyralynn's Storyline - The Heart's Garden
-export const LYRALYNN_STORYLINE: StorylineEvent[] = [
+export const lyralynnStoryline: StorylineEvent[] = [
   {
     id: 'lyralynn_story_1',
     characterId: 'lyralynn',
@@ -501,7 +501,7 @@ export const LYRALYNN_STORYLINE: StorylineEvent[] = [
 ];
 
 // Zarantha's Storyline - The Commander's Vulnerability
-export const ZARANTHA_STORYLINE: StorylineEvent[] = [
+export const zaranthaStoryline: StorylineEvent[] = [
   {
     id: 'zarantha_story_1',
     characterId: 'zarantha',
@@ -602,7 +602,7 @@ export const ZARANTHA_STORYLINE: StorylineEvent[] = [
 ];
 
 // Thalassos's Storyline - The Ocean's Depth
-export const THALASSOS_STORYLINE: StorylineEvent[] = [
+export const thalassosStoryline: StorylineEvent[] = [
   {
     id: 'thalassos_story_1',
     characterId: 'thalassos',
@@ -703,7 +703,7 @@ export const THALASSOS_STORYLINE: StorylineEvent[] = [
 ];
 
 // Nightshade's Storyline - The Shadow's Light
-export const NIGHTSHADE_STORYLINE: StorylineEvent[] = [
+export const nightshadeStoryline: StorylineEvent[] = [
   {
     id: 'nightshade_story_1',
     characterId: 'nightshade',
@@ -821,28 +821,28 @@ export function getAvailableStorylines(characterId: string, affection: number): 
   try {
     switch (characterId) {
       case 'kyrathen':
-        characterStorylines = [...KYRATHEN_STORYLINE];
+        characterStorylines = [...kyrathenStoryline];
         break;
       case 'seraphina':
-        characterStorylines = [...SERAPHINA_STORYLINE];
+        characterStorylines = [...seraphinaStoryline];
         break;
       case 'kronos':
-        characterStorylines = [...KRONOS_STORYLINE];
+        characterStorylines = [...kronosStoryline];
         break;
       case 'thessarian':
-        characterStorylines = [...THESSARIAN_STORYLINE];
+        characterStorylines = [...thessarianStoryline];
         break;
       case 'lyralynn':
-        characterStorylines = [...LYRALYNN_STORYLINE];
+        characterStorylines = [...lyralynnStoryline];
         break;
       case 'zarantha':
-        characterStorylines = [...ZARANTHA_STORYLINE];
+        characterStorylines = [...zaranthaStoryline];
         break;
       case 'thalassos':
-        characterStorylines = [...THALASSOS_STORYLINE];
+        characterStorylines = [...thalassosStoryline];
         break;
       case 'nightshade':
-        characterStorylines = [...NIGHTSHADE_STORYLINE];
+        characterStorylines = [...nightshadeStoryline];
         break;
       default:
         console.warn(`getAvailableStorylines: Unknown character ID: ${characterId}`);
@@ -908,14 +908,14 @@ export function processStorylineChoice(
 
   try {
     const storylines = [
-      ...KYRATHEN_STORYLINE,
-      ...SERAPHINA_STORYLINE,
-      ...KRONOS_STORYLINE,
-      ...THESSARIAN_STORYLINE,
-      ...LYRALYNN_STORYLINE,
-      ...ZARANTHA_STORYLINE,
-      ...THALASSOS_STORYLINE,
-      ...NIGHTSHADE_STORYLINE
+      ...kyrathenStoryline,
+      ...seraphinaStoryline,
+      ...kronosStoryline,
+      ...thessarianStoryline,
+      ...lyralynnStoryline,
+      ...zaranthaStoryline,
+      ...thalassosStoryline,
+      ...nightshadeStoryline
     ];
 
     const storyline = storylines.find(s => s.id === storylineId);

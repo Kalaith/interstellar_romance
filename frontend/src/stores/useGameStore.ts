@@ -3,6 +3,7 @@ import { useCharacterStore } from './characterStore';
 import { useGameStateStore } from './gameStateStore';
 import { useAchievementStore } from './achievementStore';
 import { Logger } from '../services/Logger';
+import { Validators } from '../utils/validators';
 
 // Combined store interface for backward compatibility
 export const useGameStore = () => {
@@ -66,17 +67,18 @@ export const useGameStore = () => {
     // Enhanced dialogue interaction that updates multiple stores
     processDialogueInteraction: (characterId: string, affectionGain: number) => {
       try {
+        const validCharacterId = Validators.validateCharacterId(characterId);
         // Update character affection
-        characterStore.updateAffection(characterId as any, affectionGain);
+        characterStore.updateAffection(validCharacterId, affectionGain);
         
         // Increment conversation count
         gameStateStore.incrementConversations();
         
         // Update last interaction date
-        characterStore.updateLastInteractionDate(characterId as any);
+        characterStore.updateLastInteractionDate(validCharacterId);
         
         // Use daily interaction
-        characterStore.useDailyInteraction(characterId as any);
+        characterStore.useDailyInteraction(validCharacterId);
         
         // Trigger batch update for achievements
         composedActions.batchUpdate(characterId, { achievements: true });
@@ -90,14 +92,15 @@ export const useGameStore = () => {
     // Enhanced date interaction
     processDateInteraction: (characterId: string, affectionGain: number, success: boolean) => {
       try {
+        const validCharacterId = Validators.validateCharacterId(characterId);
         // Update character affection
-        characterStore.updateAffection(characterId as any, affectionGain);
+        characterStore.updateAffection(validCharacterId, affectionGain);
         
         // Increment date count
         gameStateStore.incrementDates();
         
         // Update last interaction date
-        characterStore.updateLastInteractionDate(characterId as any);
+        characterStore.updateLastInteractionDate(validCharacterId);
         
         // Trigger batch update for achievements
         composedActions.batchUpdate(characterId, { achievements: true });

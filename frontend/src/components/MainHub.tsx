@@ -7,7 +7,7 @@ import { Button, PrimaryButton, SecondaryButton } from './ui/Button';
 import { CharacterImage } from './AssetLoader';
 import { calculateCompatibility } from '../utils/compatibility';
 import { filterCharactersByPreference, getPreferenceDescription } from '../utils/character-filtering';
-import { AFFECTION_THRESHOLDS } from '../constants/gameConstants';
+import { affectionThresholds } from '../constants/gameConstants';
 import { Logger } from '../services/Logger';
 import { createCharacterId } from '../types/brandedTypes';
 
@@ -246,7 +246,7 @@ export const MainHub: React.FC = () => {
                         Profile
                       </PrimaryButton>
 
-                      {character.affection >= AFFECTION_THRESHOLDS.HIGH ? (
+                      {character.affection >= affectionThresholds.HIGH ? (
                         <SecondaryButton
                           size="xs"
                           onClick={(e) => {

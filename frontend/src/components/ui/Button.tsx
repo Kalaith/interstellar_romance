@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonProps, DEFAULT_BUTTON_PROPS } from '../../types/componentProps';
+import { ButtonProps, defaultButtonProps } from '../../types/componentProps';
 
 export const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -15,7 +15,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
     className,
     onClick,
     ...restProps
-  } = { ...DEFAULT_BUTTON_PROPS({}), ...props };
+  } = { ...defaultButtonProps({}), ...props };
 
   const baseClasses = React.useMemo(() => [
     'inline-flex',

@@ -1,7 +1,7 @@
 import { CharacterPhoto, PhotoRarity } from '../types/game';
 
 // Aerarfin (Ethereal Wind Elemental) Photo Gallery
-export const AERARFIN_PHOTOS: CharacterPhoto[] = [
+export const aerarfinPhotos: CharacterPhoto[] = [
   {
     id: 'aerarfin_portrait',
     url: './images/characters/aerarfin.png',
@@ -32,7 +32,7 @@ export const AERARFIN_PHOTOS: CharacterPhoto[] = [
 ];
 
 // Bellasnor (Celestial Star Touched) Photo Gallery
-export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
+export const bellasnorPhotos: CharacterPhoto[] = [
   {
     id: 'bellasnor_portrait',
     url: './images/characters/bellasnor.png',
@@ -63,7 +63,7 @@ export const BELLASNOR_PHOTOS: CharacterPhoto[] = [
 ];
 
 // Celanlas (Sylvan Forest Guardian) Photo Gallery
-export const CELANLAS_PHOTOS: CharacterPhoto[] = [
+export const celanlasPhotos: CharacterPhoto[] = [
   {
     id: 'celanlas_portrait',
     url: './images/characters/celanlas.png',
@@ -94,7 +94,7 @@ export const CELANLAS_PHOTOS: CharacterPhoto[] = [
 ];
 
 // Lyraiel (Melodic Song Weaver) Photo Gallery
-export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
+export const lyraielPhotos: CharacterPhoto[] = [
   {
     id: 'lyraiel_portrait',
     url: './images/characters/lyraiel.png',
@@ -125,7 +125,7 @@ export const LYRAIEL_PHOTOS: CharacterPhoto[] = [
 ];
 
 // Moriaion (Shadow Void Walker) Photo Gallery
-export const MORIAION_PHOTOS: CharacterPhoto[] = [
+export const moriaionPhotos: CharacterPhoto[] = [
   {
     id: 'moriaion_portrait',
     url: './images/characters/moriaion.png',
@@ -156,7 +156,7 @@ export const MORIAION_PHOTOS: CharacterPhoto[] = [
 ];
 
 // Quinaelmir (Crystal Gem Heart) Photo Gallery
-export const QUINAELMIR_PHOTOS: CharacterPhoto[] = [
+export const quinaelmirPhotos: CharacterPhoto[] = [
   {
     id: 'quinaelmir_portrait',
     url: './images/characters/quinaelmir.png',
@@ -215,11 +215,11 @@ export const getNextPhotoToUnlock = (photos: CharacterPhoto[], currentAffection:
 };
 
 // Export object for easy access
-export const CHARACTER_PHOTO_GALLERIES = {
-  aerarfin: AERARFIN_PHOTOS,
-  bellasnor: BELLASNOR_PHOTOS,
-  celanlas: CELANLAS_PHOTOS,
-  lyraiel: LYRAIEL_PHOTOS,
-  moriaion: MORIAION_PHOTOS,
-  quinaelmir: QUINAELMIR_PHOTOS
+export const characterPhotoGalleries = {
+  aerarfin: aerarfinPhotos,
+  bellasnor: bellasnorPhotos,
+  celanlas: celanlasPhotos,
+  lyraiel: lyraielPhotos,
+  moriaion: moriaionPhotos,
+  quinaelmir: quinaelmirPhotos
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CharacterMood } from '../../types/game';
-import { MOOD_DESCRIPTIONS } from '../../data/moods';
+import { moodDescriptions } from '../../data/moods';
 
 interface MoodDisplayProps {
   mood: CharacterMood;
@@ -36,7 +36,7 @@ export const MoodDisplay: React.FC<MoodDisplayProps> = ({ mood, characterName, c
       <span className="text-sm">{moodIcons[mood]}</span>
       <span className="text-sm font-medium capitalize">{mood}</span>
       <span className="text-xs opacity-75">
-        {characterName} {MOOD_DESCRIPTIONS[mood]}
+        {characterName} {moodDescriptions[mood]}
       </span>
     </div>
   );

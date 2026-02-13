@@ -1,5 +1,5 @@
 // Game Constants - Centralized configuration values
-export const AFFECTION_THRESHOLDS = {
+export const affectionThresholds = {
   VERY_HIGH: 80,
   HIGH: 60,
   MEDIUM: 40,
@@ -7,7 +7,7 @@ export const AFFECTION_THRESHOLDS = {
   NONE: 0
 } as const;
 
-export const INTERACTION_LIMITS = {
+export const interactionLimits = {
   VERY_HIGH_AFFECTION: 8,
   HIGH_AFFECTION: 6,
   MEDIUM_AFFECTION: 5,
@@ -15,7 +15,7 @@ export const INTERACTION_LIMITS = {
   DEFAULT: 3
 } as const;
 
-export const COMPATIBILITY_SCORES = {
+export const compatibilityScores = {
   EXCELLENT: 90,
   VERY_GOOD: 80,
   GOOD: 70,
@@ -23,14 +23,14 @@ export const COMPATIBILITY_SCORES = {
   POOR: 50
 } as const;
 
-export const STAT_THRESHOLDS = {
+export const statThresholds = {
   VERY_HIGH: 80,
   HIGH: 70,
   MEDIUM: 60,
   LOW: 50
 } as const;
 
-export const MILESTONE_THRESHOLDS = {
+export const milestoneThresholds = {
   FIRST_MEETING: 1,
   GETTING_CLOSER: 15,
   MUTUAL_INTEREST: 30,
@@ -39,20 +39,20 @@ export const MILESTONE_THRESHOLDS = {
   COMMITMENT: 80
 } as const;
 
-export const PERSONALITY_GROWTH_LIMITS = {
+export const personalityGrowthLimits = {
   MAX_GROWTH: 10,
   MIN_GROWTH: 0,
   DEFAULT_BASE: 5,
   MAJOR_CHANGE_THRESHOLD: 5
 } as const;
 
-export const PERFORMANCE_THRESHOLDS = {
+export const performanceThresholds = {
   SLOW_OPERATION: 100, // milliseconds
   VERY_SLOW_OPERATION: 500,
   HIGH_RENDER_COUNT: 50
 } as const;
 
-export const VALIDATION_LIMITS = {
+export const validationLimits = {
   MIN_AFFECTION: 0,
   MAX_AFFECTION: 100,
   MIN_COMPATIBILITY: 0,
@@ -61,7 +61,7 @@ export const VALIDATION_LIMITS = {
   MAX_STAT_VALUE: 100
 } as const;
 
-export const UI_CONSTANTS = {
+export const uiConstants = {
   PROGRESS_BAR_HEIGHT: {
     XS: 'h-1',
     SM: 'h-2',
@@ -85,14 +85,14 @@ export const UI_CONSTANTS = {
   }
 } as const;
 
-export const ASYNC_DELAYS = {
+export const asyncDelays = {
   IMMEDIATE: 0,
   DEBOUNCE_SHORT: 150,
   DEBOUNCE_MEDIUM: 300,
   DEBOUNCE_LONG: 500
 } as const;
 
-export const ASYNC_OPERATION_KEYS = {
+export const asyncOperationKeys = {
   CHARACTER_INFO_UNLOCK: (characterId: string) => `unlock-info-${characterId}`,
   BATCH_UPDATE: (type: string) => `batch-update-${type}`,
   ACHIEVEMENT_UPDATE: 'achievement-update',

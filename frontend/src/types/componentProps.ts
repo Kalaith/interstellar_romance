@@ -152,7 +152,7 @@ export interface ModalProps extends StandardComponentProps {
 }
 
 // Default props helpers
-export const createDefaultProps = <T extends Record<string, any>>(
+export const createDefaultProps = <T extends Record<string, unknown>>(
   defaults: T
 ) => {
   return (props: Partial<T>): T => ({
@@ -162,33 +162,33 @@ export const createDefaultProps = <T extends Record<string, any>>(
 };
 
 // Common default props
-export const DEFAULT_MOOD_DISPLAY_PROPS = createDefaultProps({
+export const defaultMoodDisplayProps = createDefaultProps({
   size: 'medium' as const,
   showLabel: true,
   variant: 'default' as const,
 });
 
-export const DEFAULT_PROGRESS_BAR_PROPS = createDefaultProps({
+export const defaultProgressBarProps = createDefaultProps({
   variant: 'progress' as const,
   size: 'md' as const,
   showValue: false,
   animated: true,
 });
 
-export const DEFAULT_AVATAR_PROPS = createDefaultProps({
+export const defaultAvatarProps = createDefaultProps({
   size: 'md' as const,
   shape: 'circle' as const,
   showBorder: false,
 });
 
-export const DEFAULT_CHARACTER_CARD_PROPS = createDefaultProps({
+export const defaultCharacterCardProps = createDefaultProps({
   showCompatibility: true,
   showInteractionStatus: true,
   variant: 'detailed' as const,
   selectable: true,
 });
 
-export const DEFAULT_BUTTON_PROPS = createDefaultProps({
+export const defaultButtonProps = createDefaultProps({
   variant: 'primary' as const,
   size: 'md' as const,
   disabled: false,
@@ -200,7 +200,7 @@ export const DEFAULT_BUTTON_PROPS = createDefaultProps({
   fullWidth: false,
 });
 
-export const DEFAULT_MODAL_PROPS = createDefaultProps({
+export const defaultModalProps = createDefaultProps({
   modalSize: 'md' as const,
   showCloseButton: true,
   closeOnOverlay: true,

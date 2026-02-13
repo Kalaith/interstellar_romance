@@ -1,7 +1,7 @@
 import { DialogueTree, DialogueResponse, DialogueOption } from '../types/game';
 
 // Kyra'then (Aviari) Dialogue Tree
-export const KYRATHEN_DIALOGUE: DialogueTree = {
+export const kyrathenDialogue: DialogueTree = {
   id: 'kyrathen_main',
   characterId: 'kyrathen',
   rootOptions: [
@@ -80,7 +80,7 @@ export const KYRATHEN_DIALOGUE: DialogueTree = {
 };
 
 // Seraphina (Mystari) Dialogue Tree
-export const SERAPHINA_DIALOGUE: DialogueTree = {
+export const seraphinaDialogue: DialogueTree = {
   id: 'seraphina_main',
   characterId: 'seraphina',
   rootOptions: [
@@ -152,7 +152,7 @@ export const SERAPHINA_DIALOGUE: DialogueTree = {
 };
 
 // Thessarian (Sylvani) Dialogue Tree
-export const THESSARIAN_DIALOGUE: DialogueTree = {
+export const thessarianDialogue: DialogueTree = {
   id: 'thessarian_main',
   characterId: 'thessarian',
   rootOptions: [
@@ -201,7 +201,7 @@ export const THESSARIAN_DIALOGUE: DialogueTree = {
   }
 };
 
-export const DIALOGUE_RESPONSES: Record<string, DialogueResponse> = {
+export const dialogueResponses: Record<string, DialogueResponse> = {
   // Kyra'then responses
   greeting_kyrathen: {
     text: "*Kyra'then's feathers rustle with dignified approval* Your words honor me, friend. The winds carry your respect, and I am grateful for your presence.",
@@ -383,7 +383,7 @@ export const DIALOGUE_RESPONSES: Record<string, DialogueResponse> = {
 };
 
 // Lyralynn (Florani) Dialogue Tree
-export const LYRALYNN_DIALOGUE: DialogueTree = {
+export const lyralynnDialogue: DialogueTree = {
   id: 'lyralynn_main',
   characterId: 'lyralynn',
   rootOptions: [
@@ -441,7 +441,7 @@ export const LYRALYNN_DIALOGUE: DialogueTree = {
 };
 
 // Zarantha (Draconi) Dialogue Tree
-export const ZARANTHA_DIALOGUE: DialogueTree = {
+export const zaranthaDialogue: DialogueTree = {
   id: 'zarantha_main',
   characterId: 'zarantha',
   rootOptions: [
@@ -499,7 +499,7 @@ export const ZARANTHA_DIALOGUE: DialogueTree = {
 };
 
 // Thalassos (Aquari) Dialogue Tree
-export const THALASSOS_DIALOGUE: DialogueTree = {
+export const thalassosDialogue: DialogueTree = {
   id: 'thalassos_main',
   characterId: 'thalassos',
   rootOptions: [
@@ -540,7 +540,7 @@ export const THALASSOS_DIALOGUE: DialogueTree = {
 };
 
 // Nightshade (Umbra) Dialogue Tree
-export const NIGHTSHADE_DIALOGUE: DialogueTree = {
+export const nightshadeDialogue: DialogueTree = {
   id: 'nightshade_main',
   characterId: 'nightshade',
   rootOptions: [
@@ -581,7 +581,7 @@ export const NIGHTSHADE_DIALOGUE: DialogueTree = {
 };
 
 // Kronos (Cephalopi) Dialogue Tree
-export const KRONOS_DIALOGUE: DialogueTree = {
+export const kronosDialogue: DialogueTree = {
   id: 'kronos_main',
   characterId: 'kronos',
   rootOptions: [
@@ -671,33 +671,33 @@ export const KRONOS_DIALOGUE: DialogueTree = {
 export function getDialogueTree(characterId: string): DialogueTree | null {
   switch (characterId) {
     case 'kyrathen':
-      return KYRATHEN_DIALOGUE;
+      return kyrathenDialogue;
     case 'seraphina':
-      return SERAPHINA_DIALOGUE;
+      return seraphinaDialogue;
     case 'thessarian':
-      return THESSARIAN_DIALOGUE;
+      return thessarianDialogue;
     case 'lyralynn':
-      return LYRALYNN_DIALOGUE;
+      return lyralynnDialogue;
     case 'zarantha':
-      return ZARANTHA_DIALOGUE;
+      return zaranthaDialogue;
     case 'thalassos':
-      return THALASSOS_DIALOGUE;
+      return thalassosDialogue;
     case 'nightshade':
-      return NIGHTSHADE_DIALOGUE;
+      return nightshadeDialogue;
     case 'kronos':
-      return KRONOS_DIALOGUE;
+      return kronosDialogue;
     default:
       return null;
   }
 }
 
 export function getDialogueResponse(optionId: string): DialogueResponse | null {
-  return DIALOGUE_RESPONSES[optionId] || null;
+  return dialogueResponses[optionId] || null;
 }
 
 // Generate contextual dialogue based on character mood and affection
 export function getContextualDialogue(characterId: string, topic: string, mood: string, affection: number): DialogueResponse {
-  const baseResponse = DIALOGUE_RESPONSES[`${topic}_${characterId}`];
+  const baseResponse = dialogueResponses[`${topic}_${characterId}`];
 
   if (!baseResponse) {
     // Fallback generic responses

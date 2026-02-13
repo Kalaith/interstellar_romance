@@ -1,6 +1,6 @@
 import { CharacterMood } from '../types/game';
 
-export const MOOD_DESCRIPTIONS: Record<CharacterMood, string> = {
+export const moodDescriptions: Record<CharacterMood, string> = {
   cheerful: "is in a bright and optimistic mood",
   melancholy: "seems contemplative and a bit wistful",
   romantic: "has a dreamy, romantic air about them",
@@ -11,7 +11,7 @@ export const MOOD_DESCRIPTIONS: Record<CharacterMood, string> = {
   neutral: "appears calm and balanced"
 };
 
-export const MOOD_EFFECTS: Record<CharacterMood, { bonus: number; penalty: number; preferredTopics: string[] }> = {
+export const moodEffects: Record<CharacterMood, { bonus: number; penalty: number; preferredTopics: string[] }> = {
   cheerful: {
     bonus: 2,
     penalty: 0,
@@ -63,7 +63,7 @@ export function getRandomMood(): CharacterMood {
 }
 
 export function getMoodModifier(mood: CharacterMood, topic: string): number {
-  const effects = MOOD_EFFECTS[mood];
+  const effects = moodEffects[mood];
   if (effects.preferredTopics.includes(topic)) {
     return effects.bonus;
   }

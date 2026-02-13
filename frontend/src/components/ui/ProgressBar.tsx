@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProgressBarProps, DEFAULT_PROGRESS_BAR_PROPS } from '../../types/componentProps';
+import { ProgressBarProps, defaultProgressBarProps } from '../../types/componentProps';
 import { Logger } from '../../services/Logger';
 
 export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
@@ -12,7 +12,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
     label, 
     className,
     ...restProps 
-  } = { ...DEFAULT_PROGRESS_BAR_PROPS({}), ...props };
+  } = { ...defaultProgressBarProps({}), ...props };
 
   const safeValue = React.useMemo(() => {
     try {

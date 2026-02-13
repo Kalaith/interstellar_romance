@@ -4,7 +4,7 @@ import { Achievement } from '../types/game';
 import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
 import { Logger } from '../services/Logger';
 import { AsyncOperationManager } from '../utils/AsyncOperationManager';
-import { ASYNC_OPERATION_KEYS, ASYNC_DELAYS } from '../constants/gameConstants';
+import { asyncOperationKeys, asyncDelays } from '../constants/gameConstants';
 
 interface AchievementStore {
   achievements: Achievement[];
@@ -38,7 +38,7 @@ export const useAchievementStore = create<AchievementStore>()(
         try {
           // Use async operation to prevent blocking UI
           AsyncOperationManager.scheduleOperation(
-            ASYNC_OPERATION_KEYS.ACHIEVEMENT_UPDATE,
+            asyncOperationKeys.ACHIEVEMENT_UPDATE,
             () => {
               const updatedAchievements = checkAchievements(get().achievements, gameStats);
               
@@ -56,7 +56,7 @@ export const useAchievementStore = create<AchievementStore>()(
               
               set({ achievements: updatedAchievements });
             },
-            ASYNC_DELAYS.DEBOUNCE_SHORT
+            asyncDelays.DEBOUNCE_SHORT
           );
         } catch (error) {
           Logger.error('Failed to update achievements', error);

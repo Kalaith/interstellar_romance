@@ -1,6 +1,6 @@
 import { RelationshipMilestone } from '../types/game';
 
-export const DEFAULT_MILESTONES: RelationshipMilestone[] = [
+export const defaultMilestones: RelationshipMilestone[] = [
   {
     id: 'first_meeting',
     name: 'First Meeting',
