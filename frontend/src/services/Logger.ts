@@ -8,8 +8,9 @@ export enum LogLevel {
 }
 
 export class Logger {
-  private static currentLevel =
-    import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.ERROR;
+  private static currentLevel = import.meta.env.DEV
+    ? LogLevel.DEBUG
+    : LogLevel.ERROR;
 
   private static formatMessage(level: string, message: string): string {
     return `[${new Date().toISOString()}] ${level}: ${message}`;

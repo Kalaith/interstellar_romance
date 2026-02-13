@@ -38,11 +38,9 @@ export const useDailyInteractions = (characterId: string) => {
     timeUntilResetFormatted: 'Now',
   });
 
-  const [updateInterval, setUpdateInterval] = useState<
-    ReturnType<typeof setInterval> | null
-  >(
-    null
-  );
+  const [updateInterval, setUpdateInterval] = useState<ReturnType<
+    typeof setInterval
+  > | null>(null);
 
   // Initialize or update daily interaction state
   const updateDailyInteractionState = useCallback(() => {
@@ -221,15 +219,14 @@ export const useDailyInteractions = (characterId: string) => {
     interactionProgress: getInteractionProgress(),
 
     // Debug info (useful for development)
-    debugInfo:
-      import.meta.env.DEV
-        ? {
-            lastResetDate: character?.dailyInteractions.lastResetDate,
-            timezone: character?.dailyInteractions.timezone || 'Not set',
-            hasReset: state.resetInfo.hasReset,
-            currentDate: getCurrentDateInTimezone(),
-          }
-        : undefined,
+    debugInfo: import.meta.env.DEV
+      ? {
+          lastResetDate: character?.dailyInteractions.lastResetDate,
+          timezone: character?.dailyInteractions.timezone || 'Not set',
+          hasReset: state.resetInfo.hasReset,
+          currentDate: getCurrentDateInTimezone(),
+        }
+      : undefined,
   };
 };
 

@@ -651,13 +651,14 @@ export function getAvailableIcebreakers(
   Object.values(characterTemplates).forEach(
     (categoryMessages: IcebreakerMessage[]) => {
       categoryMessages.forEach((message: IcebreakerMessage) => {
-      if (
-        !message.used &&
-        currentAffection >= message.context.requiredAffection &&
-        (!message.context.timeOfDay || message.context.timeOfDay === timeOfDay)
-      ) {
-        available.push(message);
-      }
+        if (
+          !message.used &&
+          currentAffection >= message.context.requiredAffection &&
+          (!message.context.timeOfDay ||
+            message.context.timeOfDay === timeOfDay)
+        ) {
+          available.push(message);
+        }
       });
     }
   );
