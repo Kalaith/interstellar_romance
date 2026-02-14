@@ -11,12 +11,12 @@ interface PersonalityGrowthTrackerProps {
   onClose: () => void;
 }
 
-export const PersonalityGrowthTracker: React.FC<
-  PersonalityGrowthTrackerProps
-> = ({ characterName, personalityGrowth, onClose }) => {
-  const [selectedTrait, setSelectedTrait] = useState<PersonalityGrowth | null>(
-    null
-  );
+export const PersonalityGrowthTracker: React.FC<PersonalityGrowthTrackerProps> = ({
+  characterName,
+  personalityGrowth,
+  onClose,
+}) => {
+  const [selectedTrait, setSelectedTrait] = useState<PersonalityGrowth | null>(null);
 
   const overallDescription = getPersonalityDescription(personalityGrowth);
 
@@ -27,40 +27,27 @@ export const PersonalityGrowthTracker: React.FC<
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">
-                Personality Growth Tracker
-              </h2>
-              <p className="text-gray-300">
-                {characterName}'s evolving personality
-              </p>
+              <h2 className="text-2xl font-bold text-white">Personality Growth Tracker</h2>
+              <p className="text-gray-300">{characterName}'s evolving personality</p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
               ×
             </button>
           </div>
 
           {/* Overall Description */}
           <div className="bg-slate-800 rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-semibold text-purple-300 mb-2">
-              Personality Evolution
-            </h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              {overallDescription}
-            </p>
+            <h3 className="text-lg font-semibold text-purple-300 mb-2">Personality Evolution</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">{overallDescription}</p>
           </div>
 
           {/* Personality Traits Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {personalityGrowth.map((trait) => {
+            {personalityGrowth.map(trait => {
               const indicator = getPersonalityChangeIndicator(trait);
-              const progressPercent =
-                (trait.currentValue / trait.maxGrowth) * 100;
+              const progressPercent = (trait.currentValue / trait.maxGrowth) * 100;
               const changePercent =
-                ((trait.currentValue - trait.baseValue) / trait.baseValue) *
-                100;
+                ((trait.currentValue - trait.baseValue) / trait.baseValue) * 100;
 
               return (
                 <div
@@ -156,15 +143,11 @@ export const PersonalityGrowthTracker: React.FC<
                         ></div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
-                            <p className="text-gray-300 text-sm">
-                              {event.reason}
-                            </p>
+                            <p className="text-gray-300 text-sm">{event.reason}</p>
                             <div className="text-right">
                               <div
                                 className={`text-sm font-semibold ${
-                                  event.change > 0
-                                    ? 'text-green-400'
-                                    : 'text-red-400'
+                                  event.change > 0 ? 'text-green-400' : 'text-red-400'
                                 }`}
                               >
                                 {event.change > 0 ? '+' : ''}

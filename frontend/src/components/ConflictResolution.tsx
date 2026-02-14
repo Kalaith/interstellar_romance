@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import {
-  RelationshipConflict,
-  ConflictResolutionOption,
-  ConflictResolution,
-} from '../types/game';
+import { RelationshipConflict, ConflictResolutionOption, ConflictResolution } from '../types/game';
 
 interface ConflictResolutionProps {
   conflict: RelationshipConflict;
@@ -28,8 +24,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
   onResolve,
   onClose,
 }) => {
-  const [selectedOption, setSelectedOption] =
-    useState<ConflictResolutionOption | null>(null);
+  const [selectedOption, setSelectedOption] = useState<ConflictResolutionOption | null>(null);
   const [isResolving, setIsResolving] = useState(false);
 
   const severityColors = {
@@ -50,8 +45,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
     if (!option.requirements) return true;
 
     if (option.requirements.playerStat && option.requirements.minValue) {
-      const statValue =
-        playerStats[option.requirements.playerStat as keyof typeof playerStats];
+      const statValue = playerStats[option.requirements.playerStat as keyof typeof playerStats];
       return statValue >= option.requirements.minValue;
     }
 
@@ -63,12 +57,8 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
 
     // Adjust based on player stats
     if (option.requirements?.playerStat && option.requirements.minValue) {
-      const statValue =
-        playerStats[option.requirements.playerStat as keyof typeof playerStats];
-      const bonus = Math.max(
-        0,
-        (statValue - option.requirements.minValue) * 0.5
-      );
+      const statValue = playerStats[option.requirements.playerStat as keyof typeof playerStats];
+      const bonus = Math.max(0, (statValue - option.requirements.minValue) * 0.5);
       successChance = Math.min(95, successChance + bonus);
     }
 
@@ -99,13 +89,8 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
 
     const resolution: ConflictResolution = {
       method: selectedOption.method,
-      effectiveness: isSuccessful
-        ? actualSuccessChance
-        : Math.round(actualSuccessChance * 0.3),
-      affectionRecovery: Math.max(
-        -conflict.affectionPenalty,
-        affectionRecovery
-      ),
+      effectiveness: isSuccessful ? actualSuccessChance : Math.round(actualSuccessChance * 0.3),
+      affectionRecovery: Math.max(-conflict.affectionPenalty, affectionRecovery),
     };
 
     setTimeout(() => {
@@ -118,12 +103,8 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-slate-900 rounded-lg max-w-md w-full p-6 text-center">
           <div className="animate-spin text-4xl mb-4">⚙️</div>
-          <h3 className="text-xl font-bold text-white mb-2">
-            Resolving Conflict...
-          </h3>
-          <p className="text-gray-300">
-            Attempting {selectedOption?.label.toLowerCase()}...
-          </p>
+          <h3 className="text-xl font-bold text-white mb-2">Resolving Conflict...</h3>
+          <p className="text-gray-300">Attempting {selectedOption?.label.toLowerCase()}...</p>
         </div>
       </div>
     );
@@ -136,9 +117,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Relationship Conflict
-              </h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Relationship Conflict</h2>
               <div
                 className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full border-2 ${severityColors[conflict.severity]}`}
               >
@@ -148,10 +127,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                 </span>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
               ×
             </button>
           </div>
@@ -167,9 +143,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                 />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-1">
-                  {characterName}
-                </h3>
+                <h3 className="text-xl font-bold text-white mb-1">{characterName}</h3>
                 <p className="text-red-300 text-sm capitalize">
                   {conflict.type.replace('_', ' ')} • {conflict.trigger}
                 </p>
@@ -177,15 +151,13 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
             </div>
 
             <div className="bg-slate-700 rounded-lg p-4">
-              <p className="text-gray-300 leading-relaxed">
-                {conflict.description}
-              </p>
+              <p className="text-gray-300 leading-relaxed">{conflict.description}</p>
             </div>
 
             <div className="mt-4 p-3 bg-red-900/30 border border-red-400/30 rounded-lg">
               <p className="text-red-300 text-sm">
-                <strong>Relationship Impact:</strong> -
-                {conflict.affectionPenalty} affection until resolved
+                <strong>Relationship Impact:</strong> -{conflict.affectionPenalty} affection until
+                resolved
               </p>
             </div>
           </div>
@@ -196,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
               How do you want to handle this?
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {conflict.resolutionOptions.map((option) => {
+              {conflict.resolutionOptions.map(option => {
                 const canUse = canUseOption(option);
                 const actualSuccess = calculateActualSuccess(option);
 
@@ -213,9 +185,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h5 className="text-white font-semibold">
-                        {option.label}
-                      </h5>
+                      <h5 className="text-white font-semibold">{option.label}</h5>
                       <div
                         className={`px-2 py-1 rounded text-xs font-bold ${
                           actualSuccess >= 70
@@ -229,45 +199,38 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-gray-300 text-sm mb-3">
-                      {option.description}
-                    </p>
+                    <p className="text-gray-300 text-sm mb-3">{option.description}</p>
 
                     {/* Requirements */}
                     {option.requirements && (
                       <div className="mb-3">
-                        {option.requirements.playerStat &&
-                          option.requirements.minValue && (
-                            <div
-                              className={`text-xs ${
-                                playerStats[
-                                  option.requirements
-                                    .playerStat as keyof typeof playerStats
-                                ] >= option.requirements.minValue
-                                  ? 'text-green-400'
-                                  : 'text-red-400'
-                              }`}
-                            >
-                              Requires {option.requirements.playerStat}:{' '}
-                              {option.requirements.minValue}
-                              (You have:{' '}
-                              {
-                                playerStats[
-                                  option.requirements
-                                    .playerStat as keyof typeof playerStats
-                                ]
-                              }
-                              )
-                            </div>
-                          )}
+                        {option.requirements.playerStat && option.requirements.minValue && (
+                          <div
+                            className={`text-xs ${
+                              playerStats[
+                                option.requirements.playerStat as keyof typeof playerStats
+                              ] >= option.requirements.minValue
+                                ? 'text-green-400'
+                                : 'text-red-400'
+                            }`}
+                          >
+                            Requires {option.requirements.playerStat}:{' '}
+                            {option.requirements.minValue}
+                            (You have:{' '}
+                            {
+                              playerStats[
+                                option.requirements.playerStat as keyof typeof playerStats
+                              ]
+                            }
+                            )
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {/* Preview Effects */}
                     <div className="space-y-1">
-                      <div className="text-xs text-gray-400">
-                        Expected outcome:
-                      </div>
+                      <div className="text-xs text-gray-400">Expected outcome:</div>
                       <div className="text-xs text-green-300">
                         Affection recovery: +{option.preview.affectionChange}
                       </div>
@@ -287,15 +250,11 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
               <h5 className="text-purple-300 font-semibold mb-2">
                 Selected Approach: {selectedOption.label}
               </h5>
-              <p className="text-gray-300 text-sm mb-3">
-                {selectedOption.description}
-              </p>
+              <p className="text-gray-300 text-sm mb-3">{selectedOption.description}</p>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Success Chance:</span>
-                  <span className="text-white ml-2">
-                    {calculateActualSuccess(selectedOption)}%
-                  </span>
+                  <span className="text-white ml-2">{calculateActualSuccess(selectedOption)}%</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Potential Recovery:</span>

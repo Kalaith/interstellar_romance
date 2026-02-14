@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { Character, SuperLikeResult } from '../types/game';
-import {
-  superLikeEffects,
-  superLikeResponses,
-  superLikeUnlocks,
-} from '../data/super-likes';
+import { superLikeEffects, superLikeResponses, superLikeUnlocks } from '../data/super-likes';
 
 interface SuperLikeModalProps {
   character: Character;
@@ -27,8 +23,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
   const unlocks = superLikeUnlocks[character.id];
 
   const handleConfirm = () => {
-    const randomResponse =
-      responses[Math.floor(Math.random() * responses.length)];
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
     const result: SuperLikeResult = {
       affectionGained: effect.affectionBonus,
@@ -48,9 +43,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
             {/* Success Header */}
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">💖</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Super Like Sent!
-              </h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Super Like Sent!</h2>
               <p className="text-purple-300">
                 {character.name} is absolutely thrilled by your bold gesture!
               </p>
@@ -67,9 +60,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
                   />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white font-semibold mb-2">
-                    {character.name}
-                  </h3>
+                  <h3 className="text-white font-semibold mb-2">{character.name}</h3>
                   <p className="text-gray-300 text-sm leading-relaxed italic">
                     "{showResult.specialResponse}"
                   </p>
@@ -80,41 +71,29 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
             {/* Rewards */}
             <div className="space-y-4 mb-6">
               <div className="bg-green-900/30 border border-green-400 rounded-lg p-4">
-                <h4 className="text-green-300 font-semibold mb-2">
-                  Affection Bonus
-                </h4>
-                <p className="text-white text-lg">
-                  +{showResult.affectionGained} Affection! 💕
-                </p>
+                <h4 className="text-green-300 font-semibold mb-2">Affection Bonus</h4>
+                <p className="text-white text-lg">+{showResult.affectionGained} Affection! 💕</p>
               </div>
 
-              {showResult.unlockedContent &&
-                showResult.unlockedContent.length > 0 && (
-                  <div className="bg-purple-900/30 border border-purple-400 rounded-lg p-4">
-                    <h4 className="text-purple-300 font-semibold mb-2">
-                      New Content Unlocked!
-                    </h4>
-                    <ul className="space-y-1">
-                      {showResult.unlockedContent.map((content, index) => (
-                        <li
-                          key={index}
-                          className="text-gray-300 text-sm flex items-center space-x-2"
-                        >
-                          <span className="text-purple-400">✨</span>
-                          <span>{content}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+              {showResult.unlockedContent && showResult.unlockedContent.length > 0 && (
+                <div className="bg-purple-900/30 border border-purple-400 rounded-lg p-4">
+                  <h4 className="text-purple-300 font-semibold mb-2">New Content Unlocked!</h4>
+                  <ul className="space-y-1">
+                    {showResult.unlockedContent.map((content, index) => (
+                      <li key={index} className="text-gray-300 text-sm flex items-center space-x-2">
+                        <span className="text-purple-400">✨</span>
+                        <span>{content}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="bg-blue-900/30 border border-blue-400 rounded-lg p-4">
-                <h4 className="text-blue-300 font-semibold mb-2">
-                  Temporary Boost Active
-                </h4>
+                <h4 className="text-blue-300 font-semibold mb-2">Temporary Boost Active</h4>
                 <p className="text-gray-300 text-sm">
-                  +{effect.temporaryCompatibilityBonus}% compatibility bonus for
-                  the next {effect.duration} hours
+                  +{effect.temporaryCompatibilityBonus}% compatibility bonus for the next{' '}
+                  {effect.duration} hours
                 </p>
               </div>
             </div>
@@ -138,12 +117,9 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
           {/* Header */}
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">💖</div>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Send a Super Like
-            </h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Send a Super Like</h2>
             <p className="text-gray-300">
-              Show {character.name} just how much you care with a special
-              gesture
+              Show {character.name} just how much you care with a special gesture
             </p>
           </div>
 
@@ -169,9 +145,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
 
           {/* Super Like Effects Preview */}
           <div className="space-y-3 mb-6">
-            <h4 className="text-white font-semibold">
-              What happens when you send a Super Like:
-            </h4>
+            <h4 className="text-white font-semibold">What happens when you send a Super Like:</h4>
 
             <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
               <div className="flex items-center space-x-2">
@@ -195,8 +169,8 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="text-blue-400">⚡</span>
                 <span className="text-blue-300 text-sm">
-                  +{effect.temporaryCompatibilityBonus}% compatibility boost for{' '}
-                  {effect.duration} hours
+                  +{effect.temporaryCompatibilityBonus}% compatibility boost for {effect.duration}{' '}
+                  hours
                 </span>
               </div>
             </div>
@@ -214,20 +188,14 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
           {/* Super Likes Available */}
           <div className="bg-slate-800 rounded-lg p-4 mb-6">
             <div className="flex justify-between items-center">
-              <span className="text-white font-medium">
-                Super Likes Available:
-              </span>
+              <span className="text-white font-medium">Super Likes Available:</span>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-purple-400">
-                  {superLikesAvailable}
-                </span>
+                <span className="text-2xl font-bold text-purple-400">{superLikesAvailable}</span>
                 <span className="text-purple-400">💖</span>
               </div>
             </div>
             {superLikesAvailable === 0 && (
-              <p className="text-red-400 text-sm mt-2">
-                You'll get 1 new Super Like tomorrow!
-              </p>
+              <p className="text-red-400 text-sm mt-2">You'll get 1 new Super Like tomorrow!</p>
             )}
           </div>
 

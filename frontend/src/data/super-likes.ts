@@ -84,10 +84,7 @@ export const superLikeResponses: Record<string, string[]> = {
   ],
 };
 
-export const superLikeUnlocks: Record<
-  string,
-  { dialogue: string[]; content: string[] }
-> = {
+export const superLikeUnlocks: Record<string, { dialogue: string[]; content: string[] }> = {
   zara: {
     dialogue: [
       "I've been thinking about what you said...",

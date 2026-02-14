@@ -331,7 +331,7 @@ export function checkAchievements(
     characterAffections: Record<string, number>;
   }
 ): Achievement[] {
-  return achievements.map((achievement) => {
+  return achievements.map(achievement => {
     if (achievement.achieved) return achievement;
 
     let progress = 0;
@@ -342,57 +342,36 @@ export function checkAchievements(
         if (achievement.condition.characterId) {
           const characterAffection =
             stats.characterAffections[achievement.condition.characterId] || 0;
-          progress = Math.min(
-            100,
-            (characterAffection / achievement.condition.target) * 100
-          );
+          progress = Math.min(100, (characterAffection / achievement.condition.target) * 100);
           isAchieved = characterAffection >= achievement.condition.target;
         } else {
-          progress = Math.min(
-            100,
-            (stats.maxAffection / achievement.condition.target) * 100
-          );
+          progress = Math.min(100, (stats.maxAffection / achievement.condition.target) * 100);
           isAchieved = stats.maxAffection >= achievement.condition.target;
         }
         break;
 
       case 'date_count':
-        progress = Math.min(
-          100,
-          (stats.totalDates / achievement.condition.target) * 100
-        );
+        progress = Math.min(100, (stats.totalDates / achievement.condition.target) * 100);
         isAchieved = stats.totalDates >= achievement.condition.target;
         break;
 
       case 'conversation_count':
-        progress = Math.min(
-          100,
-          (stats.totalConversations / achievement.condition.target) * 100
-        );
+        progress = Math.min(100, (stats.totalConversations / achievement.condition.target) * 100);
         isAchieved = stats.totalConversations >= achievement.condition.target;
         break;
 
       case 'photo_unlock':
-        progress = Math.min(
-          100,
-          (stats.unlockedPhotos / achievement.condition.target) * 100
-        );
+        progress = Math.min(100, (stats.unlockedPhotos / achievement.condition.target) * 100);
         isAchieved = stats.unlockedPhotos >= achievement.condition.target;
         break;
 
       case 'compatibility':
-        progress = Math.min(
-          100,
-          (stats.maxCompatibility / achievement.condition.target) * 100
-        );
+        progress = Math.min(100, (stats.maxCompatibility / achievement.condition.target) * 100);
         isAchieved = stats.maxCompatibility >= achievement.condition.target;
         break;
 
       case 'milestone':
-        progress = Math.min(
-          100,
-          (stats.unlockedMilestones / achievement.condition.target) * 100
-        );
+        progress = Math.min(100, (stats.unlockedMilestones / achievement.condition.target) * 100);
         isAchieved = stats.unlockedMilestones >= achievement.condition.target;
         break;
     }
@@ -401,10 +380,7 @@ export function checkAchievements(
       ...achievement,
       progress: Math.round(progress),
       achieved: isAchieved,
-      achievedDate:
-        isAchieved && !achievement.achieved
-          ? new Date()
-          : achievement.achievedDate,
+      achievedDate: isAchieved && !achievement.achieved ? new Date() : achievement.achievedDate,
     };
   });
 }
@@ -413,9 +389,7 @@ export function getAchievementsByCategory(
   achievements: Achievement[],
   category: AchievementCategory
 ): Achievement[] {
-  return achievements.filter(
-    (achievement) => achievement.category === category
-  );
+  return achievements.filter(achievement => achievement.category === category);
 }
 
 export function getRecentAchievements(
@@ -426,9 +400,7 @@ export function getRecentAchievements(
   cutoffDate.setDate(cutoffDate.getDate() - days);
 
   return achievements.filter(
-    (achievement) =>
-      achievement.achieved &&
-      achievement.achievedDate &&
-      achievement.achievedDate >= cutoffDate
+    achievement =>
+      achievement.achieved && achievement.achievedDate && achievement.achievedDate >= cutoffDate
   );
 }

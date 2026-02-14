@@ -1,16 +1,9 @@
 import { Logger } from '../services/Logger';
 
 export class AsyncOperationManager {
-  private static pendingOperations = new Map<
-    string,
-    ReturnType<typeof setTimeout>
-  >();
+  private static pendingOperations = new Map<string, ReturnType<typeof setTimeout>>();
 
-  static scheduleOperation(
-    key: string,
-    operation: () => void,
-    delay: number = 0
-  ): void {
+  static scheduleOperation(key: string, operation: () => void, delay: number = 0): void {
     // Cancel existing operation with same key
     if (this.pendingOperations.has(key)) {
       clearTimeout(this.pendingOperations.get(key)!);
@@ -71,11 +64,7 @@ export class AsyncOperationManager {
   }
 
   // Throttle utility - only execute if not already pending
-  static throttle(
-    key: string,
-    operation: () => void,
-    delay: number = 0
-  ): boolean {
+  static throttle(key: string, operation: () => void, delay: number = 0): boolean {
     if (this.hasPendingOperation(key)) {
       return false; // Operation already scheduled
     }

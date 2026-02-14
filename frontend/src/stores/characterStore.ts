@@ -35,7 +35,7 @@ export const useCharacterStore = create<CharacterStore>()(
       characters: [...CHARACTERS],
       selectedCharacter: null,
 
-      selectCharacter: (id) => {
+      selectCharacter: id => {
         try {
           const validId = Validators.validateCharacterId(id);
           const characterRepo = CharacterRepository.getInstance();
@@ -49,7 +49,7 @@ export const useCharacterStore = create<CharacterStore>()(
               asyncOperationKeys.CHARACTER_INFO_UNLOCK(validId),
               () => {
                 // Unlock basic info on first interaction
-                const updatedCharacters = get().characters.map((c) =>
+                const updatedCharacters = get().characters.map(c =>
                   c.id === validId
                     ? {
                         ...c,
@@ -63,8 +63,7 @@ export const useCharacterStore = create<CharacterStore>()(
                 );
                 set({
                   characters: updatedCharacters,
-                  selectedCharacter:
-                    updatedCharacters.find((c) => c.id === validId) || null,
+                  selectedCharacter: updatedCharacters.find(c => c.id === validId) || null,
                 });
               },
               asyncDelays.IMMEDIATE
@@ -88,8 +87,7 @@ export const useCharacterStore = create<CharacterStore>()(
           );
           const updatedSelectedCharacter =
             get().selectedCharacter?.id === validId
-              ? updatedCharacters.find((c) => c.id === validId) ||
-                get().selectedCharacter
+              ? updatedCharacters.find(c => c.id === validId) || get().selectedCharacter
               : get().selectedCharacter;
 
           set({
@@ -102,9 +100,7 @@ export const useCharacterStore = create<CharacterStore>()(
             asyncOperationKeys.BATCH_UPDATE(`affection-${validId}`),
             () => {
               // Trigger knowledge and storyline updates
-              Logger.debug(
-                `Batch updating after affection change for character ${validId}`
-              );
+              Logger.debug(`Batch updating after affection change for character ${validId}`);
             },
             asyncDelays.DEBOUNCE_SHORT
           );
@@ -118,15 +114,10 @@ export const useCharacterStore = create<CharacterStore>()(
           const validId = Validators.validateCharacterId(id);
           const characterRepo = CharacterRepository.getInstance();
 
-          const updatedCharacters = characterRepo.updateMood(
-            get().characters,
-            validId,
-            mood
-          );
+          const updatedCharacters = characterRepo.updateMood(get().characters, validId, mood);
           const updatedSelectedCharacter =
             get().selectedCharacter?.id === validId
-              ? updatedCharacters.find((c) => c.id === validId) ||
-                get().selectedCharacter
+              ? updatedCharacters.find(c => c.id === validId) || get().selectedCharacter
               : get().selectedCharacter;
 
           set({
@@ -142,14 +133,13 @@ export const useCharacterStore = create<CharacterStore>()(
         try {
           const validId = Validators.validateCharacterId(id);
 
-          const updatedCharacters = get().characters.map((character) =>
+          const updatedCharacters = get().characters.map(character =>
             character.id === validId ? { ...character, ...updates } : character
           );
 
           const updatedSelectedCharacter =
             get().selectedCharacter?.id === validId
-              ? updatedCharacters.find((c) => c.id === validId) ||
-                get().selectedCharacter
+              ? updatedCharacters.find(c => c.id === validId) || get().selectedCharacter
               : get().selectedCharacter;
 
           set({
@@ -161,7 +151,7 @@ export const useCharacterStore = create<CharacterStore>()(
         }
       },
 
-      updateLastInteractionDate: (id) => {
+      updateLastInteractionDate: id => {
         try {
           const validId = Validators.validateCharacterId(id);
           const characterRepo = CharacterRepository.getInstance();
@@ -173,14 +163,11 @@ export const useCharacterStore = create<CharacterStore>()(
 
           set({ characters: updatedCharacters });
         } catch (error) {
-          Logger.error(
-            `Failed to update last interaction date for character ${id}`,
-            error
-          );
+          Logger.error(`Failed to update last interaction date for character ${id}`, error);
         }
       },
 
-      canTalkToCharacterToday: (id) => {
+      canTalkToCharacterToday: id => {
         try {
           const validId = Validators.validateCharacterId(id);
           const character = get().findCharacterById(validId);
@@ -195,7 +182,7 @@ export const useCharacterStore = create<CharacterStore>()(
         }
       },
 
-      useDailyInteraction: (id) => {
+      useDailyInteraction: id => {
         try {
           const validId = Validators.validateCharacterId(id);
 
@@ -204,18 +191,12 @@ export const useCharacterStore = create<CharacterStore>()(
           }
 
           const characterRepo = CharacterRepository.getInstance();
-          const updatedCharacters = characterRepo.useDailyInteraction(
-            get().characters,
-            validId
-          );
+          const updatedCharacters = characterRepo.useDailyInteraction(get().characters, validId);
 
           set({ characters: updatedCharacters });
           return true;
         } catch (error) {
-          Logger.error(
-            `Failed to use daily interaction for character ${id}`,
-            error
-          );
+          Logger.error(`Failed to use daily interaction for character ${id}`, error);
           return false;
         }
       },
@@ -230,10 +211,9 @@ export const useCharacterStore = create<CharacterStore>()(
             'adventurous',
             'neutral',
           ] as const;
-          const getRandomMood = () =>
-            moods[Math.floor(Math.random() * moods.length)];
+          const getRandomMood = () => moods[Math.floor(Math.random() * moods.length)];
 
-          const updatedCharacters = get().characters.map((char) => ({
+          const updatedCharacters = get().characters.map(char => ({
             ...char,
             mood: getRandomMood(),
           }));
@@ -259,7 +239,7 @@ export const useCharacterStore = create<CharacterStore>()(
       },
 
       // Query methods
-      findCharacterById: (id) => {
+      findCharacterById: id => {
         try {
           const validId = Validators.validateCharacterId(id);
           const characterRepo = CharacterRepository.getInstance();
@@ -270,7 +250,7 @@ export const useCharacterStore = create<CharacterStore>()(
         }
       },
 
-      getRemainingInteractions: (id) => {
+      getRemainingInteractions: id => {
         try {
           const character = get().findCharacterById(id);
           if (!character) return 0;
@@ -278,10 +258,7 @@ export const useCharacterStore = create<CharacterStore>()(
           const characterRepo = CharacterRepository.getInstance();
           return characterRepo.getRemainingInteractions(character);
         } catch (error) {
-          Logger.error(
-            `Failed to get remaining interactions for character ${id}`,
-            error
-          );
+          Logger.error(`Failed to get remaining interactions for character ${id}`, error);
           return 0;
         }
       },

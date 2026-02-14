@@ -1,14 +1,6 @@
-import {
-  Character,
-  PlayerCharacter,
-  SexualPreference,
-  CompatibilityScore,
-} from '../types/game';
+import { Character, PlayerCharacter, SexualPreference, CompatibilityScore } from '../types/game';
 import { CharacterId } from '../types/brandedTypes';
-import {
-  calculateCompatibility,
-  getCompatibilityLabel,
-} from '../utils/compatibility';
+import { calculateCompatibility, getCompatibilityLabel } from '../utils/compatibility';
 import {
   filterCharactersByPreference,
   getPreferenceDescription,
@@ -22,10 +14,7 @@ export interface CompatibilityDisplay extends CompatibilityScore {
 }
 
 export class CharacterService {
-  static filterByPreference(
-    characters: Character[],
-    preference: SexualPreference
-  ): Character[] {
+  static filterByPreference(characters: Character[], preference: SexualPreference): Character[] {
     try {
       Validators.validateArrayNotEmpty(characters, 'characters');
       return filterCharactersByPreference(characters, preference);
@@ -51,21 +40,15 @@ export class CharacterService {
         label: getCompatibilityLabel(compatibility.overall),
       };
     } catch (error) {
-      Logger.error(
-        `Failed to calculate compatibility for character ${character?.id}`,
-        error
-      );
+      Logger.error(`Failed to calculate compatibility for character ${character?.id}`, error);
       return null;
     }
   }
 
-  static findCharacterById(
-    characters: Character[],
-    id: CharacterId
-  ): Character | null {
+  static findCharacterById(characters: Character[], id: CharacterId): Character | null {
     try {
       const validId = Validators.validateCharacterId(id);
-      const character = characters.find((c) => c.id === validId);
+      const character = characters.find(c => c.id === validId);
       return character || null;
     } catch (error) {
       Logger.error(`Failed to find character by ID: ${id}`, error);
@@ -78,14 +61,10 @@ export class CharacterService {
       Validators.validateCharacterExists(character);
       return Math.max(
         0,
-        character.dailyInteractions.maxInteractions -
-          character.dailyInteractions.interactionsUsed
+        character.dailyInteractions.maxInteractions - character.dailyInteractions.interactionsUsed
       );
     } catch (error) {
-      Logger.error(
-        `Failed to get available interactions for character ${character?.id}`,
-        error
-      );
+      Logger.error(`Failed to get available interactions for character ${character?.id}`, error);
       return 0;
     }
   }
@@ -105,8 +84,7 @@ export class CharacterService {
       const validMax = Validators.validateAffectionLevel(maxAffection);
 
       return characters.filter(
-        (character) =>
-          character.affection >= validMin && character.affection <= validMax
+        character => character.affection >= validMin && character.affection <= validMax
       );
     } catch (error) {
       Logger.error('Failed to filter characters by affection range', error);
@@ -114,9 +92,7 @@ export class CharacterService {
     }
   }
 
-  static getHighestAffectionCharacter(
-    characters: Character[]
-  ): Character | null {
+  static getHighestAffectionCharacter(characters: Character[]): Character | null {
     try {
       Validators.validateArrayNotEmpty(characters, 'characters');
       return characters.reduce((highest, current) =>
@@ -132,10 +108,7 @@ export class CharacterService {
     try {
       return getPreferenceDescription(preference);
     } catch (error) {
-      Logger.error(
-        `Failed to get preference description for: ${preference}`,
-        error
-      );
+      Logger.error(`Failed to get preference description for: ${preference}`, error);
       return 'Unknown preference';
     }
   }
@@ -171,10 +144,7 @@ export class CharacterService {
 
       return moodDescriptions[character.mood] || 'has an unreadable mood';
     } catch (error) {
-      Logger.error(
-        `Failed to get mood description for character ${character?.id}`,
-        error
-      );
+      Logger.error(`Failed to get mood description for character ${character?.id}`, error);
       return 'Mood unknown';
     }
   }
@@ -189,10 +159,7 @@ export class CharacterService {
       if (validScore >= 30) return 'text-orange-400';
       return 'text-red-400';
     } catch (error) {
-      Logger.error(
-        `Failed to get compatibility color class for score: ${score}`,
-        error
-      );
+      Logger.error(`Failed to get compatibility color class for score: ${score}`, error);
       return 'text-gray-400';
     }
   }

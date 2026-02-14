@@ -9,7 +9,7 @@ export function calculatePersonalityGrowth(
   const triggers = personalityGrowthTriggers[trigger];
   const updatedTraits = [...currentTraits];
 
-  updatedTraits.forEach((trait) => {
+  updatedTraits.forEach(trait => {
     const change = triggers[trait.trait as keyof typeof triggers] || 0;
 
     if (change !== 0) {
@@ -39,20 +39,16 @@ export function calculatePersonalityGrowth(
 export function getPersonalityDescription(traits: PersonalityGrowth[]): string {
   const descriptions: string[] = [];
 
-  traits.forEach((trait) => {
+  traits.forEach(trait => {
     const change = trait.currentValue - trait.baseValue;
     const changePercent = (Math.abs(change) / trait.baseValue) * 100;
 
     if (changePercent >= 15) {
       // Significant change
       if (change > 0) {
-        descriptions.push(
-          getPositiveTraitDescription(trait.trait, changePercent)
-        );
+        descriptions.push(getPositiveTraitDescription(trait.trait, changePercent));
       } else {
-        descriptions.push(
-          getNegativeTraitDescription(trait.trait, changePercent)
-        );
+        descriptions.push(getNegativeTraitDescription(trait.trait, changePercent));
       }
     }
   });
@@ -62,10 +58,7 @@ export function getPersonalityDescription(traits: PersonalityGrowth[]): string {
     : 'Personality remains largely unchanged from initial impression.';
 }
 
-function getPositiveTraitDescription(
-  trait: string,
-  changePercent: number
-): string {
+function getPositiveTraitDescription(trait: string, changePercent: number): string {
   const intensity = changePercent >= 30 ? 'significantly' : 'noticeably';
 
   const descriptions: Record<string, string> = {
@@ -91,10 +84,7 @@ function getPositiveTraitDescription(
   return descriptions[trait] || `has improved in ${trait}`;
 }
 
-function getNegativeTraitDescription(
-  trait: string,
-  changePercent: number
-): string {
+function getNegativeTraitDescription(trait: string, changePercent: number): string {
   const intensity = changePercent >= 30 ? 'significantly' : 'noticeably';
 
   const descriptions: Record<string, string> = {
@@ -155,7 +145,7 @@ export function calculatePersonalityCompatibility(
   // Calculate how well current personality aligns with player's demonstrated preferences
   let compatibility = 70; // base compatibility
 
-  characterTraits.forEach((trait) => {
+  characterTraits.forEach(trait => {
     const growth = trait.currentValue - trait.baseValue;
 
     // Positive growth generally improves compatibility

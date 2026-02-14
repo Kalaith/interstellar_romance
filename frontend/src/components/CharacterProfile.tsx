@@ -10,12 +10,7 @@ import {
 } from '../utils/compatibility';
 import { MoodDisplay } from './ui/MoodDisplay';
 
-type TabType =
-  | 'overview'
-  | 'interests'
-  | 'values'
-  | 'background'
-  | 'compatibility';
+type TabType = 'overview' | 'interests' | 'values' | 'background' | 'compatibility';
 
 export const CharacterProfile: React.FC = () => {
   const { selectedCharacter, player, setScreen } = useGameStore();
@@ -25,9 +20,7 @@ export const CharacterProfile: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">
-            Profile not available!
-          </p>
+          <p className="text-xl text-[var(--text-primary)] mb-4">Profile not available!</p>
           <button
             onClick={() => setScreen('main-hub')}
             className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
@@ -39,9 +32,7 @@ export const CharacterProfile: React.FC = () => {
     );
   }
 
-  const compatibility = player
-    ? calculateCompatibility(player, selectedCharacter.profile)
-    : null;
+  const compatibility = player ? calculateCompatibility(player, selectedCharacter.profile) : null;
   const knownInfo = selectedCharacter.knownInfo;
 
   const tabs = [
@@ -101,17 +92,13 @@ export const CharacterProfile: React.FC = () => {
                       {selectedCharacter.species}
                     </p>
                   ) : (
-                    <p className="text-[var(--text-muted)] font-medium mb-2">
-                      Species Unknown
-                    </p>
+                    <p className="text-[var(--text-muted)] font-medium mb-2">Species Unknown</p>
                   )}
 
                   {/* Gender Information */}
                   <div className="flex items-center gap-4 mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-[var(--text-muted)]">
-                        Gender:
-                      </span>
+                      <span className="text-sm text-[var(--text-muted)]">Gender:</span>
                       <span className="text-sm text-[var(--text-secondary)] capitalize">
                         {selectedCharacter.gender}
                       </span>
@@ -121,17 +108,12 @@ export const CharacterProfile: React.FC = () => {
                         <span
                           className={`text-xs px-2 py-1 rounded-full ${getRomanceCompatibilityColor(player, selectedCharacter)}`}
                         >
-                          {isRomanticallyCompatible(player, selectedCharacter)
-                            ? '💕'
-                            : '🚫'}
+                          {isRomanticallyCompatible(player, selectedCharacter) ? '💕' : '🚫'}
                         </span>
                         <span
                           className={`text-xs ${getRomanceCompatibilityColor(player, selectedCharacter)}`}
                         >
-                          {getRomanceCompatibilityLabel(
-                            player,
-                            selectedCharacter
-                          )}
+                          {getRomanceCompatibilityLabel(player, selectedCharacter)}
                         </span>
                       </div>
                     )}
@@ -142,9 +124,7 @@ export const CharacterProfile: React.FC = () => {
                       {selectedCharacter.personality}
                     </p>
                   ) : (
-                    <p className="text-[var(--text-muted)] text-sm mb-3">
-                      Personality Unknown
-                    </p>
+                    <p className="text-[var(--text-muted)] text-sm mb-3">Personality Unknown</p>
                   )}
 
                   {/* Affection Progress */}
@@ -181,8 +161,7 @@ export const CharacterProfile: React.FC = () => {
               ) : (
                 <div className="mb-4 p-3 bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg">
                   <div className="text-[var(--text-muted)] text-sm">
-                    Current mood is unknown. Spend more time together to learn
-                    how they're feeling.
+                    Current mood is unknown. Spend more time together to learn how they're feeling.
                   </div>
                 </div>
               )}
@@ -228,7 +207,7 @@ export const CharacterProfile: React.FC = () => {
                 Relationship Progress
               </h3>
               <div className="space-y-3">
-                {selectedCharacter.milestones.map((milestone) => (
+                {selectedCharacter.milestones.map(milestone => (
                   <div
                     key={milestone.id}
                     className={`flex items-center gap-3 p-3 rounded-lg ${
@@ -237,9 +216,7 @@ export const CharacterProfile: React.FC = () => {
                         : 'bg-[var(--bg-item)] border border-[var(--border-inner)]'
                     }`}
                   >
-                    <span className="text-xl">
-                      {milestone.achieved ? '✨' : '🔒'}
-                    </span>
+                    <span className="text-xl">{milestone.achieved ? '✨' : '🔒'}</span>
                     <div className="flex-1">
                       <div
                         className={`font-medium ${milestone.achieved ? 'text-[var(--state-available)]' : 'text-[var(--text-muted)]'}`}
@@ -282,15 +259,13 @@ export const CharacterProfile: React.FC = () => {
               Interests & Passions
             </h3>
             <div className="grid grid-cols-1 gap-4">
-              {selectedCharacter.profile.interests.map((interest) => (
+              {selectedCharacter.profile.interests.map(interest => (
                 <div
                   key={interest.id}
                   className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4"
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-[var(--text-primary)]">
-                      {interest.name}
-                    </span>
+                    <span className="font-medium text-[var(--text-primary)]">{interest.name}</span>
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
                         <span
@@ -316,12 +291,9 @@ export const CharacterProfile: React.FC = () => {
           return (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                Values Unknown
-              </h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Values Unknown</h3>
               <p className="text-[var(--text-secondary)]">
-                Reach 25 affection to learn about their core values and
-                communication style.
+                Reach 25 affection to learn about their core values and communication style.
               </p>
             </div>
           );
@@ -329,11 +301,9 @@ export const CharacterProfile: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-              <h4 className="font-bold text-[var(--accent-teal)] mb-4">
-                Core Values
-              </h4>
+              <h4 className="font-bold text-[var(--accent-teal)] mb-4">Core Values</h4>
               <div className="flex flex-wrap gap-2">
-                {selectedCharacter.profile.values.map((value) => (
+                {selectedCharacter.profile.values.map(value => (
                   <span
                     key={value}
                     className="px-3 py-1 bg-[var(--state-available)]/20 text-[var(--state-available)] rounded-full text-sm capitalize border border-[var(--state-available)]/30"
@@ -346,9 +316,7 @@ export const CharacterProfile: React.FC = () => {
 
             {knownInfo.conversationStyle && (
               <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-                <h4 className="font-bold text-[var(--accent-teal)] mb-4">
-                  Communication Style
-                </h4>
+                <h4 className="font-bold text-[var(--accent-teal)] mb-4">Communication Style</h4>
                 <span className="px-4 py-2 bg-[var(--accent-cyan)]/20 text-[var(--accent-cyan)] rounded-lg text-sm capitalize border border-[var(--accent-cyan)]/30">
                   {selectedCharacter.profile.conversationStyle}
                 </span>
@@ -357,22 +325,14 @@ export const CharacterProfile: React.FC = () => {
 
             {knownInfo.dealbreakers && (
               <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-                <h4 className="font-bold text-[var(--state-deficit)] mb-4">
-                  Deal Breakers
-                </h4>
+                <h4 className="font-bold text-[var(--state-deficit)] mb-4">Deal Breakers</h4>
                 <ul className="space-y-2">
-                  {selectedCharacter.profile.dealbreakers.map(
-                    (dealbreaker, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="text-[var(--state-deficit)] mt-1">
-                          ❌
-                        </span>
-                        <span className="text-[var(--text-secondary)]">
-                          {dealbreaker}
-                        </span>
-                      </li>
-                    )
-                  )}
+                  {selectedCharacter.profile.dealbreakers.map((dealbreaker, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-[var(--state-deficit)] mt-1">❌</span>
+                      <span className="text-[var(--text-secondary)]">{dealbreaker}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -388,8 +348,7 @@ export const CharacterProfile: React.FC = () => {
                 Background Unknown
               </h3>
               <p className="text-[var(--text-secondary)]">
-                Reach 35 affection to learn about their background and life
-                story.
+                Reach 35 affection to learn about their background and life story.
               </p>
             </div>
           );
@@ -397,9 +356,7 @@ export const CharacterProfile: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-              <h4 className="font-bold text-[var(--accent-teal)] mb-4">
-                Background
-              </h4>
+              <h4 className="font-bold text-[var(--accent-teal)] mb-4">Background</h4>
               <p className="text-[var(--text-secondary)] leading-relaxed">
                 {selectedCharacter.profile.background}
               </p>
@@ -407,9 +364,7 @@ export const CharacterProfile: React.FC = () => {
 
             {knownInfo.goals && (
               <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-                <h4 className="font-bold text-[var(--accent-teal)] mb-4">
-                  Life Goals
-                </h4>
+                <h4 className="font-bold text-[var(--accent-teal)] mb-4">Life Goals</h4>
                 <p className="text-[var(--text-secondary)] leading-relaxed">
                   {selectedCharacter.profile.goals}
                 </p>
@@ -418,20 +373,16 @@ export const CharacterProfile: React.FC = () => {
 
             {knownInfo.favoriteTopics && (
               <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
-                <h4 className="font-bold text-[var(--accent-teal)] mb-4">
-                  Favorite Topics
-                </h4>
+                <h4 className="font-bold text-[var(--accent-teal)] mb-4">Favorite Topics</h4>
                 <div className="flex flex-wrap gap-2">
-                  {selectedCharacter.profile.favoriteTopics.map(
-                    (topic, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-[var(--accent-cyan)]/20 text-[var(--accent-cyan)] rounded-full text-sm border border-[var(--accent-cyan)]/30"
-                      >
-                        {topic}
-                      </span>
-                    )
-                  )}
+                  {selectedCharacter.profile.favoriteTopics.map((topic, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-[var(--accent-cyan)]/20 text-[var(--accent-cyan)] rounded-full text-sm border border-[var(--accent-cyan)]/30"
+                    >
+                      {topic}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
@@ -461,9 +412,7 @@ export const CharacterProfile: React.FC = () => {
                 >
                   {compatibility.overall}%
                 </div>
-                <div
-                  className={`text-lg ${getCompatibilityColor(compatibility.overall)}`}
-                >
+                <div className={`text-lg ${getCompatibilityColor(compatibility.overall)}`}>
                   {getCompatibilityLabel(compatibility.overall)}
                 </div>
               </div>
@@ -475,9 +424,7 @@ export const CharacterProfile: React.FC = () => {
                   >
                     {compatibility.breakdown.interests}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
-                    Interests
-                  </div>
+                  <div className="text-sm text-[var(--text-muted)]">Interests</div>
                 </div>
                 <div className="text-center">
                   <div
@@ -493,9 +440,7 @@ export const CharacterProfile: React.FC = () => {
                   >
                     {compatibility.breakdown.conversationStyle}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
-                    Communication
-                  </div>
+                  <div className="text-sm text-[var(--text-muted)]">Communication</div>
                 </div>
                 <div className="text-center">
                   <div
@@ -503,9 +448,7 @@ export const CharacterProfile: React.FC = () => {
                   >
                     {compatibility.breakdown.activities}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
-                    Activities
-                  </div>
+                  <div className="text-sm text-[var(--text-muted)]">Activities</div>
                 </div>
               </div>
 
@@ -516,12 +459,8 @@ export const CharacterProfile: React.FC = () => {
                 <ul className="space-y-2">
                   {compatibility.explanation.map((insight, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="text-[var(--resource-energy)] mt-1">
-                        •
-                      </span>
-                      <span className="text-[var(--text-secondary)] text-sm">
-                        {insight}
-                      </span>
+                      <span className="text-[var(--resource-energy)] mt-1">•</span>
+                      <span className="text-[var(--text-secondary)] text-sm">{insight}</span>
                     </li>
                   ))}
                 </ul>
@@ -549,9 +488,7 @@ export const CharacterProfile: React.FC = () => {
                 <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-wide uppercase">
                   Character Profile
                 </h1>
-                <p className="text-[var(--text-secondary)] text-sm">
-                  Diplomatic Personnel File
-                </p>
+                <p className="text-[var(--text-secondary)] text-sm">Diplomatic Personnel File</p>
               </div>
             </div>
             <button
@@ -566,7 +503,7 @@ export const CharacterProfile: React.FC = () => {
         {/* Tab Navigation */}
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg mb-6">
           <div className="flex border-b border-[var(--border-inner)]">
-            {tabs.map((tab) => (
+            {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => tab.available && setActiveTab(tab.id)}
@@ -579,9 +516,7 @@ export const CharacterProfile: React.FC = () => {
                 }`}
                 disabled={!tab.available}
               >
-                <span className="text-lg">
-                  {tab.available ? tab.icon : '🔒'}
-                </span>
+                <span className="text-lg">{tab.available ? tab.icon : '🔒'}</span>
                 <span>{tab.label}</span>
               </button>
             ))}

@@ -34,16 +34,13 @@ export const useAchievementStore = create<AchievementStore>()(
     (set, get) => ({
       achievements: [...ACHIEVEMENTS],
 
-      updateAchievements: (gameStats) => {
+      updateAchievements: gameStats => {
         try {
           // Use async operation to prevent blocking UI
           AsyncOperationManager.scheduleOperation(
             asyncOperationKeys.ACHIEVEMENT_UPDATE,
             () => {
-              const updatedAchievements = checkAchievements(
-                get().achievements,
-                gameStats
-              );
+              const updatedAchievements = checkAchievements(get().achievements, gameStats);
 
               // Check for newly unlocked achievements
               const previousAchievements = get().achievements;
@@ -53,7 +50,7 @@ export const useAchievementStore = create<AchievementStore>()(
               );
 
               if (newlyUnlocked.length > 0) {
-                newlyUnlocked.forEach((achievement) => {
+                newlyUnlocked.forEach(achievement => {
                   Logger.info(`Achievement unlocked: ${achievement.name}`);
                 });
               }
@@ -78,20 +75,15 @@ export const useAchievementStore = create<AchievementStore>()(
 
       // Query methods
       getUnlockedAchievements: () => {
-        return get().achievements.filter((achievement) => achievement.achieved);
+        return get().achievements.filter(achievement => achievement.achieved);
       },
 
       getLockedAchievements: () => {
-        return get().achievements.filter(
-          (achievement) => !achievement.achieved
-        );
+        return get().achievements.filter(achievement => !achievement.achieved);
       },
 
-      getAchievementById: (id) => {
-        return (
-          get().achievements.find((achievement) => achievement.id === id) ||
-          null
-        );
+      getAchievementById: id => {
+        return get().achievements.find(achievement => achievement.id === id) || null;
       },
 
       getTotalAchievementProgress: () => {
@@ -100,9 +92,7 @@ export const useAchievementStore = create<AchievementStore>()(
           (sum, achievement) => sum + achievement.progress,
           0
         );
-        return achievements.length > 0
-          ? Math.round(totalProgress / achievements.length)
-          : 0;
+        return achievements.length > 0 ? Math.round(totalProgress / achievements.length) : 0;
       },
     }),
     {

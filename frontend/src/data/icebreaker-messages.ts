@@ -156,8 +156,7 @@ export const icebreakerTemplates: Record<
         id: 'kai_question_1',
         characterId: 'kai',
         category: 'question',
-        message:
-          "What's the most elegant algorithm or solution you've ever developed?",
+        message: "What's the most elegant algorithm or solution you've ever developed?",
         context: {
           requiredAffection: 15,
           basedOnInterest: 'technology',
@@ -274,8 +273,7 @@ export const icebreakerTemplates: Record<
         id: 'nova_question_1',
         characterId: 'nova',
         category: 'question',
-        message:
-          "What inspires your art the most? I'd love to understand your creative process.",
+        message: "What inspires your art the most? I'd love to understand your creative process.",
         context: {
           requiredAffection: 15,
           basedOnInterest: 'creative_expression',
@@ -287,8 +285,7 @@ export const icebreakerTemplates: Record<
         id: 'nova_question_2',
         characterId: 'nova',
         category: 'question',
-        message:
-          'Do you ever feel like your emotions are too intense for others to understand?',
+        message: 'Do you ever feel like your emotions are too intense for others to understand?',
         context: {
           requiredAffection: 40,
           characterPersonality: ['sensitive', 'emotional'],
@@ -317,8 +314,7 @@ export const icebreakerTemplates: Record<
         id: 'nova_humor_1',
         characterId: 'nova',
         category: 'humor',
-        message:
-          'I think you could make even a grocery list sound like beautiful poetry!',
+        message: 'I think you could make even a grocery list sound like beautiful poetry!',
         context: {
           requiredAffection: 30,
           basedOnMood: 'cheerful',
@@ -380,8 +376,7 @@ export const icebreakerTemplates: Record<
         id: 'astra_question_1',
         characterId: 'astra',
         category: 'question',
-        message:
-          "What's the wildest adventure you've ever been on? I bet it's an amazing story!",
+        message: "What's the wildest adventure you've ever been on? I bet it's an amazing story!",
         context: {
           requiredAffection: 15,
           basedOnInterest: 'adventure',
@@ -395,8 +390,7 @@ export const icebreakerTemplates: Record<
         id: 'astra_interest_1',
         characterId: 'astra',
         category: 'shared_interest',
-        message:
-          'Want to try something totally crazy and fun together? I have some wild ideas!',
+        message: 'Want to try something totally crazy and fun together? I have some wild ideas!',
         context: {
           requiredAffection: 20,
           basedOnInterest: 'thrill_seeking',
@@ -410,8 +404,7 @@ export const icebreakerTemplates: Record<
         id: 'astra_humor_1',
         characterId: 'astra',
         category: 'humor',
-        message:
-          'I bet you could turn waiting in line into an extreme sport somehow!',
+        message: 'I bet you could turn waiting in line into an extreme sport somehow!',
         context: {
           requiredAffection: 30,
           basedOnMood: 'excited',
@@ -487,8 +480,7 @@ export const icebreakerTemplates: Record<
         id: 'orion_interest_1',
         characterId: 'orion',
         category: 'shared_interest',
-        message:
-          "I'd love to meditate or contemplate life's mysteries with you sometime.",
+        message: "I'd love to meditate or contemplate life's mysteries with you sometime.",
         context: {
           requiredAffection: 20,
           basedOnInterest: 'meditation',
@@ -502,8 +494,7 @@ export const icebreakerTemplates: Record<
         id: 'orion_humor_1',
         characterId: 'orion',
         category: 'humor',
-        message:
-          'I think you could find profound meaning in watching paint dry!',
+        message: 'I think you could find profound meaning in watching paint dry!',
         context: {
           requiredAffection: 40,
           basedOnMood: 'neutral',
@@ -648,20 +639,17 @@ export function getAvailableIcebreakers(
 
   const available: IcebreakerMessage[] = [];
 
-  Object.values(characterTemplates).forEach(
-    (categoryMessages: IcebreakerMessage[]) => {
-      categoryMessages.forEach((message: IcebreakerMessage) => {
-        if (
-          !message.used &&
-          currentAffection >= message.context.requiredAffection &&
-          (!message.context.timeOfDay ||
-            message.context.timeOfDay === timeOfDay)
-        ) {
-          available.push(message);
-        }
-      });
-    }
-  );
+  Object.values(characterTemplates).forEach((categoryMessages: IcebreakerMessage[]) => {
+    categoryMessages.forEach((message: IcebreakerMessage) => {
+      if (
+        !message.used &&
+        currentAffection >= message.context.requiredAffection &&
+        (!message.context.timeOfDay || message.context.timeOfDay === timeOfDay)
+      ) {
+        available.push(message);
+      }
+    });
+  });
 
   // Sort by effectiveness (highest first)
   return available.sort((a, b) => b.effectiveness - a.effectiveness);

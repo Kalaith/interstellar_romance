@@ -2,18 +2,11 @@ import React from 'react';
 import { AvatarProps, defaultAvatarProps } from '../../types/componentProps';
 import { Logger } from '../../services/Logger';
 
-export const Avatar: React.FC<AvatarProps> = (props) => {
-  const {
-    src,
-    alt,
-    size,
-    shape,
-    showBorder,
-    status,
-    fallbackIcon,
-    className,
-    ...restProps
-  } = { ...defaultAvatarProps({}), ...props };
+export const Avatar: React.FC<AvatarProps> = props => {
+  const { src, alt, size, shape, showBorder, status, fallbackIcon, className, ...restProps } = {
+    ...defaultAvatarProps({}),
+    ...props,
+  };
 
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
@@ -102,9 +95,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
 
     // Default fallback - first letter of alt text
     return (
-      <span className="text-gray-400 font-semibold text-sm">
-        {alt.charAt(0).toUpperCase()}
-      </span>
+      <span className="text-gray-400 font-semibold text-sm">{alt.charAt(0).toUpperCase()}</span>
     );
   };
 
@@ -141,10 +132,7 @@ interface CharacterAvatarProps extends Omit<AvatarProps, 'src'> {
   readonly characterId: string;
 }
 
-export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
-  characterId,
-  ...props
-}) => {
+export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({ characterId, ...props }) => {
   const [imageSrc, setImageSrc] = React.useState<string>('');
 
   React.useEffect(() => {

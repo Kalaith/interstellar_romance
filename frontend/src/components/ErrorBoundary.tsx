@@ -50,32 +50,22 @@ interface ErrorFallbackProps {
   retry: () => void;
 }
 
-export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
-  error,
-  retry,
-}) => {
+export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) => {
   return (
     <div className="min-h-screen bg-slate-800 flex items-center justify-center">
       <div className="bg-slate-900 rounded-lg p-8 max-w-md text-center text-white">
         <div className="text-6xl mb-4">⚠️</div>
         <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
         <p className="text-gray-300 mb-6">
-          We encountered an unexpected error. You can try again or return to the
-          main menu.
+          We encountered an unexpected error. You can try again or return to the main menu.
         </p>
 
         {import.meta.env.DEV && (
           <details className="text-left bg-red-900 p-3 rounded mb-4">
-            <summary className="cursor-pointer font-semibold">
-              Error Details
-            </summary>
-            <pre className="text-xs mt-2 overflow-auto max-h-32">
-              {error.message}
-            </pre>
+            <summary className="cursor-pointer font-semibold">Error Details</summary>
+            <pre className="text-xs mt-2 overflow-auto max-h-32">{error.message}</pre>
             {error.stack && (
-              <pre className="text-xs mt-2 overflow-auto max-h-32 opacity-75">
-                {error.stack}
-              </pre>
+              <pre className="text-xs mt-2 overflow-auto max-h-32 opacity-75">{error.stack}</pre>
             )}
           </details>
         )}
@@ -100,9 +90,7 @@ export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 };
 
 // Specific error boundaries for different sections
-export const GameErrorBoundary: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const GameErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ErrorBoundary
       onError={(error, errorInfo) => {

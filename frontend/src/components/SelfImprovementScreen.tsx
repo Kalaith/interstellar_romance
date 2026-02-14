@@ -9,9 +9,7 @@ export const SelfImprovementScreen: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">
-            No player found!
-          </p>
+          <p className="text-xl text-[var(--text-primary)] mb-4">No player found!</p>
           <button
             onClick={() => setScreen('main-hub')}
             className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
@@ -24,7 +22,7 @@ export const SelfImprovementScreen: React.FC = () => {
   }
 
   const handleActivityClick = (activityId: string) => {
-    const activity = selfImprovementActivities.find((a) => a.id === activityId);
+    const activity = selfImprovementActivities.find(a => a.id === activityId);
     if (activity?.statBonus) {
       // Apply stat bonuses (this would be handled by game store in real implementation)
       // console.log(`Applied bonuses from ${activity.name}:`, activity.statBonus);
@@ -48,9 +46,7 @@ export const SelfImprovementScreen: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   Energy
                 </div>
-                <div className="text-[var(--resource-energy)] font-semibold">
-                  100/100
-                </div>
+                <div className="text-[var(--resource-energy)] font-semibold">100/100</div>
               </div>
               <div className="text-center">
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
@@ -99,7 +95,7 @@ export const SelfImprovementScreen: React.FC = () => {
                 color: 'var(--resource-alloys)',
                 icon: '🔧',
               },
-            ].map((stat) => (
+            ].map(stat => (
               <div
                 key={stat.label}
                 className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-4 text-center"
@@ -108,10 +104,7 @@ export const SelfImprovementScreen: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   {stat.label}
                 </div>
-                <div
-                  className="text-xl font-bold"
-                  style={{ color: stat.color }}
-                >
+                <div className="text-xl font-bold" style={{ color: stat.color }}>
                   {stat.value}
                 </div>
               </div>
@@ -126,7 +119,7 @@ export const SelfImprovementScreen: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {selfImprovementActivities.map((activity) => (
+            {selfImprovementActivities.map(activity => (
               <div
                 key={activity.id}
                 onClick={() => handleActivityClick(activity.id)}

@@ -63,10 +63,7 @@ interface GameState {
   nextWeek: () => void;
 
   // Knowledge system actions
-  unlockCharacterInfo: (
-    characterId: string,
-    infoType: keyof CharacterKnownInfo
-  ) => void;
+  unlockCharacterInfo: (characterId: string, infoType: keyof CharacterKnownInfo) => void;
   updateCharacterKnowledge: (characterId: string) => void;
 
   // Storyline actions
@@ -105,16 +102,16 @@ export const useGameStore = create<GameState>()(
     (set, get) => ({
       ...initialState,
 
-      setScreen: (screen) => set({ currentScreen: screen }),
+      setScreen: screen => set({ currentScreen: screen }),
 
-      createPlayer: (player) =>
+      createPlayer: player =>
         set({
           player,
           currentScreen: 'main-hub',
         }),
 
-      selectCharacter: (characterId) => {
-        const character = get().characters.find((c) => c.id === characterId);
+      selectCharacter: characterId => {
+        const character = get().characters.find(c => c.id === characterId);
 
         // Unlock basic info on first interaction
         setTimeout(() => {
@@ -129,28 +126,19 @@ export const useGameStore = create<GameState>()(
       },
 
       updateAffection: (characterId, amount) =>
-        set((state) => {
-          const character = state.characters.find((c) => c.id === characterId);
+        set(state => {
+          const character = state.characters.find(c => c.id === characterId);
           if (!character || !state.player) return state;
 
-          const newAffection = Math.max(
-            0,
-            Math.min(100, character.affection + amount)
-          );
+          const newAffection = Math.max(0, Math.min(100, character.affection + amount));
 
-          const updatedCharacters = state.characters.map((char) => {
+          const updatedCharacters = state.characters.map(char => {
             if (char.id === characterId) {
               const updatedChar = { ...char, affection: newAffection };
               // Check milestones when affection changes
-              updatedChar.milestones = checkMilestones(
-                newAffection,
-                char.milestones
-              );
+              updatedChar.milestones = checkMilestones(newAffection, char.milestones);
               // Check photo unlocks
-              updatedChar.photoGallery = checkPhotoUnlocks(
-                char.photoGallery,
-                newAffection
-              );
+              updatedChar.photoGallery = checkPhotoUnlocks(char.photoGallery, newAffection);
               // Update max interactions based on new affection level
               updatedChar.dailyInteractions = {
                 ...char.dailyInteractions,
@@ -173,8 +161,7 @@ export const useGameStore = create<GameState>()(
 
           const updatedSelectedCharacter =
             state.selectedCharacter?.id === characterId
-              ? updatedCharacters.find((c) => c.id === characterId) ||
-                state.selectedCharacter
+              ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
               : state.selectedCharacter;
 
           // Batch update achievements, knowledge, and storylines after affection change
@@ -193,8 +180,8 @@ export const useGameStore = create<GameState>()(
         }),
 
       updateMood: (characterId, mood) =>
-        set((state) => ({
-          characters: state.characters.map((char) =>
+        set(state => ({
+          characters: state.characters.map(char =>
             char.id === characterId ? { ...char, mood } : char
           ),
           selectedCharacter:
@@ -204,8 +191,8 @@ export const useGameStore = create<GameState>()(
         })),
 
       refreshDailyMoods: () =>
-        set((state) => ({
-          characters: state.characters.map((char) => ({
+        set(state => ({
+          characters: state.characters.map(char => ({
             ...char,
             mood: getRandomMood(),
           })),
@@ -214,21 +201,16 @@ export const useGameStore = create<GameState>()(
             : state.selectedCharacter,
         })),
 
-      checkAndUpdateMilestones: (characterId) =>
-        set((state) => {
-          const character = state.characters.find((c) => c.id === characterId);
+      checkAndUpdateMilestones: characterId =>
+        set(state => {
+          const character = state.characters.find(c => c.id === characterId);
           if (!character) return state;
 
-          const updatedMilestones = checkMilestones(
-            character.affection,
-            character.milestones
-          );
+          const updatedMilestones = checkMilestones(character.affection, character.milestones);
 
           return {
-            characters: state.characters.map((char) =>
-              char.id === characterId
-                ? { ...char, milestones: updatedMilestones }
-                : char
+            characters: state.characters.map(char =>
+              char.id === characterId ? { ...char, milestones: updatedMilestones } : char
             ),
             selectedCharacter:
               state.selectedCharacter?.id === characterId
@@ -237,14 +219,12 @@ export const useGameStore = create<GameState>()(
           };
         }),
 
-      updateLastInteractionDate: (characterId) =>
-        set((state) => {
+      updateLastInteractionDate: characterId =>
+        set(state => {
           const today = new Date().toISOString().split('T')[0];
           return {
-            characters: state.characters.map((char) =>
-              char.id === characterId
-                ? { ...char, lastInteractionDate: today }
-                : char
+            characters: state.characters.map(char =>
+              char.id === characterId ? { ...char, lastInteractionDate: today } : char
             ),
             selectedCharacter:
               state.selectedCharacter?.id === characterId
@@ -253,22 +233,16 @@ export const useGameStore = create<GameState>()(
           };
         }),
 
-      canTalkToCharacterToday: (characterId) => {
+      canTalkToCharacterToday: characterId => {
         const state = get();
-        const character = state.characters.find((c) => c.id === characterId);
+        const character = state.characters.find(c => c.id === characterId);
         if (!character) return false;
 
         // Check if daily interactions need to be reset based on timezone
-        const timezone =
-          character.dailyInteractions.timezone || getUserTimezone().timezone;
-        if (
-          shouldResetDailyInteractions(
-            character.dailyInteractions.lastResetDate,
-            timezone
-          )
-        ) {
+        const timezone = character.dailyInteractions.timezone || getUserTimezone().timezone;
+        if (shouldResetDailyInteractions(character.dailyInteractions.lastResetDate, timezone)) {
           // Reset daily interactions if needed
-          const updatedCharacters = state.characters.map((c) =>
+          const updatedCharacters = state.characters.map(c =>
             c.id === characterId
               ? {
                   ...c,
@@ -291,14 +265,13 @@ export const useGameStore = create<GameState>()(
 
         // Check if character has remaining daily interactions
         return (
-          character.dailyInteractions.interactionsUsed <
-          character.dailyInteractions.maxInteractions
+          character.dailyInteractions.interactionsUsed < character.dailyInteractions.maxInteractions
         );
       },
 
-      useDailyInteraction: (characterId) => {
+      useDailyInteraction: characterId => {
         const state = get();
-        const character = state.characters.find((c) => c.id === characterId);
+        const character = state.characters.find(c => c.id === characterId);
         if (!character) return false;
 
         // Check if interaction is available
@@ -307,9 +280,8 @@ export const useGameStore = create<GameState>()(
         }
 
         // Increment daily interaction usage
-        const timezone =
-          character.dailyInteractions.timezone || getUserTimezone().timezone;
-        const updatedCharacters = state.characters.map((c) =>
+        const timezone = character.dailyInteractions.timezone || getUserTimezone().timezone;
+        const updatedCharacters = state.characters.map(c =>
           c.id === characterId
             ? {
                 ...c,
@@ -327,11 +299,9 @@ export const useGameStore = create<GameState>()(
       },
 
       updateCharacter: (characterId, updates) =>
-        set((state) => {
-          const updatedCharacters = state.characters.map((character) =>
-            character.id === characterId
-              ? { ...character, ...updates }
-              : character
+        set(state => {
+          const updatedCharacters = state.characters.map(character =>
+            character.id === characterId ? { ...character, ...updates } : character
           );
 
           return {
@@ -344,7 +314,7 @@ export const useGameStore = create<GameState>()(
         }),
 
       addDateToHistory: (characterId, datePlanId, affectionGained, success) =>
-        set((state) => {
+        set(state => {
           const dateEntry: DateHistoryEntry = {
             id: `date_${Date.now()}`,
             datePlanId,
@@ -356,7 +326,7 @@ export const useGameStore = create<GameState>()(
             notes: undefined,
           };
 
-          const updatedCharacters = state.characters.map((char) =>
+          const updatedCharacters = state.characters.map(char =>
             char.id === characterId
               ? { ...char, dateHistory: [...char.dateHistory, dateEntry] }
               : char
@@ -364,8 +334,7 @@ export const useGameStore = create<GameState>()(
 
           const updatedSelectedCharacter =
             state.selectedCharacter?.id === characterId
-              ? updatedCharacters.find((c) => c.id === characterId) ||
-                state.selectedCharacter
+              ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
               : state.selectedCharacter;
 
           // Update achievements after date
@@ -379,35 +348,28 @@ export const useGameStore = create<GameState>()(
         }),
 
       incrementConversations: () =>
-        set((state) => {
+        set(state => {
           // Update achievements after conversation
           setTimeout(() => get().batchUpdate('', { achievements: true }), 0);
           return { totalConversations: state.totalConversations + 1 };
         }),
 
       updateAchievements: () =>
-        set((state) => {
+        set(state => {
           if (!state.player) return state;
 
           const stats = {
-            totalAffection: state.characters.reduce(
-              (sum, char) => sum + char.affection,
-              0
-            ),
-            maxAffection: Math.max(
-              ...state.characters.map((char) => char.affection)
-            ),
+            totalAffection: state.characters.reduce((sum, char) => sum + char.affection, 0),
+            maxAffection: Math.max(...state.characters.map(char => char.affection)),
             totalDates: state.totalDates,
             totalConversations: state.totalConversations,
             unlockedPhotos: state.characters.reduce(
-              (sum, char) =>
-                sum + char.photoGallery.filter((p) => p.unlocked).length,
+              (sum, char) => sum + char.photoGallery.filter(p => p.unlocked).length,
               0
             ),
             maxCompatibility: 75, // Would calculate this properly
             unlockedMilestones: state.characters.reduce(
-              (sum, char) =>
-                sum + char.milestones.filter((m) => m.achieved).length,
+              (sum, char) => sum + char.milestones.filter(m => m.achieved).length,
               0
             ),
             characterAffections: state.characters.reduce(
@@ -416,19 +378,16 @@ export const useGameStore = create<GameState>()(
             ),
           };
 
-          const updatedAchievements = checkAchievements(
-            state.achievements,
-            stats
-          );
+          const updatedAchievements = checkAchievements(state.achievements, stats);
 
           return { achievements: updatedAchievements };
         }),
 
-      toggleActivity: (activityId) =>
-        set((state) => {
+      toggleActivity: activityId =>
+        set(state => {
           const isSelected = state.selectedActivities.includes(activityId);
           const newSelected = isSelected
-            ? state.selectedActivities.filter((id) => id !== activityId)
+            ? state.selectedActivities.filter(id => id !== activityId)
             : state.selectedActivities.length < 2
               ? [...state.selectedActivities, activityId]
               : state.selectedActivities;
@@ -437,9 +396,9 @@ export const useGameStore = create<GameState>()(
         }),
 
       confirmActivities: () =>
-        set((state) => {
+        set(state => {
           // Refresh moods for the new week
-          const updatedCharacters = state.characters.map((char) => ({
+          const updatedCharacters = state.characters.map(char => ({
             ...char,
             mood: getRandomMood(),
           }));
@@ -459,14 +418,14 @@ export const useGameStore = create<GameState>()(
         }),
 
       nextWeek: () =>
-        set((state) => ({
+        set(state => ({
           currentWeek: state.currentWeek + 1,
         })),
 
       // Knowledge system implementation
       unlockCharacterInfo: (characterId, infoType) =>
-        set((state) => {
-          const updatedCharacters = state.characters.map((char) =>
+        set(state => {
+          const updatedCharacters = state.characters.map(char =>
             char.id === characterId
               ? { ...char, knownInfo: { ...char.knownInfo, [infoType]: true } }
               : char
@@ -474,8 +433,7 @@ export const useGameStore = create<GameState>()(
 
           const updatedSelectedCharacter =
             state.selectedCharacter?.id === characterId
-              ? updatedCharacters.find((c) => c.id === characterId) ||
-                state.selectedCharacter
+              ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
               : state.selectedCharacter;
 
           return {
@@ -484,9 +442,9 @@ export const useGameStore = create<GameState>()(
           };
         }),
 
-      updateCharacterKnowledge: (characterId) =>
-        set((state) => {
-          const character = state.characters.find((c) => c.id === characterId);
+      updateCharacterKnowledge: characterId =>
+        set(state => {
+          const character = state.characters.find(c => c.id === characterId);
           if (!character) return state;
 
           const affection = character.affection;
@@ -503,20 +461,17 @@ export const useGameStore = create<GameState>()(
           if (affection >= 70) knownInfo.favoriteTopics = true;
 
           // Check for milestone unlocks
-          const achievedMilestones = character.milestones.filter(
-            (m) => m.achieved
-          );
+          const achievedMilestones = character.milestones.filter(m => m.achieved);
           if (achievedMilestones.length >= 2) knownInfo.deepPersonality = true;
           if (achievedMilestones.length >= 4) knownInfo.secretTraits = true;
 
-          const updatedCharacters = state.characters.map((char) =>
+          const updatedCharacters = state.characters.map(char =>
             char.id === characterId ? { ...char, knownInfo } : char
           );
 
           const updatedSelectedCharacter =
             state.selectedCharacter?.id === characterId
-              ? updatedCharacters.find((c) => c.id === characterId) ||
-                state.selectedCharacter
+              ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
               : state.selectedCharacter;
 
           return {
@@ -526,15 +481,12 @@ export const useGameStore = create<GameState>()(
         }),
 
       // Storyline system implementation
-      updateStorylines: (characterId) =>
-        set((state) => {
-          const character = state.characters.find((c) => c.id === characterId);
+      updateStorylines: characterId =>
+        set(state => {
+          const character = state.characters.find(c => c.id === characterId);
           if (!character) return state;
 
-          const availableStorylines = checkStorylineUnlocks(
-            characterId,
-            character.affection
-          );
+          const availableStorylines = checkStorylineUnlocks(characterId, character.affection);
 
           return {
             availableStorylines: {
@@ -545,15 +497,13 @@ export const useGameStore = create<GameState>()(
         }),
 
       completeStorylineChoice: (storylineId, choiceId) =>
-        set((state) => {
+        set(state => {
           const result = processStorylineChoice(storylineId, choiceId, '');
 
           if (result.affectionChange > 0) {
             // Find which character this storyline belongs to
             const characterId = storylineId.split('_')[0]; // Extract character ID from storyline ID
-            const character = state.characters.find(
-              (c) => c.id === characterId
-            );
+            const character = state.characters.find(c => c.id === characterId);
 
             if (character) {
               // Update affection through the existing updateAffection method
@@ -565,12 +515,9 @@ export const useGameStore = create<GameState>()(
 
           // Mark storyline as completed
           const updatedStorylines = { ...state.availableStorylines };
-          Object.keys(updatedStorylines).forEach((charId) => {
-            updatedStorylines[charId] = updatedStorylines[charId].map(
-              (storyline) =>
-                storyline.id === storylineId
-                  ? { ...storyline, completed: true }
-                  : storyline
+          Object.keys(updatedStorylines).forEach(charId => {
+            updatedStorylines[charId] = updatedStorylines[charId].map(storyline =>
+              storyline.id === storylineId ? { ...storyline, completed: true } : storyline
             );
           });
 
@@ -585,24 +532,17 @@ export const useGameStore = create<GameState>()(
         if (updates.achievements) {
           if (state.player) {
             const stats = {
-              totalAffection: state.characters.reduce(
-                (sum, char) => sum + char.affection,
-                0
-              ),
-              maxAffection: Math.max(
-                ...state.characters.map((char) => char.affection)
-              ),
+              totalAffection: state.characters.reduce((sum, char) => sum + char.affection, 0),
+              maxAffection: Math.max(...state.characters.map(char => char.affection)),
               totalDates: state.totalDates,
               totalConversations: state.totalConversations,
               unlockedPhotos: state.characters.reduce(
-                (sum, char) =>
-                  sum + char.photoGallery.filter((p) => p.unlocked).length,
+                (sum, char) => sum + char.photoGallery.filter(p => p.unlocked).length,
                 0
               ),
               maxCompatibility: 75,
               unlockedMilestones: state.characters.reduce(
-                (sum, char) =>
-                  sum + char.milestones.filter((m) => m.achieved).length,
+                (sum, char) => sum + char.milestones.filter(m => m.achieved).length,
                 0
               ),
               characterAffections: state.characters.reduce(
@@ -610,15 +550,12 @@ export const useGameStore = create<GameState>()(
                 {} as Record<string, number>
               ),
             };
-            updatedState.achievements = checkAchievements(
-              state.achievements,
-              stats
-            );
+            updatedState.achievements = checkAchievements(state.achievements, stats);
           }
         }
 
         if (updates.knowledge) {
-          const character = state.characters.find((c) => c.id === characterId);
+          const character = state.characters.find(c => c.id === characterId);
           if (character) {
             const affection = character.affection;
             const knownInfo = { ...character.knownInfo };
@@ -634,33 +571,26 @@ export const useGameStore = create<GameState>()(
             if (affection >= 70) knownInfo.favoriteTopics = true;
 
             // Check for milestone unlocks
-            const achievedMilestones = character.milestones.filter(
-              (m) => m.achieved
-            );
-            if (achievedMilestones.length >= 2)
-              knownInfo.deepPersonality = true;
+            const achievedMilestones = character.milestones.filter(m => m.achieved);
+            if (achievedMilestones.length >= 2) knownInfo.deepPersonality = true;
             if (achievedMilestones.length >= 4) knownInfo.secretTraits = true;
 
-            const updatedCharacters = state.characters.map((char) =>
+            const updatedCharacters = state.characters.map(char =>
               char.id === characterId ? { ...char, knownInfo } : char
             );
 
             updatedState.characters = updatedCharacters;
             if (state.selectedCharacter?.id === characterId) {
               updatedState.selectedCharacter =
-                updatedCharacters.find((c) => c.id === characterId) ||
-                state.selectedCharacter;
+                updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter;
             }
           }
         }
 
         if (updates.storylines) {
-          const character = state.characters.find((c) => c.id === characterId);
+          const character = state.characters.find(c => c.id === characterId);
           if (character) {
-            const availableStorylines = checkStorylineUnlocks(
-              characterId,
-              character.affection
-            );
+            const availableStorylines = checkStorylineUnlocks(characterId, character.affection);
             updatedState.availableStorylines = {
               ...state.availableStorylines,
               [characterId]: availableStorylines,
@@ -669,7 +599,7 @@ export const useGameStore = create<GameState>()(
         }
 
         if (Object.keys(updatedState).length > 0) {
-          set((state) => ({ ...state, ...updatedState }));
+          set(state => ({ ...state, ...updatedState }));
         }
       },
 

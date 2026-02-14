@@ -1,8 +1,4 @@
-import {
-  Character,
-  CharacterKnownInfo,
-  DailyInteractionData,
-} from '../types/game';
+import { Character, CharacterKnownInfo, DailyInteractionData } from '../types/game';
 import { getDefaultRelationshipStatus } from '../utils/relationshipUtils';
 import { getCharacterImage } from '../utils/assetManager';
 import {
@@ -89,9 +85,7 @@ const getRandomMood = () => {
 };
 
 // Default daily interaction data
-const getDefaultDailyInteractions = (
-  affection: number
-): DailyInteractionData => ({
+const getDefaultDailyInteractions = (affection: number): DailyInteractionData => ({
   lastResetDate: new Date().toISOString().split('T')[0], // Today's date
   interactionsUsed: 0,
   maxInteractions: calculateMaxInteractions(affection),
@@ -99,14 +93,10 @@ const getDefaultDailyInteractions = (
 
 // Calculate max interactions based on affection level
 export const calculateMaxInteractions = (affection: number): number => {
-  if (affection >= affectionThresholds.VERY_HIGH)
-    return interactionLimits.VERY_HIGH_AFFECTION;
-  if (affection >= affectionThresholds.HIGH)
-    return interactionLimits.HIGH_AFFECTION;
-  if (affection >= affectionThresholds.MEDIUM)
-    return interactionLimits.MEDIUM_AFFECTION;
-  if (affection >= affectionThresholds.LOW)
-    return interactionLimits.LOW_MEDIUM_AFFECTION;
+  if (affection >= affectionThresholds.VERY_HIGH) return interactionLimits.VERY_HIGH_AFFECTION;
+  if (affection >= affectionThresholds.HIGH) return interactionLimits.HIGH_AFFECTION;
+  if (affection >= affectionThresholds.MEDIUM) return interactionLimits.MEDIUM_AFFECTION;
+  if (affection >= affectionThresholds.LOW) return interactionLimits.LOW_MEDIUM_AFFECTION;
   return interactionLimits.DEFAULT;
 };
 
@@ -154,14 +144,8 @@ export const CHARACTERS: Character[] = [
       values: ['honor', 'loyalty', 'tradition', 'freedom'],
       background:
         'Desert clan chieftain who united the scattered sky tribes through diplomacy and strength',
-      goals:
-        'To bridge the gap between ancient traditions and modern galactic society',
-      favoriteTopics: [
-        'Flight techniques',
-        'Tribal history',
-        'Honor duels',
-        'Desert survival',
-      ],
+      goals: 'To bridge the gap between ancient traditions and modern galactic society',
+      favoriteTopics: ['Flight techniques', 'Tribal history', 'Honor duels', 'Desert survival'],
     },
     lastInteractionDate: undefined,
     photoGallery: [
@@ -244,16 +228,11 @@ export const CHARACTERS: Character[] = [
         },
         { id: 'dreams', name: 'Dream Walking', category: 'arts', intensity: 3 },
       ],
-      dealbreakers: [
-        'Materialistic focus',
-        'Closed-mindedness',
-        'Aggressive behavior',
-      ],
+      dealbreakers: ['Materialistic focus', 'Closed-mindedness', 'Aggressive behavior'],
       preferredActivities: ['intellectual', 'romantic', 'cultural'],
       conversationStyle: 'philosophical',
       values: ['empathy', 'harmony', 'growth', 'tradition'],
-      background:
-        'Oracle of the Blue Temples who can peer across dimensional barriers',
+      background: 'Oracle of the Blue Temples who can peer across dimensional barriers',
       goals: 'To guide others toward enlightenment and cosmic understanding',
       favoriteTopics: [
         'Dimensional theory',
@@ -348,18 +327,13 @@ export const CHARACTERS: Character[] = [
           intensity: 4,
         },
       ],
-      dealbreakers: [
-        'Anti-science views',
-        'Deliberate ignorance',
-        'Destruction of knowledge',
-      ],
+      dealbreakers: ['Anti-science views', 'Deliberate ignorance', 'Destruction of knowledge'],
       preferredActivities: ['intellectual', 'creative', 'adventurous'],
       conversationStyle: 'analytical',
       values: ['innovation', 'efficiency', 'growth', 'loyalty'],
       background:
         'Lead researcher at the Galactic Biotechnology Institute, specializing in cross-species compatibility',
-      goals:
-        'To advance understanding of biological diversity and create beneficial symbioses',
+      goals: 'To advance understanding of biological diversity and create beneficial symbioses',
       favoriteTopics: [
         'Genetic sequences',
         'Bioengineering',
@@ -382,9 +356,7 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus(
-      'Dr. Thessarian Brightleaf'
-    ),
+    relationshipStatus: getDefaultRelationshipStatus('Dr. Thessarian Brightleaf'),
     relationshipMemories: [],
     personalityGrowth: [
       {
@@ -465,8 +437,7 @@ export const CHARACTERS: Character[] = [
       values: ['harmony', 'growth', 'empathy', 'tradition'],
       background:
         'Guardian of the Great Forest, responsible for maintaining the balance between civilization and nature',
-      goals:
-        'To help others find their connection to the natural world and inner growth',
+      goals: 'To help others find their connection to the natural world and inner growth',
       favoriteTopics: [
         'Plant cultivation',
         'Natural cycles',
@@ -560,18 +531,13 @@ export const CHARACTERS: Character[] = [
           intensity: 3,
         },
       ],
-      dealbreakers: [
-        'Weakness',
-        'Betrayal',
-        'Incompetence in critical situations',
-      ],
+      dealbreakers: ['Weakness', 'Betrayal', 'Incompetence in critical situations'],
       preferredActivities: ['adventurous', 'intellectual', 'social'],
       conversationStyle: 'direct',
       values: ['honor', 'efficiency', 'loyalty', 'freedom'],
       background:
         'Elite military commander who rose through the ranks to become the youngest general in Draconi history',
-      goals:
-        'To prove that strength and intelligence combined can overcome any obstacle',
+      goals: 'To prove that strength and intelligence combined can overcome any obstacle',
       favoriteTopics: [
         'Battle tactics',
         'Leadership philosophy',
@@ -594,9 +560,7 @@ export const CHARACTERS: Character[] = [
     dateHistory: [],
     knownInfo: { ...defaultKnownInfo },
     dailyInteractions: getDefaultDailyInteractions(0),
-    relationshipStatus: getDefaultRelationshipStatus(
-      'Commander Zarantha Scales'
-    ),
+    relationshipStatus: getDefaultRelationshipStatus('Commander Zarantha Scales'),
     relationshipMemories: [],
     personalityGrowth: [
       {
@@ -677,8 +641,7 @@ export const CHARACTERS: Character[] = [
       values: ['tradition', 'harmony', 'empathy', 'honor'],
       background:
         'High Priest of the Deep Temples, keeper of ancient aquatic knowledge and rituals',
-      goals:
-        'To preserve ancient wisdom while guiding others through spiritual transformation',
+      goals: 'To preserve ancient wisdom while guiding others through spiritual transformation',
       favoriteTopics: [
         'Ocean lore',
         'Spiritual practices',
@@ -772,18 +735,13 @@ export const CHARACTERS: Character[] = [
           intensity: 3,
         },
       ],
-      dealbreakers: [
-        'Betrayal of trust',
-        'Unnecessary cruelty',
-        'Exposure of secrets',
-      ],
+      dealbreakers: ['Betrayal of trust', 'Unnecessary cruelty', 'Exposure of secrets'],
       preferredActivities: ['adventurous', 'intellectual', 'romantic'],
       conversationStyle: 'direct',
       values: ['loyalty', 'freedom', 'honor', 'efficiency'],
       background:
         'Elite operative from the Shadow Realm, sworn to protect interdimensional stability',
-      goals:
-        'To maintain balance between light and shadow while finding personal connection',
+      goals: 'To maintain balance between light and shadow while finding personal connection',
       favoriteTopics: [
         'Dimensional physics',
         'Stealth techniques',
@@ -877,18 +835,13 @@ export const CHARACTERS: Character[] = [
           intensity: 4,
         },
       ],
-      dealbreakers: [
-        'Mental stagnation',
-        'Fear of progress',
-        'Rejection of enhancement',
-      ],
+      dealbreakers: ['Mental stagnation', 'Fear of progress', 'Rejection of enhancement'],
       preferredActivities: ['intellectual', 'creative', 'social'],
       conversationStyle: 'analytical',
       values: ['innovation', 'growth', 'efficiency', 'freedom'],
       background:
         'Pioneering researcher in neural-cybernetic interfaces, pushing the boundaries of consciousness',
-      goals:
-        'To unlock the full potential of biological and artificial intelligence integration',
+      goals: 'To unlock the full potential of biological and artificial intelligence integration',
       favoriteTopics: [
         'Neural pathways',
         'Cybernetic enhancement',

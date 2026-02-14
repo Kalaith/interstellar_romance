@@ -13,7 +13,7 @@ import { RelationshipTimeline } from '../components/RelationshipTimeline';
 import { SelfImprovementScreen } from '../components/SelfImprovementScreen';
 
 export function GamePage() {
-  const currentScreen = useGameStore((state) => state.currentScreen);
+  const currentScreen = useGameStore(state => state.currentScreen);
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -47,9 +47,7 @@ export function GamePage() {
   return (
     <div className="stellaris-theme min-h-screen relative">
       <div className="starfield"></div>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">
-        {renderScreen()}
-      </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">{renderScreen()}</div>
     </div>
   );
 }

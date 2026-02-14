@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonProps, defaultButtonProps } from '../../types/componentProps';
 
-export const Button: React.FC<ButtonProps> = (props) => {
+export const Button: React.FC<ButtonProps> = props => {
   const {
     children,
     variant,
@@ -184,22 +184,22 @@ export const Button: React.FC<ButtonProps> = (props) => {
 };
 
 // Convenience components for common button patterns
-export const PrimaryButton: React.FC<Omit<ButtonProps, 'variant'>> = (
-  props
-) => <Button {...props} variant="primary" />;
+export const PrimaryButton: React.FC<Omit<ButtonProps, 'variant'>> = props => (
+  <Button {...props} variant="primary" />
+);
 
-export const SecondaryButton: React.FC<Omit<ButtonProps, 'variant'>> = (
-  props
-) => <Button {...props} variant="secondary" />;
+export const SecondaryButton: React.FC<Omit<ButtonProps, 'variant'>> = props => (
+  <Button {...props} variant="secondary" />
+);
 
-export const OutlineButton: React.FC<Omit<ButtonProps, 'variant'>> = (
-  props
-) => <Button {...props} variant="outline" />;
+export const OutlineButton: React.FC<Omit<ButtonProps, 'variant'>> = props => (
+  <Button {...props} variant="outline" />
+);
 
-export const GhostButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => (
+export const GhostButton: React.FC<Omit<ButtonProps, 'variant'>> = props => (
   <Button {...props} variant="ghost" />
 );
 
-export const DangerButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => (
+export const DangerButton: React.FC<Omit<ButtonProps, 'variant'>> = props => (
   <Button {...props} variant="danger" />
 );

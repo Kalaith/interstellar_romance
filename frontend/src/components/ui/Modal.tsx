@@ -2,7 +2,7 @@ import React from 'react';
 import { ModalProps, defaultModalProps } from '../../types/componentProps';
 import { Button } from './Button';
 
-export const Modal: React.FC<ModalProps> = (props) => {
+export const Modal: React.FC<ModalProps> = props => {
   const {
     isOpen,
     onClose,
@@ -47,10 +47,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
 
     // Return focus when modal closes
     return () => {
-      if (
-        previousActiveElement.current &&
-        'focus' in previousActiveElement.current
-      ) {
+      if (previousActiveElement.current && 'focus' in previousActiveElement.current) {
         (previousActiveElement.current as HTMLElement).focus();
       }
     };
@@ -146,9 +143,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
         )}
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
-          {children}
-        </div>
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">{children}</div>
       </div>
     </div>
   );
@@ -186,17 +181,12 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <Modal {...modalProps} onClose={onClose} size="sm">
       <div className="text-center">
-        <div className={`text-lg font-medium mb-4 ${variantStyles[variant]}`}>
-          {message}
-        </div>
+        <div className={`text-lg font-medium mb-4 ${variantStyles[variant]}`}>{message}</div>
         <div className="flex justify-end gap-3">
           <Button variant="ghost" onClick={onClose}>
             {cancelText}
           </Button>
-          <Button
-            variant={variant === 'danger' ? 'danger' : 'primary'}
-            onClick={handleConfirm}
-          >
+          <Button variant={variant === 'danger' ? 'danger' : 'primary'} onClick={handleConfirm}>
             {confirmText}
           </Button>
         </div>
@@ -235,9 +225,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   return (
     <Modal {...modalProps} onClose={onClose} size="sm">
       <div className="text-center">
-        <div className={`text-4xl mb-4 ${variantStyles[variant]}`}>
-          {variantIcons[variant]}
-        </div>
+        <div className={`text-4xl mb-4 ${variantStyles[variant]}`}>{variantIcons[variant]}</div>
         <div className="text-lg font-medium mb-6 text-gray-200">{message}</div>
         <Button onClick={onClose} fullWidth>
           {buttonText}

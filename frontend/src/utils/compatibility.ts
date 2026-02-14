@@ -1,34 +1,15 @@
-import {
-  CompatibilityScore,
-  CharacterProfile,
-  PlayerCharacter,
-  Character,
-} from '../types/game';
+import { CompatibilityScore, CharacterProfile, PlayerCharacter, Character } from '../types/game';
 
 export function calculateCompatibility(
   playerCharacter: PlayerCharacter,
   characterProfile: CharacterProfile
 ): CompatibilityScore {
-  const interestScore = calculateInterestCompatibility(
-    playerCharacter,
-    characterProfile
-  );
-  const valueScore = calculateValueCompatibility(
-    playerCharacter,
-    characterProfile
-  );
-  const conversationScore = calculateConversationCompatibility(
-    playerCharacter,
-    characterProfile
-  );
-  const activityScore = calculateActivityCompatibility(
-    playerCharacter,
-    characterProfile
-  );
+  const interestScore = calculateInterestCompatibility(playerCharacter, characterProfile);
+  const valueScore = calculateValueCompatibility(playerCharacter, characterProfile);
+  const conversationScore = calculateConversationCompatibility(playerCharacter, characterProfile);
+  const activityScore = calculateActivityCompatibility(playerCharacter, characterProfile);
 
-  const overall = Math.round(
-    (interestScore + valueScore + conversationScore + activityScore) / 4
-  );
+  const overall = Math.round((interestScore + valueScore + conversationScore + activityScore) / 4);
 
   const explanation = generateCompatibilityExplanation(
     overall,
@@ -72,7 +53,7 @@ function calculateInterestCompatibility(
   let totalScore = 0;
   let maxPossibleScore = 0;
 
-  character.interests.forEach((interest) => {
+  character.interests.forEach(interest => {
     const playerScore = playerInterestScores[interest.category] || 0;
     const characterIntensity = interest.intensity;
 
@@ -82,22 +63,15 @@ function calculateInterestCompatibility(
     maxPossibleScore += 100 * characterIntensity;
   });
 
-  return maxPossibleScore > 0
-    ? Math.round((totalScore / maxPossibleScore) * 100)
-    : 50;
+  return maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 50;
 }
 
-function calculateValueCompatibility(
-  player: PlayerCharacter,
-  character: CharacterProfile
-): number {
+function calculateValueCompatibility(player: PlayerCharacter, character: CharacterProfile): number {
   // Map player traits to values
-  const playerValues = new Set(
-    player.traits.map((trait) => trait.toLowerCase())
-  );
+  const playerValues = new Set(player.traits.map(trait => trait.toLowerCase()));
 
   let matches = 0;
-  character.values.forEach((value) => {
+  character.values.forEach(value => {
     // Check if player traits align with character values
     switch (value) {
       case 'adventure':
@@ -182,27 +156,16 @@ function calculateConversationCompatibility(
       score = player.stats.charisma >= 60 ? 80 : 60;
       break;
     case 'philosophical':
-      score =
-        player.stats.intelligence >= 70
-          ? 90
-          : player.stats.intelligence >= 50
-            ? 70
-            : 50;
+      score = player.stats.intelligence >= 70 ? 90 : player.stats.intelligence >= 50 ? 70 : 50;
       break;
     case 'playful':
-      score =
-        player.stats.charisma >= 70
-          ? 85
-          : player.stats.adventure >= 60
-            ? 75
-            : 55;
+      score = player.stats.charisma >= 70 ? 85 : player.stats.adventure >= 60 ? 75 : 55;
       break;
     case 'serious':
       score = player.stats.intelligence >= 60 ? 80 : 60;
       break;
     case 'emotional':
-      score =
-        player.stats.empathy >= 70 ? 90 : player.stats.empathy >= 50 ? 75 : 55;
+      score = player.stats.empathy >= 70 ? 90 : player.stats.empathy >= 50 ? 75 : 55;
       break;
     case 'analytical':
       score =
@@ -233,7 +196,7 @@ function calculateActivityCompatibility(
   };
 
   let totalScore = 0;
-  character.preferredActivities.forEach((activity) => {
+  character.preferredActivities.forEach(activity => {
     totalScore += playerActivityScores[activity] || 0;
   });
 
@@ -258,13 +221,9 @@ function generateCompatibilityExplanation(
   } else if (overall >= 60) {
     explanations.push("There's definitely potential for a strong connection.");
   } else if (overall >= 40) {
-    explanations.push(
-      'You have some things in common, but may need to work on compatibility.'
-    );
+    explanations.push('You have some things in common, but may need to work on compatibility.');
   } else {
-    explanations.push(
-      'You might have different approaches to life, but opposites can attract!'
-    );
+    explanations.push('You might have different approaches to life, but opposites can attract!');
   }
 
   // Interest compatibility
@@ -280,9 +239,7 @@ function generateCompatibilityExplanation(
   if (breakdown.values >= 80) {
     explanations.push('You share many of the same core values.');
   } else if (breakdown.values <= 40) {
-    explanations.push(
-      'Your values differ, which might require understanding and compromise.'
-    );
+    explanations.push('Your values differ, which might require understanding and compromise.');
   }
 
   // Conversation compatibility
@@ -325,10 +282,7 @@ export function getCompatibilityLabel(score: number): string {
 }
 
 // Romance compatibility functions
-export function isRomanticallyCompatible(
-  player: PlayerCharacter,
-  character: Character
-): boolean {
+export function isRomanticallyCompatible(player: PlayerCharacter, character: Character): boolean {
   const playerPreference = player.sexualPreference;
   const characterGender = character.gender;
 
@@ -352,9 +306,7 @@ export function getFilteredCharactersByPreference(
   player: PlayerCharacter,
   characters: Character[]
 ): Character[] {
-  return characters.filter((character) =>
-    isRomanticallyCompatible(player, character)
-  );
+  return characters.filter(character => isRomanticallyCompatible(player, character));
 }
 
 export function getRomanceCompatibilityLabel(

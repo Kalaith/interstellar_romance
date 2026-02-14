@@ -33,10 +33,7 @@ export const kyrathenDialogue: DialogueTree = {
       topic: 'backstory',
       emotion: 'thoughtful',
       requiresAffection: 15,
-      nextOptions: [
-        'kyrathen_history_challenges',
-        'kyrathen_history_victories',
-      ],
+      nextOptions: ['kyrathen_history_challenges', 'kyrathen_history_victories'],
     },
   ],
   branches: {
@@ -179,10 +176,7 @@ export const thessarianDialogue: DialogueTree = {
       topic: 'flirt',
       emotion: 'flirty',
       requiresAffection: 20,
-      nextOptions: [
-        'thessarian_flirt_analytical',
-        'thessarian_flirt_flustered',
-      ],
+      nextOptions: ['thessarian_flirt_analytical', 'thessarian_flirt_flustered'],
     },
   ],
   branches: {
@@ -336,8 +330,7 @@ export const dialogueResponses: Record<string, DialogueResponse> = {
     text: "*Thalassos' expression grows warm, his bio-luminescent patterns pulsing gently* Your words stir currents in my soul I thought had grown still. Perhaps... the deepest waters have room for two.",
     emotion: 'surprised',
     affectionChange: 5,
-    consequence:
-      'Thalassos begins to see romantic potential in your connection',
+    consequence: 'Thalassos begins to see romantic potential in your connection',
   },
 
   // Nightshade responses
@@ -753,10 +746,7 @@ export function getContextualDialogue(
   if (mood === 'romantic' && topic === 'flirt') {
     modifiedResponse.affectionChange += 1;
   } else if (mood === 'melancholy' && topic !== 'comfort') {
-    modifiedResponse.affectionChange = Math.max(
-      0,
-      modifiedResponse.affectionChange - 1
-    );
+    modifiedResponse.affectionChange = Math.max(0, modifiedResponse.affectionChange - 1);
   }
 
   return modifiedResponse;
@@ -771,7 +761,7 @@ export function getAvailableDialogueOptions(
   const tree = getDialogueTree(characterId);
   if (!tree) return [];
 
-  return tree.rootOptions.filter((option) => {
+  return tree.rootOptions.filter(option => {
     // Check affection requirements
     if (option.requiresAffection && affection < option.requiresAffection) {
       return false;
@@ -787,10 +777,7 @@ export function getAvailableDialogueOptions(
 }
 
 // Dialogue consequences that affect future interactions
-export function processDialogueConsequence(
-  consequence: string,
-  _characterId?: string
-): string {
+export function processDialogueConsequence(consequence: string, _characterId?: string): string {
   const consequences: Record<string, string> = {
     "Kyra'then seems more open to romantic advances":
       "Kyra'then's traditional barriers are lowering. He trusts you more.",

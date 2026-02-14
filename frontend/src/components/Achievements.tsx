@@ -5,9 +5,7 @@ import { getAchievementsByCategory } from '../data/achievements';
 
 export const Achievements: React.FC = () => {
   const { player, setScreen, achievements } = useGameStore();
-  const [selectedCategory, setSelectedCategory] = useState<
-    AchievementCategory | 'all'
-  >('all');
+  const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
 
   if (!player || !achievements) {
     return (
@@ -30,7 +28,7 @@ export const Achievements: React.FC = () => {
       ? achievements
       : getAchievementsByCategory(achievements, selectedCategory);
 
-  const achievedCount = achievements.filter((a) => a.achieved).length;
+  const achievedCount = achievements.filter(a => a.achieved).length;
   const totalCount = achievements.length;
 
   const categories: {
@@ -70,9 +68,7 @@ export const Achievements: React.FC = () => {
 
           {/* Overall Progress */}
           <div className="bg-slate-900 rounded-lg p-6 mb-8 text-white">
-            <h3 className="text-lg font-semibold mb-4 text-purple-300">
-              Overall Progress
-            </h3>
+            <h3 className="text-lg font-semibold mb-4 text-purple-300">Overall Progress</h3>
             <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
               <div
                 className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
@@ -86,17 +82,12 @@ export const Achievements: React.FC = () => {
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map((category) => {
+            {categories.map(category => {
               const categoryAchievements =
                 category.key === 'all'
                   ? achievements
-                  : getAchievementsByCategory(
-                      achievements,
-                      category.key as AchievementCategory
-                    );
-              const categoryAchieved = categoryAchievements.filter(
-                (a) => a.achieved
-              ).length;
+                  : getAchievementsByCategory(achievements, category.key as AchievementCategory);
+              const categoryAchieved = categoryAchievements.filter(a => a.achieved).length;
 
               return (
                 <button
@@ -120,7 +111,7 @@ export const Achievements: React.FC = () => {
 
           {/* Achievements Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAchievements.map((achievement) => (
+            {filteredAchievements.map(achievement => (
               <div
                 key={achievement.id}
                 className={`rounded-lg p-6 border-2 transition-all duration-300 ${
@@ -132,9 +123,7 @@ export const Achievements: React.FC = () => {
                 <div className="flex items-start space-x-4">
                   <div
                     className={`text-4xl flex-shrink-0 ${
-                      achievement.achieved
-                        ? 'grayscale-0'
-                        : 'grayscale opacity-50'
+                      achievement.achieved ? 'grayscale-0' : 'grayscale opacity-50'
                     }`}
                   >
                     {achievement.icon}
@@ -174,8 +163,7 @@ export const Achievements: React.FC = () => {
                     {/* Achievement Date */}
                     {achievement.achieved && achievement.achievedDate && (
                       <div className="text-xs text-purple-300 mb-2">
-                        ✨ Unlocked:{' '}
-                        {achievement.achievedDate.toLocaleDateString()}
+                        ✨ Unlocked: {achievement.achievedDate.toLocaleDateString()}
                       </div>
                     )}
 
@@ -189,9 +177,7 @@ export const Achievements: React.FC = () => {
                         }`}
                       >
                         <div className="font-semibold mb-1">
-                          {achievement.achieved
-                            ? '🎁 Reward Unlocked:'
-                            : '🎁 Reward:'}
+                          {achievement.achieved ? '🎁 Reward Unlocked:' : '🎁 Reward:'}
                         </div>
                         <div>{achievement.reward.description}</div>
                       </div>
@@ -216,9 +202,7 @@ export const Achievements: React.FC = () => {
               <h3 className="text-xl font-semibold text-white mb-2">
                 No achievements in this category
               </h3>
-              <p className="text-gray-400">
-                Try a different category to see more achievements.
-              </p>
+              <p className="text-gray-400">Try a different category to see more achievements.</p>
             </div>
           )}
         </div>

@@ -42,7 +42,7 @@ export const useGameStateStore = create<GameStateStore>()(
     (set, get) => ({
       ...initialState,
 
-      setScreen: (screen) => {
+      setScreen: screen => {
         try {
           Logger.debug(`Navigating to screen: ${screen}`);
           set({ currentScreen: screen });
@@ -51,7 +51,7 @@ export const useGameStateStore = create<GameStateStore>()(
         }
       },
 
-      createPlayer: (player) => {
+      createPlayer: player => {
         try {
           Validators.validatePlayerExists(player);
           Validators.validateStringNotEmpty(player.name, 'player.name');

@@ -28,22 +28,17 @@ export const useGameStore = () => {
           const characters = characterStore.characters;
 
           const achievementStats = {
-            totalAffection: characters.reduce(
-              (sum, char) => sum + char.affection,
-              0
-            ),
-            maxAffection: Math.max(...characters.map((char) => char.affection)),
+            totalAffection: characters.reduce((sum, char) => sum + char.affection, 0),
+            maxAffection: Math.max(...characters.map(char => char.affection)),
             totalDates: gameStats.totalDates,
             totalConversations: gameStats.totalConversations,
             unlockedPhotos: characters.reduce(
-              (sum, char) =>
-                sum + char.photoGallery.filter((p) => p.unlocked).length,
+              (sum, char) => sum + char.photoGallery.filter(p => p.unlocked).length,
               0
             ),
             maxCompatibility: 75, // Would calculate this properly
             unlockedMilestones: characters.reduce(
-              (sum, char) =>
-                sum + char.milestones.filter((m) => m.achieved).length,
+              (sum, char) => sum + char.milestones.filter(m => m.achieved).length,
               0
             ),
             characterAffections: characters.reduce(
@@ -82,10 +77,7 @@ export const useGameStore = () => {
     },
 
     // Enhanced dialogue interaction that updates multiple stores
-    processDialogueInteraction: (
-      characterId: string,
-      affectionGain: number
-    ) => {
+    processDialogueInteraction: (characterId: string, affectionGain: number) => {
       try {
         const validCharacterId = Validators.validateCharacterId(characterId);
         // Update character affection
@@ -107,19 +99,12 @@ export const useGameStore = () => {
           `Processed dialogue interaction for ${characterId}: +${affectionGain} affection`
         );
       } catch (error) {
-        Logger.error(
-          `Failed to process dialogue interaction for ${characterId}`,
-          error
-        );
+        Logger.error(`Failed to process dialogue interaction for ${characterId}`, error);
       }
     },
 
     // Enhanced date interaction
-    processDateInteraction: (
-      characterId: string,
-      affectionGain: number,
-      success: boolean
-    ) => {
+    processDateInteraction: (characterId: string, affectionGain: number, success: boolean) => {
       try {
         const validCharacterId = Validators.validateCharacterId(characterId);
         // Update character affection
@@ -138,10 +123,7 @@ export const useGameStore = () => {
           `Processed date interaction for ${characterId}: success=${success}, +${affectionGain} affection`
         );
       } catch (error) {
-        Logger.error(
-          `Failed to process date interaction for ${characterId}`,
-          error
-        );
+        Logger.error(`Failed to process date interaction for ${characterId}`, error);
       }
     },
   };

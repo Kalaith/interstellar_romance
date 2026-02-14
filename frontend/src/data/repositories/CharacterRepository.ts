@@ -4,11 +4,7 @@ import type {
   CharacterPhoto,
   CharacterMood,
 } from '../../types/game';
-import {
-  CharacterId,
-  AffectionLevel,
-  createAffectionLevel,
-} from '../../types/brandedTypes';
+import { CharacterId, AffectionLevel, createAffectionLevel } from '../../types/brandedTypes';
 import { Validators } from '../../utils/validators';
 import { Logger } from '../../services/Logger';
 import { calculateMaxInteractions } from '../characters';
@@ -26,7 +22,7 @@ export class CharacterRepository {
   findById(characters: Character[], id: CharacterId): Character | null {
     try {
       const validId = Validators.validateCharacterId(id);
-      const character = characters.find((c) => c.id === validId);
+      const character = characters.find(c => c.id === validId);
 
       if (!character) {
         Logger.warn(`Character not found: ${id}`);
@@ -40,21 +36,14 @@ export class CharacterRepository {
     }
   }
 
-  updateAffection(
-    characters: Character[],
-    id: CharacterId,
-    amount: number
-  ): Character[] {
+  updateAffection(characters: Character[], id: CharacterId, amount: number): Character[] {
     try {
       const validId = Validators.validateCharacterId(id);
       const validAmount = Validators.validateAffectionAmount(amount);
 
-      return characters.map((character) => {
+      return characters.map(character => {
         if (character.id === validId) {
-          const newAffectionValue = Math.max(
-            0,
-            Math.min(100, character.affection + validAmount)
-          );
+          const newAffectionValue = Math.max(0, Math.min(100, character.affection + validAmount));
           const newAffection = createAffectionLevel(newAffectionValue);
 
           const updatedCharacter = {
@@ -66,15 +55,9 @@ export class CharacterRepository {
               maxInteractions: calculateMaxInteractions(newAffection),
             },
             // Check for milestone achievements
-            milestones: this.checkMilestones(
-              character.milestones,
-              newAffection
-            ),
+            milestones: this.checkMilestones(character.milestones, newAffection),
             // Update photo unlocks
-            photoGallery: this.checkPhotoUnlocks(
-              character.photoGallery,
-              newAffection
-            ),
+            photoGallery: this.checkPhotoUnlocks(character.photoGallery, newAffection),
           };
 
           Logger.debug(
@@ -90,19 +73,13 @@ export class CharacterRepository {
     }
   }
 
-  updateMood(
-    characters: Character[],
-    id: CharacterId,
-    mood: CharacterMood
-  ): Character[] {
+  updateMood(characters: Character[], id: CharacterId, mood: CharacterMood): Character[] {
     try {
       const validId = Validators.validateCharacterId(id);
 
-      return characters.map((character) => {
+      return characters.map(character => {
         if (character.id === validId) {
-          Logger.debug(
-            `Updated mood for ${character.name}: ${character.mood} -> ${mood}`
-          );
+          Logger.debug(`Updated mood for ${character.name}: ${character.mood} -> ${mood}`);
           return { ...character, mood };
         }
         return character;
@@ -117,15 +94,13 @@ export class CharacterRepository {
     try {
       const validId = Validators.validateCharacterId(id);
 
-      return characters.map((character) => {
+      return characters.map(character => {
         if (character.id === validId) {
           if (
             character.dailyInteractions.interactionsUsed >=
             character.dailyInteractions.maxInteractions
           ) {
-            Logger.warn(
-              `No daily interactions remaining for character ${character.name}`
-            );
+            Logger.warn(`No daily interactions remaining for character ${character.name}`);
             return character;
           }
 
@@ -146,22 +121,16 @@ export class CharacterRepository {
         return character;
       });
     } catch (error) {
-      Logger.error(
-        `Failed to use daily interaction for character ${id}`,
-        error
-      );
+      Logger.error(`Failed to use daily interaction for character ${id}`, error);
       return characters;
     }
   }
 
-  resetDailyInteractions(
-    characters: Character[],
-    timezone: string
-  ): Character[] {
+  resetDailyInteractions(characters: Character[], timezone: string): Character[] {
     try {
       const currentDate = new Date().toISOString().split('T')[0];
 
-      return characters.map((character) => {
+      return characters.map(character => {
         const updatedInteractions = {
           ...character.dailyInteractions,
           lastResetDate: currentDate,
@@ -180,25 +149,19 @@ export class CharacterRepository {
     }
   }
 
-  updateLastInteractionDate(
-    characters: Character[],
-    id: CharacterId
-  ): Character[] {
+  updateLastInteractionDate(characters: Character[], id: CharacterId): Character[] {
     try {
       const validId = Validators.validateCharacterId(id);
       const today = new Date().toISOString().split('T')[0];
 
-      return characters.map((character) => {
+      return characters.map(character => {
         if (character.id === validId) {
           return { ...character, lastInteractionDate: today };
         }
         return character;
       });
     } catch (error) {
-      Logger.error(
-        `Failed to update last interaction date for character ${id}`,
-        error
-      );
+      Logger.error(`Failed to update last interaction date for character ${id}`, error);
       return characters;
     }
   }
@@ -208,9 +171,8 @@ export class CharacterRepository {
     affection: AffectionLevel
   ): RelationshipMilestone[] {
     try {
-      return milestones.map((milestone) => {
-        const shouldAchieve =
-          affection >= milestone.unlockedAt && !milestone.achieved;
+      return milestones.map(milestone => {
+        const shouldAchieve = affection >= milestone.unlockedAt && !milestone.achieved;
 
         if (shouldAchieve) {
           Logger.info(`Milestone achieved: ${milestone.name}`);
@@ -234,7 +196,7 @@ export class CharacterRepository {
     affection: AffectionLevel
   ): CharacterPhoto[] {
     try {
-      return photoGallery.map((photo) => {
+      return photoGallery.map(photo => {
         const shouldUnlock = affection >= photo.unlockedAt && !photo.unlocked;
 
         if (shouldUnlock) {
@@ -258,14 +220,10 @@ export class CharacterRepository {
     try {
       Validators.validateCharacterExists(character);
       return (
-        character.dailyInteractions.interactionsUsed <
-        character.dailyInteractions.maxInteractions
+        character.dailyInteractions.interactionsUsed < character.dailyInteractions.maxInteractions
       );
     } catch (error) {
-      Logger.error(
-        `Failed to check if can interact today for character ${character?.id}`,
-        error
-      );
+      Logger.error(`Failed to check if can interact today for character ${character?.id}`, error);
       return false;
     }
   }
@@ -275,14 +233,10 @@ export class CharacterRepository {
       Validators.validateCharacterExists(character);
       return Math.max(
         0,
-        character.dailyInteractions.maxInteractions -
-          character.dailyInteractions.interactionsUsed
+        character.dailyInteractions.maxInteractions - character.dailyInteractions.interactionsUsed
       );
     } catch (error) {
-      Logger.error(
-        `Failed to get remaining interactions for character ${character?.id}`,
-        error
-      );
+      Logger.error(`Failed to get remaining interactions for character ${character?.id}`, error);
       return 0;
     }
   }

@@ -3,13 +3,8 @@ import { useGameStore } from '../stores/gameStore';
 import { ACTIVITIES } from '../data/activities';
 
 export const ActivitiesScreen: React.FC = () => {
-  const {
-    currentWeek,
-    selectedActivities,
-    setScreen,
-    toggleActivity,
-    confirmActivities,
-  } = useGameStore();
+  const { currentWeek, selectedActivities, setScreen, toggleActivity, confirmActivities } =
+    useGameStore();
 
   const handleConfirm = () => {
     if (selectedActivities.length === 2) {
@@ -18,21 +13,13 @@ export const ActivitiesScreen: React.FC = () => {
   };
 
   // Categorize activities
-  const socialActivities = ACTIVITIES.filter(
-    (a) => a.id === 'social' || a.id === 'work'
-  );
+  const socialActivities = ACTIVITIES.filter(a => a.id === 'social' || a.id === 'work');
   const explorationActivities = ACTIVITIES.filter(
-    (a) => a.id === 'exploration' || a.id === 'research'
+    a => a.id === 'exploration' || a.id === 'research'
   );
-  const personalActivities = ACTIVITIES.filter(
-    (a) => a.id === 'meditation' || a.id === 'training'
-  );
+  const personalActivities = ACTIVITIES.filter(a => a.id === 'meditation' || a.id === 'training');
 
-  const renderActivityGrid = (
-    activities: typeof ACTIVITIES,
-    title: string,
-    icon: string
-  ) => (
+  const renderActivityGrid = (activities: typeof ACTIVITIES, title: string, icon: string) => (
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-4">
         <span className="text-3xl">{icon}</span>
@@ -42,7 +29,7 @@ export const ActivitiesScreen: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {activities.map((activity) => {
+        {activities.map(activity => {
           const isSelected = selectedActivities.includes(activity.id);
           const canSelect = selectedActivities.length < 2 || isSelected;
 
@@ -137,8 +124,7 @@ export const ActivitiesScreen: React.FC = () => {
               </div>
             </div>
             <p className="text-[var(--text-secondary)] mt-2">
-              Choose 2 activities to advance your relationships and personal
-              growth
+              Choose 2 activities to advance your relationships and personal growth
             </p>
           </div>
         </div>
@@ -146,11 +132,7 @@ export const ActivitiesScreen: React.FC = () => {
         {/* Activities Grid Panel */}
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
           {renderActivityGrid(socialActivities, 'Social Activities', '👥')}
-          {renderActivityGrid(
-            explorationActivities,
-            'Exploration & Discovery',
-            '🌌'
-          )}
+          {renderActivityGrid(explorationActivities, 'Exploration & Discovery', '🌌')}
           {renderActivityGrid(personalActivities, 'Personal Development', '📚')}
         </div>
 
@@ -168,10 +150,8 @@ export const ActivitiesScreen: React.FC = () => {
                     Scheduled Activities
                   </p>
                   <div className="flex flex-wrap justify-center gap-3">
-                    {selectedActivities.map((activityId) => {
-                      const activity = ACTIVITIES.find(
-                        (a) => a.id === activityId
-                      );
+                    {selectedActivities.map(activityId => {
+                      const activity = ACTIVITIES.find(a => a.id === activityId);
                       return (
                         <div
                           key={activityId}

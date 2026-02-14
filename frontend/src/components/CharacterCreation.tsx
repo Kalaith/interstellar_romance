@@ -22,9 +22,9 @@ export const CharacterCreation: React.FC = () => {
   });
 
   const handleTraitToggle = (trait: string) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       const newTraits = prev.traits.includes(trait)
-        ? prev.traits.filter((t) => t !== trait)
+        ? prev.traits.filter(t => t !== trait)
         : prev.traits.length < 2
           ? [...prev.traits, trait]
           : prev.traits;
@@ -203,9 +203,7 @@ export const CharacterCreation: React.FC = () => {
               Character Creation
               <span className="animate-pulse text-stellaris-cyan">|</span>
             </h2>
-            <p className="text-slate-300 text-lg">
-              Design your interstellar persona
-            </p>
+            <p className="text-slate-300 text-lg">Design your interstellar persona</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -217,9 +215,7 @@ export const CharacterCreation: React.FC = () => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
+                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:border-stellaris-cyan focus:outline-none focus:ring-1 focus:ring-stellaris-cyan transition-colors"
                 placeholder="Enter your name..."
               />
@@ -231,13 +227,11 @@ export const CharacterCreation: React.FC = () => {
                 Species
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {species.map((spec) => (
+                {species.map(spec => (
                   <button
                     key={spec.value}
                     type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, species: spec.value }))
-                    }
+                    onClick={() => setFormData(prev => ({ ...prev, species: spec.value }))}
                     className={`p-4 rounded-lg border-2 transition-all duration-300 ${
                       formData.species === spec.value
                         ? 'border-stellaris-cyan bg-stellaris-cyan/20 shadow-lg shadow-stellaris-cyan/40 scale-105'
@@ -250,9 +244,7 @@ export const CharacterCreation: React.FC = () => {
                     >
                       {spec.label}
                     </div>
-                    <div className="text-xs text-slate-400">
-                      {spec.description}
-                    </div>
+                    <div className="text-xs text-slate-400">{spec.description}</div>
                   </button>
                 ))}
               </div>
@@ -264,13 +256,11 @@ export const CharacterCreation: React.FC = () => {
                 Gender
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {genders.map((gender) => (
+                {genders.map(gender => (
                   <button
                     key={gender.value}
                     type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, gender: gender.value }))
-                    }
+                    onClick={() => setFormData(prev => ({ ...prev, gender: gender.value }))}
                     className={`p-4 rounded-lg border-2 transition-all duration-300 ${
                       formData.gender === gender.value
                         ? 'border-purple-400 bg-purple-400/20 shadow-lg shadow-purple-400/40 scale-105'
@@ -294,15 +284,12 @@ export const CharacterCreation: React.FC = () => {
                 Choose Traits ({formData.traits.length}/2 selected)
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {traits.map((trait) => (
+                {traits.map(trait => (
                   <button
                     key={trait.id}
                     type="button"
                     onClick={() => handleTraitToggle(trait.id)}
-                    disabled={
-                      !formData.traits.includes(trait.id) &&
-                      formData.traits.length >= 2
-                    }
+                    disabled={!formData.traits.includes(trait.id) && formData.traits.length >= 2}
                     className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
                       formData.traits.includes(trait.id)
                         ? 'border-green-400 bg-green-400/20 shadow-lg shadow-green-400/40 scale-105'
@@ -331,12 +318,12 @@ export const CharacterCreation: React.FC = () => {
                 Romantic Interest
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sexualPreferences.map((preference) => (
+                {sexualPreferences.map(preference => (
                   <button
                     key={preference.value}
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({
+                      setFormData(prev => ({
                         ...prev,
                         sexualPreference: preference.value,
                       }))
@@ -355,9 +342,7 @@ export const CharacterCreation: React.FC = () => {
                         {preference.label}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-400">
-                      {preference.description}
-                    </div>
+                    <div className="text-xs text-slate-400">{preference.description}</div>
                   </button>
                 ))}
               </div>
@@ -369,12 +354,12 @@ export const CharacterCreation: React.FC = () => {
                 Backstory
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {backstories.map((backstory) => (
+                {backstories.map(backstory => (
                   <button
                     key={backstory.value}
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({
+                      setFormData(prev => ({
                         ...prev,
                         backstory: backstory.value,
                       }))
@@ -393,9 +378,7 @@ export const CharacterCreation: React.FC = () => {
                         {backstory.label}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-400">
-                      {backstory.description}
-                    </div>
+                    <div className="text-xs text-slate-400">{backstory.description}</div>
                   </button>
                 ))}
               </div>

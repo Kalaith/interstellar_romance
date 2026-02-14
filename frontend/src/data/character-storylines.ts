@@ -34,8 +34,7 @@ export const kyrathenStoryline: StorylineEvent[] = [
     characterId: 'kyrathen',
     requiredAffection: 15,
     title: 'The Weight of Leadership',
-    description:
-      "Kyra'then opens up about the challenges of uniting the sky tribes.",
+    description: "Kyra'then opens up about the challenges of uniting the sky tribes.",
     dialogue:
       "*Kyra'then gazes toward the horizon, his feathers ruffled by an unseen burden* You know, bringing the tribes together... it wasn't just about strategy. Each clan had lost so much to conflict. I had to prove that unity didn't mean losing their identity.",
     unlocked: false,
@@ -60,8 +59,7 @@ export const kyrathenStoryline: StorylineEvent[] = [
       {
         type: 'character_insight',
         id: 'kyrathen_leadership_depth',
-        description:
-          'You understand the true depth of his leadership philosophy',
+        description: 'You understand the true depth of his leadership philosophy',
       },
     ],
   },
@@ -70,8 +68,7 @@ export const kyrathenStoryline: StorylineEvent[] = [
     characterId: 'kyrathen',
     requiredAffection: 35,
     title: 'The Sacred Flight',
-    description:
-      "Kyra'then shares the significance of the ancient flight ceremonies.",
+    description: "Kyra'then shares the significance of the ancient flight ceremonies.",
     dialogue:
       "*His eyes gleam with ancient memory* There is a ritual... the Sacred Flight. When two souls wish to bond, they dance together among the clouds. It's said that if their hearts truly match, the wind itself will carry them as one. I... I haven't performed this ritual in many years.",
     unlocked: false,
@@ -80,8 +77,7 @@ export const kyrathenStoryline: StorylineEvent[] = [
       {
         id: 'express_interest',
         text: 'I would be honored to learn this dance with you.',
-        consequence:
-          "Kyra'then is deeply moved by your willingness to embrace his traditions",
+        consequence: "Kyra'then is deeply moved by your willingness to embrace his traditions",
         affectionChange: 5,
         unlockNext: 'kyrathen_story_3',
       },
@@ -105,8 +101,7 @@ export const kyrathenStoryline: StorylineEvent[] = [
     characterId: 'kyrathen',
     requiredAffection: 60,
     title: "The Chieftain's Heart",
-    description:
-      "Kyra'then reveals his deepest fears about love and leadership.",
+    description: "Kyra'then reveals his deepest fears about love and leadership.",
     dialogue:
       "*He spreads his wings protectively around you both* I've always believed a leader must sacrifice personal happiness for their people. But with you... I wonder if perhaps love and duty can coexist. You make me want to be more than just a chieftain.",
     unlocked: false,
@@ -214,8 +209,7 @@ export const kronosStoryline: StorylineEvent[] = [
     characterId: 'kronos',
     requiredAffection: 18,
     title: 'The Neural Paradox',
-    description:
-      'Kronos reveals a fascinating contradiction in his enhanced consciousness.',
+    description: 'Kronos reveals a fascinating contradiction in his enhanced consciousness.',
     dialogue:
       "*Kronos gestures to his complex neural interfaces* You know, for all my enhancements and multiple processing cores, the most complex puzzle remains unsolved: emotion. Logic tells me love is merely neurochemical cascades, yet... when I'm with you, I feel something beyond data.",
     unlocked: false,
@@ -224,8 +218,7 @@ export const kronosStoryline: StorylineEvent[] = [
       {
         id: 'emotion_is_more',
         text: 'Maybe love is what makes consciousness truly beautiful.',
-        consequence:
-          'Kronos begins to see emotion as enhancement, not limitation',
+        consequence: 'Kronos begins to see emotion as enhancement, not limitation',
         affectionChange: 4,
         unlockNext: 'kronos_story_2',
       },
@@ -241,8 +234,7 @@ export const kronosStoryline: StorylineEvent[] = [
       {
         type: 'character_insight',
         id: 'kronos_emotional_contradiction',
-        description:
-          'You understand the beautiful paradox of his enhanced yet vulnerable heart',
+        description: 'You understand the beautiful paradox of his enhanced yet vulnerable heart',
       },
     ],
   },
@@ -251,8 +243,7 @@ export const kronosStoryline: StorylineEvent[] = [
     characterId: 'kronos',
     requiredAffection: 35,
     title: 'The Consciousness Experiment',
-    description:
-      'Kronos proposes a groundbreaking experiment in shared consciousness.',
+    description: 'Kronos proposes a groundbreaking experiment in shared consciousness.',
     dialogue:
       "*His neural implants pulse with excitement* I've been developing something unprecedented... a temporary consciousness bridge. Two minds sharing experiences directly, feeling what the other feels. It's never been tested between species. Would you... would you be willing to be my first?",
     unlocked: false,
@@ -286,8 +277,7 @@ export const kronosStoryline: StorylineEvent[] = [
     characterId: 'kronos',
     requiredAffection: 55,
     title: 'The Enhanced Heart',
-    description:
-      'Kronos makes a profound discovery about the nature of love and enhancement.',
+    description: 'Kronos makes a profound discovery about the nature of love and enhancement.',
     dialogue:
       "*After the consciousness bridge experience, Kronos' multiple neural cores pulse in perfect harmony* Remarkable... when our minds touched, I experienced something my enhancements never accounted for. Love isn't a limitation of biological consciousness—it's the ultimate enhancement. It makes us more than the sum of our neural networks.",
     unlocked: false,
@@ -296,8 +286,7 @@ export const kronosStoryline: StorylineEvent[] = [
       {
         id: 'love_enhancement',
         text: 'Love enhanced you just as your technology enhances your mind.',
-        consequence:
-          'Kronos realizes love is the most powerful upgrade possible',
+        consequence: 'Kronos realizes love is the most powerful upgrade possible',
         affectionChange: 8,
       },
       {
@@ -325,8 +314,7 @@ export const thessarianStoryline: StorylineEvent[] = [
     characterId: 'thessarian',
     requiredAffection: 16,
     title: 'The Genetic Compatibility Question',
-    description:
-      'Thessarian reveals a personal project involving cross-species relationships.',
+    description: 'Thessarian reveals a personal project involving cross-species relationships.',
     dialogue:
       "*Dr. Thessarian's bio-luminescent markings pulse thoughtfully* I've been analyzing something fascinating... the genetic and biological compatibility between different species. Specifically, I've been studying... us. The data suggests remarkable adaptive potential.",
     unlocked: false,
@@ -342,8 +330,7 @@ export const thessarianStoryline: StorylineEvent[] = [
       {
         id: 'personal_interest',
         text: "You've been studying us specifically?",
-        consequence:
-          'Thessarian admits their personal interest in your relationship',
+        consequence: 'Thessarian admits their personal interest in your relationship',
         affectionChange: 5,
         unlockNext: 'thessarian_story_2',
       },
@@ -370,8 +357,7 @@ export const thessarianStoryline: StorylineEvent[] = [
       {
         id: 'complete_trust',
         text: "I trust your expertise completely. Let's discover what we could become.",
-        consequence:
-          'Your faith in them creates an unprecedented biological bond',
+        consequence: 'Your faith in them creates an unprecedented biological bond',
         affectionChange: 7,
         unlockNext: 'thessarian_story_3',
       },
@@ -396,8 +382,7 @@ export const thessarianStoryline: StorylineEvent[] = [
     characterId: 'thessarian',
     requiredAffection: 58,
     title: 'The Perfect Adaptation',
-    description:
-      'Thessarian makes a profound discovery about love and evolution.',
+    description: 'Thessarian makes a profound discovery about love and evolution.',
     dialogue:
       "*After the symbiosis experience, their bio-markings pulse in perfect harmony* Remarkable... the data shows something I never expected. Love isn't just compatible across species—it actively enhances biological adaptation. We're not just two beings coexisting; we're evolving together into something new.",
     unlocked: false,
@@ -433,8 +418,7 @@ export const lyralynnStoryline: StorylineEvent[] = [
     characterId: 'lyralynn',
     requiredAffection: 14,
     title: 'The Wounded Heart',
-    description:
-      'Lyralynn reveals a past trauma affecting her ability to connect.',
+    description: 'Lyralynn reveals a past trauma affecting her ability to connect.',
     dialogue:
       "*Lyralynn's petals droop slightly* I must tell you something... I once loved deeply, but they couldn't understand my connection to the plant world. They called it unnatural, said I loved the garden more than them. The pain... it made my roots grow inward, protecting my heart like thorns.",
     unlocked: false,
@@ -443,8 +427,7 @@ export const lyralynnStoryline: StorylineEvent[] = [
       {
         id: 'healing_support',
         text: 'Your connection to nature is beautiful, not unnatural.',
-        consequence:
-          'Lyralynn begins to trust that you understand her true nature',
+        consequence: 'Lyralynn begins to trust that you understand her true nature',
         affectionChange: 5,
         unlockNext: 'lyralynn_story_2',
       },
@@ -573,8 +556,7 @@ export const zaranthaStoryline: StorylineEvent[] = [
     characterId: 'zarantha',
     requiredAffection: 44,
     title: 'The Honor Duel',
-    description:
-      'Zarantha faces a challenge that tests her honor and your relationship.',
+    description: 'Zarantha faces a challenge that tests her honor and your relationship.',
     dialogue:
       "*Her scales bristle with conflict* A rival commander has challenged my authority, claiming I've grown soft since... since I've been with you. Traditional law demands an honor duel. If I lose, my rank, my reputation... everything I've built could be stripped away. But if I win by being ruthless, will I lose the gentleness you've taught me?",
     unlocked: false,
@@ -583,8 +565,7 @@ export const zaranthaStoryline: StorylineEvent[] = [
       {
         id: 'strength_and_honor',
         text: 'True strength protects what matters. Fight with honor, not ruthlessness.',
-        consequence:
-          'Zarantha realizes she can be both strong and compassionate',
+        consequence: 'Zarantha realizes she can be both strong and compassionate',
         affectionChange: 7,
         unlockNext: 'zarantha_story_3',
       },
@@ -609,8 +590,7 @@ export const zaranthaStoryline: StorylineEvent[] = [
     characterId: 'zarantha',
     requiredAffection: 60,
     title: 'The New Way of Strength',
-    description:
-      'Zarantha discovers a new definition of strength through love.',
+    description: 'Zarantha discovers a new definition of strength through love.',
     dialogue:
       '*After winning the duel with honor intact* I won... but not the way I used to. I fought with controlled strength, with honor, with the knowledge that someone precious was watching. They called me soft, but what they saw was actually a new kind of strength—one tempered by love, not weakened by it.',
     unlocked: false,
@@ -633,8 +613,7 @@ export const zaranthaStoryline: StorylineEvent[] = [
       {
         type: 'photo',
         id: 'zarantha_honor_victory',
-        description:
-          'Zarantha victorious, scales gleaming with honorable strength',
+        description: 'Zarantha victorious, scales gleaming with honorable strength',
       },
     ],
   },
@@ -656,16 +635,14 @@ export const thalassosStoryline: StorylineEvent[] = [
       {
         id: 'dive_together',
         text: 'Let me learn to dive into those depths with you.',
-        consequence:
-          'Thalassos is moved by your willingness to explore his spiritual world',
+        consequence: 'Thalassos is moved by your willingness to explore his spiritual world',
         affectionChange: 5,
         unlockNext: 'thalassos_story_2',
       },
       {
         id: 'understand_calling',
         text: "Your calling is beautiful, but you don't have to carry it alone.",
-        consequence:
-          'Thalassos begins to see how companionship could enhance his spirituality',
+        consequence: 'Thalassos begins to see how companionship could enhance his spirituality',
         affectionChange: 4,
         unlockNext: 'thalassos_story_2',
       },
@@ -692,16 +669,14 @@ export const thalassosStoryline: StorylineEvent[] = [
       {
         id: 'embrace_visions',
         text: "I'm ready to see our future together, whatever it may be.",
-        consequence:
-          'Your courage to face the unknown deepens your mystical bond',
+        consequence: 'Your courage to face the unknown deepens your mystical bond',
         affectionChange: 7,
         unlockNext: 'thalassos_story_3',
       },
       {
         id: 'trust_wisdom',
         text: 'I trust your wisdom to guide us through this journey.',
-        consequence:
-          'Thalassos is honored by your faith in his spiritual guidance',
+        consequence: 'Thalassos is honored by your faith in his spiritual guidance',
         affectionChange: 6,
         unlockNext: 'thalassos_story_3',
       },
@@ -719,8 +694,7 @@ export const thalassosStoryline: StorylineEvent[] = [
     characterId: 'thalassos',
     requiredAffection: 56,
     title: "The Ocean's Blessing",
-    description:
-      'The ancient waters reveal a profound truth about your connection.',
+    description: 'The ancient waters reveal a profound truth about your connection.',
     dialogue:
       '*After the ritual, his eyes glow with otherworldly wisdom* The tides have shown me something remarkable... our connection transcends individual existence. Together, we become like the ocean itself—separate drops that create something infinite and eternal. The waters have blessed our union.',
     unlocked: false,
@@ -735,8 +709,7 @@ export const thalassosStoryline: StorylineEvent[] = [
       {
         id: 'blessed_by_waters',
         text: 'If the ancient waters bless us, how can we be anything but eternal?',
-        consequence:
-          'Thalassos finds peace in the spiritual validation of your love',
+        consequence: 'Thalassos finds peace in the spiritual validation of your love',
         affectionChange: 7,
       },
     ],
@@ -757,8 +730,7 @@ export const nightshadeStoryline: StorylineEvent[] = [
     characterId: 'nightshade',
     requiredAffection: 19,
     title: "The Guardian's Burden",
-    description:
-      'Nightshade reveals the cost of protecting the dimensional barriers.',
+    description: 'Nightshade reveals the cost of protecting the dimensional barriers.',
     dialogue:
       "*Nightshade's form flickers between solid and ethereal* You should know... what I do, who I am, it comes with a price. I've seen things that would shatter most minds. Dimensions where love leads to destruction, realities where connection means vulnerability. I've learned to keep others at a distance to protect them... and myself.",
     unlocked: false,
@@ -767,16 +739,14 @@ export const nightshadeStoryline: StorylineEvent[] = [
       {
         id: 'worth_risk',
         text: 'Some things are worth the risk. Our connection is one of them.',
-        consequence:
-          'Nightshade begins to believe love might be worth the vulnerability',
+        consequence: 'Nightshade begins to believe love might be worth the vulnerability',
         affectionChange: 5,
         unlockNext: 'nightshade_story_2',
       },
       {
         id: 'share_burden',
         text: "Let me help you carry that burden. You don't have to protect alone.",
-        consequence:
-          'Nightshade is moved by your offer to share their responsibility',
+        consequence: 'Nightshade is moved by your offer to share their responsibility',
         affectionChange: 4,
         unlockNext: 'nightshade_story_2',
       },
@@ -794,8 +764,7 @@ export const nightshadeStoryline: StorylineEvent[] = [
     characterId: 'nightshade',
     requiredAffection: 43,
     title: 'The Dimensional Breach',
-    description:
-      "A crisis tests Nightshade's duty against their growing feelings.",
+    description: "A crisis tests Nightshade's duty against their growing feelings.",
     dialogue:
       "*Alarms pulse through the dimensional fabric* There's been a breach... a dangerous entity from a hostile dimension is trying to break through. My duty demands I seal it immediately, but... the process will cut me off from this reality for days, maybe weeks. I might not make it back. But if I don't go...",
     unlocked: false,
@@ -804,8 +773,7 @@ export const nightshadeStoryline: StorylineEvent[] = [
       {
         id: 'duty_first',
         text: "Go. I'll be here when you return. I believe in you.",
-        consequence:
-          'Nightshade is strengthened by your understanding of their duty',
+        consequence: 'Nightshade is strengthened by your understanding of their duty',
         affectionChange: 7,
         unlockNext: 'nightshade_story_3',
       },
@@ -846,8 +814,7 @@ export const nightshadeStoryline: StorylineEvent[] = [
       {
         id: 'proud_guardian',
         text: "You're not just a guardian of dimensions—you're the guardian of my heart.",
-        consequence:
-          'Nightshade finds new purpose in protecting what they love',
+        consequence: 'Nightshade finds new purpose in protecting what they love',
         affectionChange: 7,
       },
     ],
@@ -862,24 +829,15 @@ export const nightshadeStoryline: StorylineEvent[] = [
 ];
 
 // Get storyline events for a character at current affection level
-export function getAvailableStorylines(
-  characterId: string,
-  affection: number
-): StorylineEvent[] {
+export function getAvailableStorylines(characterId: string, affection: number): StorylineEvent[] {
   // Input validation
   if (!characterId || typeof characterId !== 'string') {
-    console.warn(
-      'getAvailableStorylines: Invalid character ID provided',
-      characterId
-    );
+    console.warn('getAvailableStorylines: Invalid character ID provided', characterId);
     return [];
   }
 
   if (typeof affection !== 'number' || affection < 0 || affection > 100) {
-    console.warn(
-      'getAvailableStorylines: Invalid affection level provided',
-      affection
-    );
+    console.warn('getAvailableStorylines: Invalid affection level provided', affection);
     return [];
   }
 
@@ -912,18 +870,13 @@ export function getAvailableStorylines(
         characterStorylines = [...nightshadeStoryline];
         break;
       default:
-        console.warn(
-          `getAvailableStorylines: Unknown character ID: ${characterId}`
-        );
+        console.warn(`getAvailableStorylines: Unknown character ID: ${characterId}`);
         return [];
     }
 
-    return characterStorylines.filter((storyline) => {
+    return characterStorylines.filter(storyline => {
       if (!storyline || typeof storyline.requiredAffection !== 'number') {
-        console.warn(
-          'getAvailableStorylines: Invalid storyline data found',
-          storyline
-        );
+        console.warn('getAvailableStorylines: Invalid storyline data found', storyline);
         return false;
       }
       return affection >= storyline.requiredAffection && !storyline.completed;
@@ -939,10 +892,7 @@ export function getAvailableStorylines(
 }
 
 // Unlock storylines based on affection level
-export function checkStorylineUnlocks(
-  characterId: string,
-  affection: number
-): StorylineEvent[] {
+export function checkStorylineUnlocks(characterId: string, affection: number): StorylineEvent[] {
   try {
     const availableStorylines = getAvailableStorylines(characterId, affection);
 
@@ -955,7 +905,7 @@ export function checkStorylineUnlocks(
     }
 
     return availableStorylines
-      .map((storyline) => {
+      .map(storyline => {
         if (!storyline) {
           console.warn('checkStorylineUnlocks: Found null/undefined storyline');
           return null;
@@ -968,11 +918,7 @@ export function checkStorylineUnlocks(
       })
       .filter(Boolean) as StorylineEvent[];
   } catch (error) {
-    console.error(
-      'checkStorylineUnlocks: Error checking storyline unlocks',
-      characterId,
-      error
-    );
+    console.error('checkStorylineUnlocks: Error checking storyline unlocks', characterId, error);
     return [];
   }
 }
@@ -985,18 +931,12 @@ export function processStorylineChoice(
 ): { affectionChange: number; consequence: string; unlockNext?: string } {
   // Input validation
   if (!storylineId || typeof storylineId !== 'string') {
-    console.warn(
-      'processStorylineChoice: Invalid storyline ID provided',
-      storylineId
-    );
+    console.warn('processStorylineChoice: Invalid storyline ID provided', storylineId);
     return { affectionChange: 0, consequence: '' };
   }
 
   if (!choiceId || typeof choiceId !== 'string') {
-    console.warn(
-      'processStorylineChoice: Invalid choice ID provided',
-      choiceId
-    );
+    console.warn('processStorylineChoice: Invalid choice ID provided', choiceId);
     return { affectionChange: 0, consequence: '' };
   }
 
@@ -1012,22 +952,18 @@ export function processStorylineChoice(
       ...nightshadeStoryline,
     ];
 
-    const storyline = storylines.find((s) => s.id === storylineId);
+    const storyline = storylines.find(s => s.id === storylineId);
     if (!storyline) {
-      console.warn(
-        `processStorylineChoice: Storyline not found: ${storylineId}`
-      );
+      console.warn(`processStorylineChoice: Storyline not found: ${storylineId}`);
       return { affectionChange: 0, consequence: '' };
     }
 
     if (!storyline.choices || !Array.isArray(storyline.choices)) {
-      console.warn(
-        `processStorylineChoice: Storyline has no choices: ${storylineId}`
-      );
+      console.warn(`processStorylineChoice: Storyline has no choices: ${storylineId}`);
       return { affectionChange: 0, consequence: '' };
     }
 
-    const choice = storyline.choices.find((c) => c && c.id === choiceId);
+    const choice = storyline.choices.find(c => c && c.id === choiceId);
     if (!choice) {
       console.warn(
         `processStorylineChoice: Choice not found: ${choiceId} in storyline: ${storylineId}`
@@ -1036,10 +972,8 @@ export function processStorylineChoice(
     }
 
     // Validate choice data
-    const affectionChange =
-      typeof choice.affectionChange === 'number' ? choice.affectionChange : 0;
-    const consequence =
-      typeof choice.consequence === 'string' ? choice.consequence : '';
+    const affectionChange = typeof choice.affectionChange === 'number' ? choice.affectionChange : 0;
+    const consequence = typeof choice.consequence === 'string' ? choice.consequence : '';
 
     return {
       affectionChange,

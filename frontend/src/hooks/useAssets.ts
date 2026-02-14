@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  assetManager,
-  preloadCharacterAssets,
-  validateAllAssets,
-} from '../utils/assetManager';
+import { assetManager, preloadCharacterAssets, validateAllAssets } from '../utils/assetManager';
 
 interface AssetLoadingState {
   isLoading: boolean;
@@ -29,13 +25,13 @@ export const useAssetLoader = () => {
 
     const loadAssets = async () => {
       try {
-        setState((prev) => ({ ...prev, isLoading: true }));
+        setState(prev => ({ ...prev, isLoading: true }));
 
         // Get total number of character assets
         const characterAssets = assetManager.getAllAssets('character');
 
         if (isMounted) {
-          setState((prev) => ({
+          setState(prev => ({
             ...prev,
             total: characterAssets.length,
             loaded: 0,
@@ -49,16 +45,13 @@ export const useAssetLoader = () => {
         const { valid, invalid } = await validateAllAssets();
 
         if (isMounted) {
-          setState((prev) => ({
+          setState(prev => ({
             ...prev,
             isLoading: false,
             loaded: valid.length,
             validAssets: valid,
             invalidAssets: invalid,
-            errors:
-              invalid.length > 0
-                ? [`Failed to load ${invalid.length} assets`]
-                : [],
+            errors: invalid.length > 0 ? [`Failed to load ${invalid.length} assets`] : [],
           }));
         }
 
@@ -72,7 +65,7 @@ export const useAssetLoader = () => {
         }
       } catch (error) {
         if (isMounted) {
-          setState((prev) => ({
+          setState(prev => ({
             ...prev,
             isLoading: false,
             errors: [...prev.errors, `Asset loading failed: ${error}`],
@@ -113,19 +106,19 @@ export const useCharacterImage = (characterId: string) => {
     const assetId = `character_${characterId}`;
     const imagePath = assetManager.getAssetPath(assetId);
 
-    setImageStatus((prev) => ({ ...prev, src: imagePath }));
+    setImageStatus(prev => ({ ...prev, src: imagePath }));
 
     // Test if image loads
     const img = new Image();
     img.onload = () => {
-      setImageStatus((prev) => ({
+      setImageStatus(prev => ({
         ...prev,
         isLoaded: true,
         error: false,
       }));
     };
     img.onerror = () => {
-      setImageStatus((prev) => ({
+      setImageStatus(prev => ({
         ...prev,
         isLoaded: false,
         error: true,
@@ -145,8 +138,7 @@ export const useCharacterImage = (characterId: string) => {
 // Hook for asset management utilities
 export const useAssetManager = () => {
   return {
-    getCharacterImage: (characterId: string) =>
-      assetManager.getCharacterImage(characterId),
+    getCharacterImage: (characterId: string) => assetManager.getCharacterImage(characterId),
     preloadAssets: () => preloadCharacterAssets(),
     validateAssets: () => validateAllAssets(),
     getAllAssets: (category?: 'character' | 'background' | 'ui' | 'misc') =>

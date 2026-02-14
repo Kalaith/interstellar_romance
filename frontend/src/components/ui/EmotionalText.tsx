@@ -31,16 +31,10 @@ const emotionIcons: Record<EmotionType, string> = {
   neutral: '😐',
 };
 
-export const EmotionalText: React.FC<EmotionalTextProps> = ({
-  text,
-  emotion,
-  className = '',
-}) => {
+export const EmotionalText: React.FC<EmotionalTextProps> = ({ text, emotion, className = '' }) => {
   return (
     <div className={`flex items-start space-x-2 ${className}`}>
-      <span className="text-2xl flex-shrink-0 mt-1">
-        {emotionIcons[emotion]}
-      </span>
+      <span className="text-2xl flex-shrink-0 mt-1">{emotionIcons[emotion]}</span>
       <p className={`flex-1 ${emotionStyles[emotion]}`}>{text}</p>
     </div>
   );

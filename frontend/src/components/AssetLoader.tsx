@@ -12,16 +12,8 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
   showProgress = false,
   fallback,
 }) => {
-  const {
-    isLoading,
-    progress,
-    hasErrors,
-    isComplete,
-    errors,
-    invalidAssets,
-    loaded,
-    total,
-  } = useAssetLoader();
+  const { isLoading, progress, hasErrors, isComplete, errors, invalidAssets, loaded, total } =
+    useAssetLoader();
 
   // If loading is complete or we don't want to show loading state, render children
   if (isComplete || !showProgress) {
@@ -41,9 +33,7 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
           <div className="mb-6">
             <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
             <h2 className="text-2xl font-bold mb-2">Loading Game Assets</h2>
-            <p className="text-blue-200">
-              Preparing your interstellar romance adventure...
-            </p>
+            <p className="text-blue-200">Preparing your interstellar romance adventure...</p>
           </div>
 
           <div className="w-80 bg-slate-700 rounded-full h-3 mx-auto">
@@ -115,24 +105,22 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
     import('../utils/assetManager').then(({ getCharacterImage }) => {
       const src = getCharacterImage(characterId);
       setImageSrc(src);
-      setImageState((prev) => ({ ...prev, src }));
+      setImageState(prev => ({ ...prev, src }));
     });
   }, [characterId]);
 
   const handleImageLoad = () => {
-    setImageState((prev) => ({ ...prev, loaded: true, error: false }));
+    setImageState(prev => ({ ...prev, loaded: true, error: false }));
   };
 
   const handleImageError = () => {
-    setImageState((prev) => ({ ...prev, loaded: false, error: true }));
+    setImageState(prev => ({ ...prev, loaded: false, error: true }));
   };
 
   // Show loading placeholder while image source is being determined
   if (!imageSrc) {
     return (
-      <div
-        className={`${className} ${fallbackClassName} flex items-center justify-center`}
-      >
+      <div className={`${className} ${fallbackClassName} flex items-center justify-center`}>
         <div className="animate-pulse text-gray-400 text-xs">Loading...</div>
       </div>
     );

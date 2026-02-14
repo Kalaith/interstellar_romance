@@ -7,7 +7,7 @@ import { CharacterLookup, memoize, debounce } from '../utils/performanceUtils';
 
 // Optimized character selection with memoization
 export const useOptimizedCharacters = () => {
-  const characters = useGameStore((state) => state.characters);
+  const characters = useGameStore(state => state.characters);
   const characterLookupRef = useRef<CharacterLookup | null>(null);
 
   // Create or update character lookup map
@@ -54,7 +54,7 @@ export const useOptimizedCharacters = () => {
 
 // Memoized dialogue options calculation
 export const useDialogueOptions = () => {
-  const selectedCharacter = useGameStore((state) => state.selectedCharacter);
+  const selectedCharacter = useGameStore(state => state.selectedCharacter);
 
   // Memoize expensive dialogue calculations
   const getAvailableOptions = useMemo(() => {
@@ -66,7 +66,7 @@ export const useDialogueOptions = () => {
         // For now, return empty array as placeholder
         return [];
       },
-      (character) =>
+      character =>
         `${character?.id || 'none'}-${character?.affection || 0}-${character?.mood || 'none'}`
     );
   }, []);
@@ -78,7 +78,7 @@ export const useDialogueOptions = () => {
 
 // Debounced affection updates
 export const useDebouncedAffectionUpdate = (delay: number = 300) => {
-  const updateAffection = useGameStore((state) => state.updateAffection);
+  const updateAffection = useGameStore(state => state.updateAffection);
 
   const debouncedUpdate = useMemo(() => {
     return debounce((characterId: string, amount: number) => {
@@ -91,8 +91,8 @@ export const useDebouncedAffectionUpdate = (delay: number = 300) => {
 
 // Optimized screen navigation
 export const useOptimizedNavigation = () => {
-  const setScreen = useGameStore((state) => state.setScreen);
-  const currentScreen = useGameStore((state) => state.currentScreen);
+  const setScreen = useGameStore(state => state.setScreen);
+  const currentScreen = useGameStore(state => state.currentScreen);
 
   const navigateToScreen = useCallback(
     (screen: GameScreen) => {
@@ -140,9 +140,7 @@ export const usePerformanceMonitor = (componentName: string) => {
       const duration = Date.now() - startTime;
       if (duration > 16) {
         // Slower than 60fps
-        console.warn(
-          `Slow operation in ${componentName}: ${operationName} took ${duration}ms`
-        );
+        console.warn(`Slow operation in ${componentName}: ${operationName} took ${duration}ms`);
       }
     },
     [componentName]
@@ -153,10 +151,8 @@ export const usePerformanceMonitor = (componentName: string) => {
 
 // Optimized storyline management
 export const useOptimizedStorylines = () => {
-  const availableStorylines = useGameStore(
-    (state) => state.availableStorylines
-  );
-  const selectedCharacter = useGameStore((state) => state.selectedCharacter);
+  const availableStorylines = useGameStore(state => state.availableStorylines);
+  const selectedCharacter = useGameStore(state => state.selectedCharacter);
 
   const characterStorylines = useMemo(() => {
     if (!selectedCharacter) return [];
@@ -164,13 +160,11 @@ export const useOptimizedStorylines = () => {
   }, [availableStorylines, selectedCharacter?.id]);
 
   const unlockedStorylines = useMemo(() => {
-    return characterStorylines.filter(
-      (storyline) => storyline.unlocked && !storyline.completed
-    );
+    return characterStorylines.filter(storyline => storyline.unlocked && !storyline.completed);
   }, [characterStorylines]);
 
   const completedStorylines = useMemo(() => {
-    return characterStorylines.filter((storyline) => storyline.completed);
+    return characterStorylines.filter(storyline => storyline.completed);
   }, [characterStorylines]);
 
   return {
@@ -187,19 +181,17 @@ export const useOptimizedStorylines = () => {
 
 // Memoized achievement calculations
 export const useOptimizedAchievements = () => {
-  const achievements = useGameStore((state) => state.achievements);
-  const characters = useGameStore((state) => state.characters);
-  const totalDates = useGameStore((state) => state.totalDates);
-  const totalConversations = useGameStore((state) => state.totalConversations);
+  const achievements = useGameStore(state => state.achievements);
+  const characters = useGameStore(state => state.characters);
+  const totalDates = useGameStore(state => state.totalDates);
+  const totalConversations = useGameStore(state => state.totalConversations);
 
   const achievementStats = useMemo(() => {
-    const unlockedAchievements = achievements.filter((a) => a.achieved);
+    const unlockedAchievements = achievements.filter(a => a.achieved);
     // Note: points system not implemented yet, setting to 0
     const totalPoints = 0;
     const completionRate =
-      achievements.length > 0
-        ? (unlockedAchievements.length / achievements.length) * 100
-        : 0;
+      achievements.length > 0 ? (unlockedAchievements.length / achievements.length) * 100 : 0;
 
     return {
       unlocked: unlockedAchievements,
@@ -212,13 +204,9 @@ export const useOptimizedAchievements = () => {
   }, [achievements]);
 
   const gameStats = useMemo(() => {
-    const totalAffection = characters.reduce(
-      (sum, char) => sum + char.affection,
-      0
-    );
-    const maxAffection = Math.max(...characters.map((char) => char.affection));
-    const averageAffection =
-      characters.length > 0 ? totalAffection / characters.length : 0;
+    const totalAffection = characters.reduce((sum, char) => sum + char.affection, 0);
+    const maxAffection = Math.max(...characters.map(char => char.affection));
+    const averageAffection = characters.length > 0 ? totalAffection / characters.length : 0;
 
     return {
       totalAffection,
@@ -226,8 +214,7 @@ export const useOptimizedAchievements = () => {
       averageAffection,
       totalDates,
       totalConversations,
-      charactersAtMaxAffection: characters.filter((c) => c.affection >= 100)
-        .length,
+      charactersAtMaxAffection: characters.filter(c => c.affection >= 100).length,
     };
   }, [characters, totalDates, totalConversations]);
 

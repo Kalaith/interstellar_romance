@@ -23,9 +23,7 @@ export const CharacterInteraction: React.FC = () => {
   const [currentDialogue, setCurrentDialogue] = useState<string>(
     'Select a conversation topic to begin...'
   );
-  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>(
-    []
-  );
+  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
   const [consequences, setConsequences] = useState<string[]>([]);
 
   // Memoize dialogue options calculation for performance
@@ -71,10 +69,7 @@ export const CharacterInteraction: React.FC = () => {
 
       if (response.affectionChange > 0) {
         // Use debounced update for better performance
-        debouncedUpdateAffection(
-          selectedCharacter.id,
-          response.affectionChange
-        );
+        debouncedUpdateAffection(selectedCharacter.id, response.affectionChange);
       }
 
       // Handle consequences
@@ -83,7 +78,7 @@ export const CharacterInteraction: React.FC = () => {
           response.consequence,
           selectedCharacter.id
         );
-        setConsequences((prev) => [...prev.slice(-2), processedConsequence]); // Keep last 3 consequences
+        setConsequences(prev => [...prev.slice(-2), processedConsequence]); // Keep last 3 consequences
       }
 
       // Options will be automatically updated via the memoized calculation
@@ -94,9 +89,7 @@ export const CharacterInteraction: React.FC = () => {
 
   const handleGift = useCallback(() => {
     if (!selectedCharacter) return;
-    setCurrentDialogue(
-      `${selectedCharacter.name} appreciates your thoughtful gift!`
-    );
+    setCurrentDialogue(`${selectedCharacter.name} appreciates your thoughtful gift!`);
     debouncedUpdateAffection(selectedCharacter.id, 5);
   }, [selectedCharacter, debouncedUpdateAffection]);
 
@@ -104,9 +97,7 @@ export const CharacterInteraction: React.FC = () => {
     if (!selectedCharacter) return;
 
     if (selectedCharacter.affection >= 50) {
-      setCurrentDialogue(
-        `${selectedCharacter.name} happily agrees to go on a date with you!`
-      );
+      setCurrentDialogue(`${selectedCharacter.name} happily agrees to go on a date with you!`);
       debouncedUpdateAffection(selectedCharacter.id, 10);
     } else {
       setCurrentDialogue(
@@ -145,15 +136,9 @@ export const CharacterInteraction: React.FC = () => {
                 fallbackClassName="bg-slate-700"
               />
               <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2">
-                  {selectedCharacter.name}
-                </h3>
-                <p className="text-blue-300 mb-2">
-                  {selectedCharacter.species}
-                </p>
-                <p className="text-purple-300 mb-2">
-                  Mood: {selectedCharacter.mood}
-                </p>
+                <h3 className="text-2xl font-bold mb-2">{selectedCharacter.name}</h3>
+                <p className="text-blue-300 mb-2">{selectedCharacter.species}</p>
+                <p className="text-purple-300 mb-2">Mood: {selectedCharacter.mood}</p>
 
                 {/* Relationship Status */}
                 <div className="mb-3">
@@ -181,9 +166,7 @@ export const CharacterInteraction: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="text-center">
                     <div className="text-blue-400">Trust</div>
-                    <div className="text-white">
-                      {selectedCharacter.relationshipStatus.trust}
-                    </div>
+                    <div className="text-white">{selectedCharacter.relationshipStatus.trust}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-green-400">Intimacy</div>
@@ -216,9 +199,7 @@ export const CharacterInteraction: React.FC = () => {
                     key={index}
                     className="bg-purple-900/40 border border-purple-500/30 rounded p-3"
                   >
-                    <p className="text-purple-200 text-sm italic">
-                      {consequence}
-                    </p>
+                    <p className="text-purple-200 text-sm italic">{consequence}</p>
                   </div>
                 ))}
               </div>
@@ -227,7 +208,7 @@ export const CharacterInteraction: React.FC = () => {
             {/* Dialogue Options */}
             <div className="grid grid-cols-1 gap-3">
               {availableOptions.length > 0 ? (
-                availableOptions.map((option) => (
+                availableOptions.map(option => (
                   <button
                     key={option.id}
                     onClick={() => handleDialogue(option)}
@@ -262,9 +243,7 @@ export const CharacterInteraction: React.FC = () => {
               ) : (
                 <div className="text-center text-gray-400 py-4">
                   <p>No dialogue options available for this character yet.</p>
-                  <p className="text-sm mt-1">
-                    Try building more affection or check back later!
-                  </p>
+                  <p className="text-sm mt-1">Try building more affection or check back later!</p>
                 </div>
               )}
             </div>

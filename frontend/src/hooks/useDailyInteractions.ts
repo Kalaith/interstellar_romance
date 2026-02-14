@@ -23,7 +23,7 @@ interface DailyInteractionState {
 // Hook for managing daily interactions with timezone support
 export const useDailyInteractions = (characterId: string) => {
   const { characters, updateCharacter } = useGameStore();
-  const character = characters.find((c) => c.id === characterId);
+  const character = characters.find(c => c.id === characterId);
 
   const [state, setState] = useState<DailyInteractionState>({
     interactionsUsed: 0,
@@ -38,9 +38,7 @@ export const useDailyInteractions = (characterId: string) => {
     timeUntilResetFormatted: 'Now',
   });
 
-  const [updateInterval, setUpdateInterval] = useState<ReturnType<
-    typeof setInterval
-  > | null>(null);
+  const [updateInterval, setUpdateInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize or update daily interaction state
   const updateDailyInteractionState = useCallback(() => {
@@ -70,10 +68,7 @@ export const useDailyInteractions = (characterId: string) => {
     }
 
     // Update character if reset occurred or migration happened
-    if (
-      enhancedData.resetInfo.hasReset ||
-      !character.dailyInteractions.timezone
-    ) {
+    if (enhancedData.resetInfo.hasReset || !character.dailyInteractions.timezone) {
       updateCharacter(characterId, {
         dailyInteractions: {
           lastResetDate: enhancedData.lastResetDate,
@@ -90,9 +85,7 @@ export const useDailyInteractions = (characterId: string) => {
       maxInteractions: enhancedData.maxInteractions,
       canInteract: enhancedData.interactionsUsed < enhancedData.maxInteractions,
       resetInfo: enhancedData.resetInfo,
-      timeUntilResetFormatted: formatTimeUntilReset(
-        enhancedData.resetInfo.timeUntilReset
-      ),
+      timeUntilResetFormatted: formatTimeUntilReset(enhancedData.resetInfo.timeUntilReset),
     });
   }, [character, characterId, updateCharacter]);
 
@@ -111,20 +104,14 @@ export const useDailyInteractions = (characterId: string) => {
       },
     });
 
-    setState((prev) => ({
+    setState(prev => ({
       ...prev,
       interactionsUsed: newInteractionsUsed,
       canInteract: newInteractionsUsed < prev.maxInteractions,
     }));
 
     return true;
-  }, [
-    character,
-    characterId,
-    state.interactionsUsed,
-    state.maxInteractions,
-    updateCharacter,
-  ]);
+  }, [character, characterId, state.interactionsUsed, state.maxInteractions, updateCharacter]);
 
   // Get remaining interactions
   const getRemainingInteractions = useCallback(() => {
@@ -170,12 +157,10 @@ export const useDailyInteractions = (characterId: string) => {
         updateDailyInteractionState();
       } else {
         // Just update the countdown
-        setState((prev) => ({
+        setState(prev => ({
           ...prev,
           resetInfo,
-          timeUntilResetFormatted: formatTimeUntilReset(
-            resetInfo.timeUntilReset
-          ),
+          timeUntilResetFormatted: formatTimeUntilReset(resetInfo.timeUntilReset),
         }));
       }
     }, 1000);
@@ -237,7 +222,7 @@ export const useDailyInteractionSettings = () => {
 
   // Update all characters to use current timezone
   const updateAllCharacterTimezones = useCallback(() => {
-    characters.forEach((character) => {
+    characters.forEach(character => {
       if (!character.dailyInteractions.timezone) {
         updateCharacter(character.id, {
           dailyInteractions: {
@@ -252,7 +237,7 @@ export const useDailyInteractionSettings = () => {
   // Reset all daily interactions (for testing purposes)
   const resetAllDailyInteractions = useCallback(() => {
     const currentDate = getCurrentDateInTimezone();
-    characters.forEach((character) => {
+    characters.forEach(character => {
       updateCharacter(character.id, {
         dailyInteractions: {
           lastResetDate: currentDate,
@@ -271,13 +256,10 @@ export const useDailyInteractionSettings = () => {
 
     // Character counts for overview
     totalCharacters: characters.length,
-    charactersWithInteractions: characters.filter(
-      (c) => c.dailyInteractions.interactionsUsed > 0
-    ).length,
+    charactersWithInteractions: characters.filter(c => c.dailyInteractions.interactionsUsed > 0)
+      .length,
     charactersAtMaxInteractions: characters.filter(
-      (c) =>
-        c.dailyInteractions.interactionsUsed >=
-        c.dailyInteractions.maxInteractions
+      c => c.dailyInteractions.interactionsUsed >= c.dailyInteractions.maxInteractions
     ).length,
   };
 };

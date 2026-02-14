@@ -6,17 +6,12 @@ interface StorylinePanelProps {
   characterId: string;
 }
 
-export const StorylinePanel: React.FC<StorylinePanelProps> = ({
-  characterId,
-}) => {
+export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) => {
   const { availableStorylines, completeStorylineChoice } = useGameStore();
-  const [selectedStoryline, setSelectedStoryline] =
-    useState<StorylineEvent | null>(null);
+  const [selectedStoryline, setSelectedStoryline] = useState<StorylineEvent | null>(null);
 
   const characterStorylines = availableStorylines[characterId] || [];
-  const unlockedStorylines = characterStorylines.filter(
-    (s) => s.unlocked && !s.completed
-  );
+  const unlockedStorylines = characterStorylines.filter(s => s.unlocked && !s.completed);
 
   const handleStorylineClick = (storyline: StorylineEvent) => {
     setSelectedStoryline(storyline);
@@ -33,9 +28,7 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({
 
   return (
     <div className="mt-6">
-      <h4 className="text-lg font-semibold text-white mb-3">
-        Character Storylines
-      </h4>
+      <h4 className="text-lg font-semibold text-white mb-3">Character Storylines</h4>
 
       {unlockedStorylines.length === 0 ? (
         <div className="bg-slate-800 rounded-lg p-4 text-center">
@@ -46,16 +39,14 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({
         </div>
       ) : (
         <div className="space-y-3">
-          {unlockedStorylines.map((storyline) => (
+          {unlockedStorylines.map(storyline => (
             <div
               key={storyline.id}
               className="bg-slate-800 rounded-lg p-4 cursor-pointer hover:bg-slate-700 transition-colors border-l-4 border-yellow-500"
               onClick={() => handleStorylineClick(storyline)}
             >
               <div className="flex justify-between items-start mb-2">
-                <h5 className="text-yellow-400 font-semibold">
-                  {storyline.title}
-                </h5>
+                <h5 className="text-yellow-400 font-semibold">{storyline.title}</h5>
                 <span className="text-xs bg-yellow-900 text-yellow-200 px-2 py-1 rounded">
                   New Story
                 </span>
@@ -75,9 +66,7 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({
           <div className="bg-slate-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-yellow-400">
-                  {selectedStoryline.title}
-                </h3>
+                <h3 className="text-xl font-bold text-yellow-400">{selectedStoryline.title}</h3>
                 <button
                   onClick={() => setSelectedStoryline(null)}
                   className="text-gray-400 hover:text-white text-2xl"
@@ -87,22 +76,16 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({
               </div>
 
               <div className="bg-slate-800 rounded-lg p-4 mb-6">
-                <p className="text-gray-300 leading-relaxed">
-                  {selectedStoryline.dialogue}
-                </p>
+                <p className="text-gray-300 leading-relaxed">{selectedStoryline.dialogue}</p>
               </div>
 
               {selectedStoryline.choices && (
                 <div className="space-y-3">
-                  <h4 className="text-white font-semibold mb-3">
-                    How do you respond?
-                  </h4>
-                  {selectedStoryline.choices.map((choice) => (
+                  <h4 className="text-white font-semibold mb-3">How do you respond?</h4>
+                  {selectedStoryline.choices.map(choice => (
                     <button
                       key={choice.id}
-                      onClick={() =>
-                        handleChoiceSelect(selectedStoryline.id, choice.id)
-                      }
+                      onClick={() => handleChoiceSelect(selectedStoryline.id, choice.id)}
                       className="w-full text-left p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
                     >
                       <div className="text-white mb-1">{choice.text}</div>
@@ -114,22 +97,19 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({
                 </div>
               )}
 
-              {selectedStoryline.rewards &&
-                selectedStoryline.rewards.length > 0 && (
-                  <div className="mt-6 p-3 bg-purple-900/40 rounded-lg border border-purple-500/30">
-                    <h5 className="text-purple-300 font-semibold mb-2">
-                      Potential Rewards:
-                    </h5>
-                    <ul className="text-purple-200 text-sm space-y-1">
-                      {selectedStoryline.rewards.map((reward, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-                          {reward.description}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+              {selectedStoryline.rewards && selectedStoryline.rewards.length > 0 && (
+                <div className="mt-6 p-3 bg-purple-900/40 rounded-lg border border-purple-500/30">
+                  <h5 className="text-purple-300 font-semibold mb-2">Potential Rewards:</h5>
+                  <ul className="text-purple-200 text-sm space-y-1">
+                    {selectedStoryline.rewards.map((reward, index) => (
+                      <li key={index} className="flex items-center">
+                        <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                        {reward.description}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

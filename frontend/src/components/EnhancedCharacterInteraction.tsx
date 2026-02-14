@@ -19,9 +19,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     'Choose how to start your conversation...'
   );
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
-  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>(
-    []
-  );
+  const [availableOptions, setAvailableOptions] = useState<DialogueOption[]>([]);
   const [dialogueHistory, setDialogueHistory] = useState<
     { player: string; character: string; emotion: string }[]
   >([]);
@@ -48,9 +46,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">
-            No character selected!
-          </p>
+          <p className="text-xl text-[var(--text-primary)] mb-4">No character selected!</p>
           <button
             onClick={() => setScreen('main-hub')}
             className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
@@ -73,10 +69,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     }
 
     // Check requirements
-    if (
-      option.requiresAffection &&
-      selectedCharacter.affection < option.requiresAffection
-    ) {
+    if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
       setCurrentDialogue(
         `${selectedCharacter.name} seems uncomfortable with that approach. Perhaps build more trust first.`
       );
@@ -102,10 +95,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       setCurrentEmotion(response.emotion);
 
       // Calculate affection change with mood modifier
-      const moodModifier = getMoodModifier(
-        selectedCharacter.mood,
-        option.topic
-      );
+      const moodModifier = getMoodModifier(selectedCharacter.mood, option.topic);
       const totalAffectionChange = response.affectionChange + moodModifier;
 
       if (totalAffectionChange !== 0) {
@@ -114,7 +104,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       }
 
       // Add to dialogue history
-      setDialogueHistory((prev) => [
+      setDialogueHistory(prev => [
         ...prev,
         {
           player: option.text,
@@ -130,10 +120,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
           const nextBranchOptions = option.nextOptions.flatMap(
             (branchId: string) => dialogueTree.branches[branchId] || []
           );
-          setAvailableOptions([
-            ...dialogueTree.rootOptions,
-            ...nextBranchOptions,
-          ]);
+          setAvailableOptions([...dialogueTree.rootOptions, ...nextBranchOptions]);
           // setCurrentBranch(option.nextOptions[0] || null);
         }
       }
@@ -192,11 +179,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     }
   };
 
-  const filteredOptions = availableOptions.filter((option) => {
-    if (
-      option.requiresAffection &&
-      selectedCharacter.affection < option.requiresAffection
-    ) {
+  const filteredOptions = availableOptions.filter(option => {
+    if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
       return false;
     }
     return true;
@@ -204,10 +188,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
   const canTalkToday = canTalkToCharacterToday(selectedCharacter.id);
 
-  const unlockedMilestones = selectedCharacter.milestones.filter(
-    (m) => m.achieved
-  );
-  const nextMilestone = selectedCharacter.milestones.find((m) => !m.achieved);
+  const unlockedMilestones = selectedCharacter.milestones.filter(m => m.achieved);
+  const nextMilestone = selectedCharacter.milestones.find(m => !m.achieved);
 
   return (
     <div className="min-h-screen">
@@ -241,18 +223,14 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                         {selectedCharacter.species}
                       </p>
                     ) : (
-                      <p className="text-[var(--text-muted)] font-medium mb-1">
-                        Unknown Species
-                      </p>
+                      <p className="text-[var(--text-muted)] font-medium mb-1">Unknown Species</p>
                     )}
                     {selectedCharacter.knownInfo.basicPersonality ? (
                       <p className="text-[var(--text-muted)] text-sm">
                         {selectedCharacter.personality}
                       </p>
                     ) : (
-                      <p className="text-[var(--text-muted)] text-sm">
-                        Personality Unknown
-                      </p>
+                      <p className="text-[var(--text-muted)] text-sm">Personality Unknown</p>
                     )}
                   </div>
 
@@ -262,9 +240,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
                         Comm Status
                       </div>
-                      <div className="text-[var(--state-available)] font-semibold">
-                        ONLINE
-                      </div>
+                      <div className="text-[var(--state-available)] font-semibold">ONLINE</div>
                     </div>
                     <div>
                       <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
@@ -290,8 +266,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 ) : (
                   <div className="mb-4">
                     <div className="text-[var(--text-muted)] text-sm">
-                      Current mood is unknown - spend more time with them to
-                      learn their emotional state.
+                      Current mood is unknown - spend more time with them to learn their emotional
+                      state.
                     </div>
                   </div>
                 )}
@@ -323,9 +299,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                         Trust
                       </span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">
-                        75/100
-                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">75/100</span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
                       <div
@@ -343,9 +317,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                         Compatibility
                       </span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">
-                        85%
-                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">85%</span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
                       <div
@@ -371,8 +343,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                   ))}
                   {nextMilestone && (
                     <div className="px-3 py-1 bg-[var(--state-locked)] text-[var(--text-muted)] rounded-full text-xs">
-                      🔒 {nextMilestone.name} ({nextMilestone.unlockedAt}{' '}
-                      affection)
+                      🔒 {nextMilestone.name} ({nextMilestone.unlockedAt} affection)
                     </div>
                   )}
                 </div>
@@ -388,20 +359,14 @@ export const EnhancedCharacterInteraction: React.FC = () => {
               </h4>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[var(--state-available)] rounded-full animate-pulse"></div>
-                <span className="text-[var(--text-muted)] text-xs">
-                  ACTIVE CHANNEL
-                </span>
+                <span className="text-[var(--text-muted)] text-xs">ACTIVE CHANNEL</span>
               </div>
             </div>
 
             {/* Dialogue Display */}
             <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4 mb-6 min-h-[120px]">
               <div className="text-[var(--text-primary)] leading-relaxed">
-                <EmotionalText
-                  text={currentDialogue}
-                  emotion={currentEmotion}
-                  className="w-full"
-                />
+                <EmotionalText text={currentDialogue} emotion={currentEmotion} className="w-full" />
               </div>
             </div>
 
@@ -415,9 +380,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       Daily conversation completed
                     </div>
                     <div className="text-[var(--text-muted)] text-sm">
-                      You've already had your daily chat with{' '}
-                      {selectedCharacter.name}. Come back tomorrow for another
-                      conversation!
+                      You've already had your daily chat with {selectedCharacter.name}. Come back
+                      tomorrow for another conversation!
                     </div>
                   </div>
                 </div>
@@ -426,7 +390,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
             {/* Response Options Grid */}
             <div className="grid grid-cols-1 gap-3">
-              {filteredOptions.map((option) => {
+              {filteredOptions.map(option => {
                 const isLocked =
                   option.requiresAffection &&
                   selectedCharacter.affection < option.requiresAffection;

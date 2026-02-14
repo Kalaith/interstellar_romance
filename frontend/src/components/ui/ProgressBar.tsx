@@ -1,21 +1,12 @@
 import React from 'react';
-import {
-  ProgressBarProps,
-  defaultProgressBarProps,
-} from '../../types/componentProps';
+import { ProgressBarProps, defaultProgressBarProps } from '../../types/componentProps';
 import { Logger } from '../../services/Logger';
 
-export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
-  const {
-    value,
-    variant,
-    size,
-    showValue,
-    animated,
-    label,
-    className,
-    ...restProps
-  } = { ...defaultProgressBarProps({}), ...props };
+export const ProgressBar: React.FC<ProgressBarProps> = props => {
+  const { value, variant, size, showValue, animated, label, className, ...restProps } = {
+    ...defaultProgressBarProps({}),
+    ...props,
+  };
 
   const safeValue = React.useMemo(() => {
     try {
@@ -48,11 +39,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
   );
 
   const progressClasses = React.useMemo(() => {
-    const baseClasses = [
-      sizeClasses[size],
-      'rounded-full',
-      variantClasses[variant],
-    ];
+    const baseClasses = [sizeClasses[size], 'rounded-full', variantClasses[variant]];
 
     if (animated) {
       baseClasses.push('transition-all', 'duration-500', 'ease-out');
@@ -66,17 +53,11 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
       {label && (
         <div className="flex items-center justify-between mb-1">
           <span className="text-sm text-gray-300">{label}</span>
-          {showValue && (
-            <span className="text-sm font-semibold text-white">
-              {safeValue}%
-            </span>
-          )}
+          {showValue && <span className="text-sm font-semibold text-white">{safeValue}%</span>}
         </div>
       )}
 
-      <div
-        className={`w-full bg-gray-700 rounded-full ${sizeClasses[size]} overflow-hidden`}
-      >
+      <div className={`w-full bg-gray-700 rounded-full ${sizeClasses[size]} overflow-hidden`}>
         <div
           className={progressClasses}
           style={{ width: `${safeValue}%` }}
@@ -90,9 +71,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
 
       {showValue && !label && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-semibold text-white drop-shadow-sm">
-            {safeValue}%
-          </span>
+          <span className="text-xs font-semibold text-white drop-shadow-sm">{safeValue}%</span>
         </div>
       )}
     </div>
@@ -100,14 +79,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = (props) => {
 };
 
 // Specific progress bar variants
-export const AffectionBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
-  props
-) => <ProgressBar {...props} variant="affection" />;
+export const AffectionBar: React.FC<Omit<ProgressBarProps, 'variant'>> = props => (
+  <ProgressBar {...props} variant="affection" />
+);
 
-export const CompatibilityBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
-  props
-) => <ProgressBar {...props} variant="compatibility" />;
+export const CompatibilityBar: React.FC<Omit<ProgressBarProps, 'variant'>> = props => (
+  <ProgressBar {...props} variant="compatibility" />
+);
 
-export const HealthBar: React.FC<Omit<ProgressBarProps, 'variant'>> = (
-  props
-) => <ProgressBar {...props} variant="health" />;
+export const HealthBar: React.FC<Omit<ProgressBarProps, 'variant'>> = props => (
+  <ProgressBar {...props} variant="health" />
+);

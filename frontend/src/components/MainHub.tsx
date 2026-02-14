@@ -17,8 +17,7 @@ import { createCharacterId } from '../types/brandedTypes';
 export const MainHub: React.FC = () => {
   const { player, currentWeek, setScreen } = useGameStore();
 
-  const { characters, selectCharacter, canTalkToCharacterToday } =
-    useCharacterStore();
+  const { characters, selectCharacter, canTalkToCharacterToday } = useCharacterStore();
 
   React.useEffect(() => {
     Logger.info('MainHub component mounted', {
@@ -32,13 +31,8 @@ export const MainHub: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">
-            No character found!
-          </p>
-          <PrimaryButton
-            onClick={() => setScreen('character-creation')}
-            size="lg"
-          >
+          <p className="text-xl text-[var(--text-primary)] mb-4">No character found!</p>
+          <PrimaryButton onClick={() => setScreen('character-creation')} size="lg">
             Create Character
           </PrimaryButton>
         </div>
@@ -47,13 +41,8 @@ export const MainHub: React.FC = () => {
   }
 
   // Filter characters based on player's sexual preference
-  const filteredCharacters = filterCharactersByPreference(
-    characters,
-    player.sexualPreference
-  );
-  const preferenceDescription = getPreferenceDescription(
-    player.sexualPreference
-  );
+  const filteredCharacters = filterCharactersByPreference(characters, player.sexualPreference);
+  const preferenceDescription = getPreferenceDescription(player.sexualPreference);
 
   return (
     <div className="min-h-screen">
@@ -69,9 +58,7 @@ export const MainHub: React.FC = () => {
                 <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-wide uppercase">
                   Galactic Dating Hub
                 </h2>
-                <p className="text-[var(--text-secondary)] text-sm">
-                  Interstellar Romance Command
-                </p>
+                <p className="text-[var(--text-secondary)] text-sm">Interstellar Romance Command</p>
               </div>
             </div>
 
@@ -80,23 +67,15 @@ export const MainHub: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   Captain
                 </div>
-                <div className="text-[var(--text-primary)] font-semibold">
-                  {player.name}
-                </div>
+                <div className="text-[var(--text-primary)] font-semibold">{player.name}</div>
               </div>
               <div className="text-center">
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   Cycle
                 </div>
-                <div className="text-[var(--resource-energy)] font-semibold">
-                  {currentWeek}
-                </div>
+                <div className="text-[var(--resource-energy)] font-semibold">{currentWeek}</div>
               </div>
-              <Button
-                variant="ghost"
-                onClick={() => setScreen('main-menu')}
-                iconLeft="🏠"
-              >
+              <Button variant="ghost" onClick={() => setScreen('main-menu')} iconLeft="🏠">
                 Main Menu
               </Button>
             </div>
@@ -135,7 +114,7 @@ export const MainHub: React.FC = () => {
                 color: 'var(--resource-alloys)',
                 icon: '🔧',
               },
-            ].map((stat) => (
+            ].map(stat => (
               <div
                 key={stat.label}
                 className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-4 text-center"
@@ -144,10 +123,7 @@ export const MainHub: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   {stat.label}
                 </div>
-                <div
-                  className="text-xl font-bold"
-                  style={{ color: stat.color }}
-                >
+                <div className="text-xl font-bold" style={{ color: stat.color }}>
                   {stat.value}
                 </div>
               </div>
@@ -182,8 +158,7 @@ export const MainHub: React.FC = () => {
                   No Compatible Characters
                 </h3>
                 <p className="text-[var(--text-secondary)] mb-4">
-                  No characters match your current preference:{' '}
-                  {preferenceDescription.toLowerCase()}
+                  No characters match your current preference: {preferenceDescription.toLowerCase()}
                 </p>
                 <button
                   onClick={() => setScreen('character-creation')}
@@ -193,10 +168,8 @@ export const MainHub: React.FC = () => {
                 </button>
               </div>
             ) : (
-              filteredCharacters.map((character) => {
-                const canTalkToday = canTalkToCharacterToday(
-                  createCharacterId(character.id)
-                );
+              filteredCharacters.map(character => {
+                const canTalkToday = canTalkToCharacterToday(createCharacterId(character.id));
                 const compatibility = player
                   ? calculateCompatibility(player, character.profile)
                   : null;
@@ -204,9 +177,7 @@ export const MainHub: React.FC = () => {
                 return (
                   <div
                     key={character.id}
-                    onClick={() =>
-                      selectCharacter(createCharacterId(character.id))
-                    }
+                    onClick={() => selectCharacter(createCharacterId(character.id))}
                     className="bg-[var(--bg-section)] border-2 border-[var(--border-inner)] hover:border-[var(--accent-cyan)] cursor-pointer hover:shadow-[0_0_20px_rgba(0,212,255,0.2)] transform hover:scale-105 rounded-lg overflow-hidden transition-all duration-300"
                   >
                     {/* Character Portrait */}
@@ -242,12 +213,8 @@ export const MainHub: React.FC = () => {
                       {!canTalkToday && (
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                           <div className="text-center">
-                            <div className="text-[var(--resource-energy)] text-2xl mb-2">
-                              💬
-                            </div>
-                            <div className="text-[var(--text-secondary)] text-sm">
-                              Chat Used
-                            </div>
+                            <div className="text-[var(--resource-energy)] text-2xl mb-2">💬</div>
+                            <div className="text-[var(--text-secondary)] text-sm">Chat Used</div>
                             <div className="text-[var(--text-muted)] text-xs">
                               Available tomorrow
                             </div>
@@ -284,9 +251,7 @@ export const MainHub: React.FC = () => {
                               {character.personality}
                             </p>
                           ) : (
-                            <p className="text-[var(--text-muted)] text-xs">
-                              Personality Unknown
-                            </p>
+                            <p className="text-[var(--text-muted)] text-xs">Personality Unknown</p>
                           )}
                         </div>
                       </div>
@@ -302,9 +267,7 @@ export const MainHub: React.FC = () => {
                         </div>
                       ) : (
                         <div className="mb-3">
-                          <div className="text-xs text-[var(--text-muted)]">
-                            Mood: Unknown
-                          </div>
+                          <div className="text-xs text-[var(--text-muted)]">Mood: Unknown</div>
                         </div>
                       )}
 
@@ -324,7 +287,7 @@ export const MainHub: React.FC = () => {
                       <div className="grid grid-cols-2 gap-2">
                         <PrimaryButton
                           size="xs"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             selectCharacter(createCharacterId(character.id));
                             setScreen('character-profile');
@@ -337,7 +300,7 @@ export const MainHub: React.FC = () => {
                         {character.affection >= affectionThresholds.HIGH ? (
                           <SecondaryButton
                             size="xs"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               selectCharacter(createCharacterId(character.id));
                               setScreen('character-interaction');
@@ -347,31 +310,20 @@ export const MainHub: React.FC = () => {
                             Date
                           </SecondaryButton>
                         ) : (
-                          <Button
-                            size="xs"
-                            disabled
-                            variant="ghost"
-                            iconLeft="🔒"
-                          >
+                          <Button size="xs" disabled variant="ghost" iconLeft="🔒">
                             Locked
                           </Button>
                         )}
                       </div>
 
                       {/* Milestones */}
-                      {character.milestones.filter((m) => m.achieved).length >
-                        0 && (
+                      {character.milestones.filter(m => m.achieved).length > 0 && (
                         <div className="mt-3 pt-3 border-t border-[var(--border-inner)]">
                           <div className="flex items-center gap-2">
-                            <span className="text-[var(--state-available)] text-xs">
-                              ✨
-                            </span>
+                            <span className="text-[var(--state-available)] text-xs">✨</span>
                             <span className="text-[var(--text-muted)] text-xs">
-                              {
-                                character.milestones.filter((m) => m.achieved)
-                                  .length
-                              }{' '}
-                              milestones achieved
+                              {character.milestones.filter(m => m.achieved).length} milestones
+                              achieved
                             </span>
                           </div>
                         </div>

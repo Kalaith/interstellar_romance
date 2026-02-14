@@ -29,17 +29,11 @@ export const datePlans: DatePlan[] = [
   {
     id: 'philosophy_cafe',
     name: 'Philosophy Café Discussion',
-    description:
-      'Share deep thoughts over exotic beverages in a quiet, contemplative setting.',
+    description: 'Share deep thoughts over exotic beverages in a quiet, contemplative setting.',
     activityType: 'intellectual',
     location: "The Thinking Being's Café",
     duration: 60,
-    preferredTopics: [
-      'philosophy',
-      'meaning of life',
-      'consciousness',
-      'ethics',
-    ],
+    preferredTopics: ['philosophy', 'meaning of life', 'consciousness', 'ethics'],
     requiredAffection: 15,
     compatibilityBonus: 20,
   },
@@ -98,25 +92,18 @@ export const datePlans: DatePlan[] = [
   {
     id: 'starlight_dinner',
     name: 'Starlight Dinner',
-    description:
-      'Enjoy a private dinner under the stars with cuisine from across the galaxy.',
+    description: 'Enjoy a private dinner under the stars with cuisine from across the galaxy.',
     activityType: 'romantic',
     location: 'Starlight Dining Pavilion',
     duration: 120,
-    preferredTopics: [
-      'personal stories',
-      'culture',
-      'taste preferences',
-      'intimacy',
-    ],
+    preferredTopics: ['personal stories', 'culture', 'taste preferences', 'intimacy'],
     requiredAffection: 40,
     compatibilityBonus: 35,
   },
   {
     id: 'garden_walk',
     name: 'Botanical Garden Stroll',
-    description:
-      'Walk through exotic alien gardens, enjoying the beauty and serenity together.',
+    description: 'Walk through exotic alien gardens, enjoying the beauty and serenity together.',
     activityType: 'romantic',
     location: 'Xeno-Botanical Gardens',
     duration: 75,
@@ -179,8 +166,7 @@ export const datePlans: DatePlan[] = [
   {
     id: 'thermal_springs',
     name: 'Thermal Spring Retreat',
-    description:
-      'Relax in natural thermal springs while enjoying peaceful conversation.',
+    description: 'Relax in natural thermal springs while enjoying peaceful conversation.',
     activityType: 'relaxing',
     location: 'Crystalline Thermal Springs',
     duration: 90,
@@ -193,8 +179,7 @@ export const datePlans: DatePlan[] = [
   {
     id: 'game_arcade',
     name: 'Galactic Game Arcade',
-    description:
-      'Play interactive games from different alien cultures, competing and cooperating.',
+    description: 'Play interactive games from different alien cultures, competing and cooperating.',
     activityType: 'social',
     location: 'Multi-Species Game Arcade',
     duration: 120,
@@ -205,8 +190,7 @@ export const datePlans: DatePlan[] = [
   {
     id: 'social_mixer',
     name: 'Interspecies Social Mixer',
-    description:
-      'Meet other beings at a casual social gathering with your date by your side.',
+    description: 'Meet other beings at a casual social gathering with your date by your side.',
     activityType: 'social',
     location: 'Social Hub Commons',
     duration: 150,
@@ -224,12 +208,7 @@ export const datePlans: DatePlan[] = [
     activityType: 'creative',
     location: 'Creative Arts Workshop',
     duration: 135,
-    preferredTopics: [
-      'creativity',
-      'collaboration',
-      'expression',
-      'imagination',
-    ],
+    preferredTopics: ['creativity', 'collaboration', 'expression', 'imagination'],
     requiredAffection: 25,
     compatibilityBonus: 30,
   },
@@ -248,8 +227,7 @@ export const datePlans: DatePlan[] = [
   {
     id: 'music_creation',
     name: 'Musical Collaboration',
-    description:
-      'Create music together using instruments from both your species, finding harmony.',
+    description: 'Create music together using instruments from both your species, finding harmony.',
     activityType: 'creative',
     location: 'Harmonic Music Studio',
     duration: 90,
@@ -260,13 +238,13 @@ export const datePlans: DatePlan[] = [
 ];
 
 export function getDatePlansByActivity(activityType: ActivityType): DatePlan[] {
-  return datePlans.filter((plan) => plan.activityType === activityType);
+  return datePlans.filter(plan => plan.activityType === activityType);
 }
 
 export function getAvailableDatePlans(affection: number): DatePlan[] {
-  return datePlans.filter((plan) => affection >= plan.requiredAffection);
+  return datePlans.filter(plan => affection >= plan.requiredAffection);
 }
 
 export function getDatePlanById(id: string): DatePlan | undefined {
-  return datePlans.find((plan) => plan.id === id);
+  return datePlans.find(plan => plan.id === id);
 }

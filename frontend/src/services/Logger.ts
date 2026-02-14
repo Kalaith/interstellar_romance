@@ -8,9 +8,7 @@ export enum LogLevel {
 }
 
 export class Logger {
-  private static currentLevel = import.meta.env.DEV
-    ? LogLevel.DEBUG
-    : LogLevel.ERROR;
+  private static currentLevel = import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.ERROR;
 
   private static formatMessage(level: string, message: string): string {
     return `[${new Date().toISOString()}] ${level}: ${message}`;
@@ -67,18 +65,13 @@ export class Logger {
                 }
               : error,
           timestamp: new Date().toISOString(),
-          userAgent:
-            typeof window !== 'undefined'
-              ? window.navigator.userAgent
-              : 'unknown',
+          userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
           url: typeof window !== 'undefined' ? window.location.href : 'unknown',
         };
 
         // Store in localStorage for debugging (limit to last 10 errors)
         if (typeof window !== 'undefined' && window.localStorage) {
-          const existingErrors = JSON.parse(
-            localStorage.getItem('app_errors') || '[]'
-          );
+          const existingErrors = JSON.parse(localStorage.getItem('app_errors') || '[]');
           existingErrors.push(errorData);
           if (existingErrors.length > 10) {
             existingErrors.splice(0, existingErrors.length - 10);
@@ -96,9 +89,7 @@ export class Logger {
   static getStoredErrors(): unknown[] {
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
-        const parsed: unknown = JSON.parse(
-          localStorage.getItem('app_errors') || '[]'
-        );
+        const parsed: unknown = JSON.parse(localStorage.getItem('app_errors') || '[]');
         return Array.isArray(parsed) ? parsed : [];
       } catch {
         return [];

@@ -49,7 +49,7 @@ export function checkMilestones(
   currentAffection: number,
   milestones: RelationshipMilestone[]
 ): RelationshipMilestone[] {
-  return milestones.map((milestone) => {
+  return milestones.map(milestone => {
     if (!milestone.achieved && currentAffection >= milestone.unlockedAt) {
       return {
         ...milestone,

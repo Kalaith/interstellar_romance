@@ -1,9 +1,6 @@
 import { PersonalityGrowth, GrowthTrigger } from '../types/game';
 
-export const personalityGrowthTriggers: Record<
-  GrowthTrigger,
-  Record<string, number>
-> = {
+export const personalityGrowthTriggers: Record<GrowthTrigger, Record<string, number>> = {
   positive_interaction: {
     confidence: 2,
     trust: 3,

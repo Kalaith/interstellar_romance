@@ -9,9 +9,7 @@ import {
 
 export const PhotoGallery: React.FC = () => {
   const { selectedCharacter, setScreen } = useGameStore();
-  const [selectedPhoto, setSelectedPhoto] = useState<CharacterPhoto | null>(
-    null
-  );
+  const [selectedPhoto, setSelectedPhoto] = useState<CharacterPhoto | null>(null);
   const [filterRarity, setFilterRarity] = useState<PhotoRarity | 'all'>('all');
 
   if (!selectedCharacter) {
@@ -32,15 +30,10 @@ export const PhotoGallery: React.FC = () => {
 
   const allPhotos = selectedCharacter.photoGallery;
   const unlockedPhotos = getUnlockedPhotos(allPhotos);
-  const nextPhoto = getNextPhotoToUnlock(
-    allPhotos,
-    selectedCharacter.affection
-  );
+  const nextPhoto = getNextPhotoToUnlock(allPhotos, selectedCharacter.affection);
 
   const filteredPhotos =
-    filterRarity === 'all'
-      ? allPhotos
-      : getPhotosByRarity(allPhotos, filterRarity);
+    filterRarity === 'all' ? allPhotos : getPhotosByRarity(allPhotos, filterRarity);
 
   const rarityColors: Record<PhotoRarity, string> = {
     common: 'border-gray-400 bg-gray-900/20',
@@ -85,60 +78,46 @@ export const PhotoGallery: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Progress */}
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-purple-300">
-                  Collection Progress
-                </h3>
+                <h3 className="text-lg font-semibold mb-3 text-purple-300">Collection Progress</h3>
                 <div className="space-y-3">
-                  {(
-                    [
-                      'common',
-                      'uncommon',
-                      'rare',
-                      'epic',
-                      'legendary',
-                    ] as PhotoRarity[]
-                  ).map((rarity) => {
-                    const rarityPhotos = getPhotosByRarity(allPhotos, rarity);
-                    const unlockedRarity = getPhotosByRarity(
-                      unlockedPhotos,
-                      rarity
-                    );
+                  {(['common', 'uncommon', 'rare', 'epic', 'legendary'] as PhotoRarity[]).map(
+                    rarity => {
+                      const rarityPhotos = getPhotosByRarity(allPhotos, rarity);
+                      const unlockedRarity = getPhotosByRarity(unlockedPhotos, rarity);
 
-                    return (
-                      <div
-                        key={rarity}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span>{rarityIcons[rarity]}</span>
-                          <span className="capitalize">{rarity}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm">
-                            {unlockedRarity.length}/{rarityPhotos.length}
-                          </span>
-                          <div className="w-20 bg-gray-700 rounded-full h-2">
-                            <div
-                              className={`h-2 rounded-full transition-all duration-300 ${
-                                rarity === 'common'
-                                  ? 'bg-gray-400'
-                                  : rarity === 'uncommon'
-                                    ? 'bg-green-400'
-                                    : rarity === 'rare'
-                                      ? 'bg-blue-400'
-                                      : rarity === 'epic'
-                                        ? 'bg-purple-400'
-                                        : 'bg-yellow-400'
-                              }`}
-                              style={{
-                                width: `${rarityPhotos.length > 0 ? (unlockedRarity.length / rarityPhotos.length) * 100 : 0}%`,
-                              }}
-                            ></div>
+                      return (
+                        <div key={rarity} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span>{rarityIcons[rarity]}</span>
+                            <span className="capitalize">{rarity}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm">
+                              {unlockedRarity.length}/{rarityPhotos.length}
+                            </span>
+                            <div className="w-20 bg-gray-700 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  rarity === 'common'
+                                    ? 'bg-gray-400'
+                                    : rarity === 'uncommon'
+                                      ? 'bg-green-400'
+                                      : rarity === 'rare'
+                                        ? 'bg-blue-400'
+                                        : rarity === 'epic'
+                                          ? 'bg-purple-400'
+                                          : 'bg-yellow-400'
+                                }`}
+                                style={{
+                                  width: `${rarityPhotos.length > 0 ? (unlockedRarity.length / rarityPhotos.length) * 100 : 0}%`,
+                                }}
+                              ></div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </div>
               </div>
 
@@ -148,21 +127,15 @@ export const PhotoGallery: React.FC = () => {
                   <h3 className="text-lg font-semibold mb-3 text-yellow-300">
                     Next Photo to Unlock
                   </h3>
-                  <div
-                    className={`border-2 rounded-lg p-4 ${rarityColors[nextPhoto.rarity]}`}
-                  >
+                  <div className={`border-2 rounded-lg p-4 ${rarityColors[nextPhoto.rarity]}`}>
                     <div className="flex items-center space-x-2 mb-2">
                       <span>{rarityIcons[nextPhoto.rarity]}</span>
                       <h4 className="font-semibold">{nextPhoto.title}</h4>
                     </div>
-                    <p className="text-sm text-gray-300 mb-3">
-                      {nextPhoto.description}
-                    </p>
+                    <p className="text-sm text-gray-300 mb-3">{nextPhoto.description}</p>
                     <div className="text-sm">
                       <span className="text-gray-400">Unlocks at: </span>
-                      <span className="font-semibold">
-                        {nextPhoto.unlockedAt} affection
-                      </span>
+                      <span className="font-semibold">{nextPhoto.unlockedAt} affection</span>
                       <span className="text-gray-400">
                         {' '}
                         (Current: {selectedCharacter.affection})
@@ -194,15 +167,7 @@ export const PhotoGallery: React.FC = () => {
             >
               All Photos
             </button>
-            {(
-              [
-                'common',
-                'uncommon',
-                'rare',
-                'epic',
-                'legendary',
-              ] as PhotoRarity[]
-            ).map((rarity) => (
+            {(['common', 'uncommon', 'rare', 'epic', 'legendary'] as PhotoRarity[]).map(rarity => (
               <button
                 key={rarity}
                 onClick={() => setFilterRarity(rarity)}
@@ -220,7 +185,7 @@ export const PhotoGallery: React.FC = () => {
 
           {/* Photo Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-            {filteredPhotos.map((photo) => (
+            {filteredPhotos.map(photo => (
               <div
                 key={photo.id}
                 onClick={() => photo.unlocked && setSelectedPhoto(photo)}
@@ -232,20 +197,12 @@ export const PhotoGallery: React.FC = () => {
               >
                 {photo.unlocked ? (
                   <div className="relative w-full h-full">
-                    <img
-                      src={photo.url}
-                      alt={photo.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={photo.url} alt={photo.title} className="w-full h-full object-cover" />
                     <div className="absolute top-2 right-2">
-                      <span className="text-lg">
-                        {rarityIcons[photo.rarity]}
-                      </span>
+                      <span className="text-lg">{rarityIcons[photo.rarity]}</span>
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-2">
-                      <h4 className="text-white text-sm font-semibold truncate">
-                        {photo.title}
-                      </h4>
+                      <h4 className="text-white text-sm font-semibold truncate">{photo.title}</h4>
                     </div>
                   </div>
                 ) : (
@@ -300,18 +257,11 @@ export const PhotoGallery: React.FC = () => {
                   </div>
                 </div>
                 <div className="p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">
-                    {selectedPhoto.title}
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    {selectedPhoto.description}
-                  </p>
+                  <h3 className="text-2xl font-bold mb-2">{selectedPhoto.title}</h3>
+                  <p className="text-gray-300 mb-4">{selectedPhoto.description}</p>
                   <div className="text-sm text-gray-400">
                     {selectedPhoto.unlockedDate && (
-                      <p>
-                        Unlocked on:{' '}
-                        {selectedPhoto.unlockedDate.toLocaleDateString()}
-                      </p>
+                      <p>Unlocked on: {selectedPhoto.unlockedDate.toLocaleDateString()}</p>
                     )}
                     <p>Required affection: {selectedPhoto.unlockedAt}</p>
                   </div>

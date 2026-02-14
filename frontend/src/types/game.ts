@@ -51,13 +51,7 @@ export interface Activity {
   description: string;
   reward: string;
   type: 'weekly' | 'daily';
-  category?:
-    | 'social'
-    | 'exploration'
-    | 'personal'
-    | 'fitness'
-    | 'study'
-    | 'leisure';
+  category?: 'social' | 'exploration' | 'personal' | 'fitness' | 'study' | 'leisure';
   statBonus?: Partial<PlayerStats>;
 }
 
@@ -195,12 +189,7 @@ export type PersonalValue =
 
 export type Gender = 'male' | 'female' | 'non-binary' | 'other';
 
-export type SexualPreference =
-  | 'men'
-  | 'women'
-  | 'all'
-  | 'non-binary'
-  | 'alien-species';
+export type SexualPreference = 'men' | 'women' | 'all' | 'non-binary' | 'alien-species';
 
 export interface DatePlan {
   id: string;
@@ -354,13 +343,7 @@ export type ConflictType =
 export type ConflictSeverity = 'minor' | 'moderate' | 'major' | 'critical';
 
 export interface ConflictResolution {
-  method:
-    | 'apologize'
-    | 'discuss'
-    | 'compromise'
-    | 'gift'
-    | 'time_apart'
-    | 'ignore';
+  method: 'apologize' | 'discuss' | 'compromise' | 'gift' | 'time_apart' | 'ignore';
   effectiveness: number; // 0-100
   affectionRecovery: number;
   personalityGrowth?: PersonalityGrowth[];
@@ -415,16 +398,8 @@ export type MoodState = CharacterMood;
 
 export interface TemporaryBoost {
   id: string;
-  type:
-    | 'super_like'
-    | 'successful_resolution'
-    | 'perfect_date'
-    | 'milestone_bonus';
-  effect:
-    | 'compatibility_bonus'
-    | 'affection_multiplier'
-    | 'mood_boost'
-    | 'interaction_bonus';
+  type: 'super_like' | 'successful_resolution' | 'perfect_date' | 'milestone_bonus';
+  effect: 'compatibility_bonus' | 'affection_multiplier' | 'mood_boost' | 'interaction_bonus';
   value: number;
   startDate: Date;
   duration: number; // hours
@@ -457,13 +432,7 @@ export interface RelationshipTimeline {
 
 export interface TimelineEvent {
   id: string;
-  type:
-    | 'first_meeting'
-    | 'milestone'
-    | 'date'
-    | 'conversation'
-    | 'photo_unlock'
-    | 'achievement';
+  type: 'first_meeting' | 'milestone' | 'date' | 'conversation' | 'photo_unlock' | 'achievement';
   date: Date;
   title: string;
   description: string;

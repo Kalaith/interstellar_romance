@@ -24,10 +24,7 @@ export function getRelationshipStatusInfo(
   level: RelationshipLevel,
   characterName: string
 ): { title: string; description: string } {
-  const statusMap: Record<
-    RelationshipLevel,
-    { title: string; description: string }
-  > = {
+  const statusMap: Record<RelationshipLevel, { title: string; description: string }> = {
     stranger: {
       title: 'Unknown',
       description: `You've just met ${characterName}. There's much to discover about this intriguing individual.`,
@@ -66,22 +63,16 @@ export function getRelationshipStatusInfo(
 }
 
 // Calculate compatibility score based on character profiles
-export function calculateCompatibility(
-  player: PlayerCharacter,
-  character: Character
-): number {
+export function calculateCompatibility(player: PlayerCharacter, character: Character): number {
   let compatibilityScore = 0;
 
   // Base compatibility from species (some species naturally get along better)
-  const speciesBonus = getSpeciesCompatibility(
-    player.species,
-    character.species
-  );
+  const speciesBonus = getSpeciesCompatibility(player.species, character.species);
   compatibilityScore += speciesBonus;
 
   // Values alignment
   const sharedValues = character.profile.values.filter(
-    (value) =>
+    value =>
       (player.stats.empathy >= 7 && value === 'empathy') ||
       (player.stats.adventure >= 7 && value === 'adventure') ||
       (player.stats.intelligence >= 7 && value === 'innovation')
@@ -100,10 +91,7 @@ export function calculateCompatibility(
 }
 
 // Helper function for species compatibility
-function getSpeciesCompatibility(
-  playerSpecies: string,
-  characterSpecies: string
-): number {
+function getSpeciesCompatibility(playerSpecies: string, characterSpecies: string): number {
   // Base compatibility matrix (simplified)
   const compatibilityMatrix: Record<string, Record<string, number>> = {
     human: {
@@ -137,10 +125,7 @@ function getSpeciesCompatibility(
 }
 
 // Helper function for conversation style compatibility
-function getConversationStyleCompatibility(
-  playerSpecies: string,
-  characterStyle: string
-): number {
+function getConversationStyleCompatibility(playerSpecies: string, characterStyle: string): number {
   // Simplified style matching based on player species tendencies
   const stylePreferences: Record<string, Record<string, number>> = {
     human: {
@@ -212,25 +197,13 @@ export function updateRelationshipStatus(
   character: Character
 ): RelationshipStatus {
   const newLevel = getRelationshipLevel(affection);
-  const { title, description } = getRelationshipStatusInfo(
-    newLevel,
-    characterName
-  );
+  const { title, description } = getRelationshipStatusInfo(newLevel, characterName);
   const compatibility = calculateCompatibility(player, character);
 
   // Update trust, intimacy, and commitment based on affection and interactions
-  const trust = Math.min(
-    100,
-    currentStatus.trust + (affection > currentStatus.intimacy ? 1 : 0)
-  );
-  const intimacy = Math.min(
-    100,
-    Math.floor(affection * 0.8) + currentStatus.sharedExperiences
-  );
-  const commitment = Math.min(
-    100,
-    Math.floor(affection * 0.6) + currentStatus.conflicts * 2
-  );
+  const trust = Math.min(100, currentStatus.trust + (affection > currentStatus.intimacy ? 1 : 0));
+  const intimacy = Math.min(100, Math.floor(affection * 0.8) + currentStatus.sharedExperiences);
+  const commitment = Math.min(100, Math.floor(affection * 0.6) + currentStatus.conflicts * 2);
 
   return {
     ...currentStatus,
@@ -242,21 +215,14 @@ export function updateRelationshipStatus(
     intimacy,
     commitment,
     lastStatusChange:
-      newLevel !== currentStatus.level
-        ? new Date()
-        : currentStatus.lastStatusChange,
+      newLevel !== currentStatus.level ? new Date() : currentStatus.lastStatusChange,
   };
 }
 
 // Get default relationship status for new character
-export function getDefaultRelationshipStatus(
-  characterName: string
-): RelationshipStatus {
+export function getDefaultRelationshipStatus(characterName: string): RelationshipStatus {
   const level = getRelationshipLevel(0);
-  const { title, description } = getRelationshipStatusInfo(
-    level,
-    characterName
-  );
+  const { title, description } = getRelationshipStatusInfo(level, characterName);
 
   return {
     level,

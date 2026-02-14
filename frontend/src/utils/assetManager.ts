@@ -36,7 +36,7 @@ class AssetManager {
       'kronos',
     ];
 
-    characterIds.forEach((characterId) => {
+    characterIds.forEach(characterId => {
       this.registerAsset({
         id: `character_${characterId}`,
         category: 'character',
@@ -86,15 +86,10 @@ class AssetManager {
 
   async preloadAssets(category?: AssetCategory): Promise<void> {
     const assetsToPreload = Array.from(this.assets.values()).filter(
-      (asset) =>
-        asset.preload &&
-        (!category || asset.category === category) &&
-        asset.type === 'image'
+      asset => asset.preload && (!category || asset.category === category) && asset.type === 'image'
     );
 
-    const preloadPromises = assetsToPreload.map((asset) =>
-      this.preloadImage(asset)
-    );
+    const preloadPromises = assetsToPreload.map(asset => this.preloadImage(asset));
 
     try {
       await Promise.all(preloadPromises);
@@ -105,7 +100,7 @@ class AssetManager {
   }
 
   private async preloadImage(asset: AssetMetadata): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
 
       img.onload = () => {
@@ -130,9 +125,7 @@ class AssetManager {
 
   getAllAssets(category?: AssetCategory): AssetMetadata[] {
     const assets = Array.from(this.assets.values());
-    return category
-      ? assets.filter((asset) => asset.category === category)
-      : assets;
+    return category ? assets.filter(asset => asset.category === category) : assets;
   }
 
   getAssetInfo(id: string): AssetMetadata | undefined {

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IcebreakerMessage, IcebreakerCategory } from '../types/game';
-import {
-  getAvailableIcebreakers,
-  generateContextualSuggestion,
-} from '../data/icebreaker-messages';
+import { getAvailableIcebreakers, generateContextualSuggestion } from '../data/icebreaker-messages';
 
 interface IcebreakerMessagesProps {
   characterId: string;
@@ -26,14 +23,9 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
   onSendMessage,
   onClose,
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<
-    IcebreakerCategory | 'all'
-  >('all');
-  const [availableMessages, setAvailableMessages] = useState<
-    IcebreakerMessage[]
-  >([]);
-  const [selectedMessage, setSelectedMessage] =
-    useState<IcebreakerMessage | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<IcebreakerCategory | 'all'>('all');
+  const [availableMessages, setAvailableMessages] = useState<IcebreakerMessage[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<IcebreakerMessage | null>(null);
   const [contextualSuggestion, setContextualSuggestion] = useState<string>('');
 
   const currentTime = new Date().getHours();
@@ -57,19 +49,9 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
     );
     setAvailableMessages(messages);
     setContextualSuggestion(
-      generateContextualSuggestion(
-        characterId,
-        currentAffection,
-        recentInteractions
-      )
+      generateContextualSuggestion(characterId, currentAffection, recentInteractions)
     );
-  }, [
-    characterId,
-    currentAffection,
-    characterMood,
-    timeOfDay,
-    recentInteractions,
-  ]);
+  }, [characterId, currentAffection, characterMood, timeOfDay, recentInteractions]);
 
   const categories: {
     key: IcebreakerCategory | 'all';
@@ -88,7 +70,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
   const filteredMessages =
     selectedCategory === 'all'
       ? availableMessages
-      : availableMessages.filter((msg) => msg.category === selectedCategory);
+      : availableMessages.filter(msg => msg.category === selectedCategory);
 
   const getEffectivenessColor = (effectiveness: number): string => {
     if (effectiveness >= 85) return 'text-green-400 bg-green-900/30';
@@ -111,17 +93,10 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Conversation Starters
-              </h2>
-              <p className="text-gray-300">
-                Perfect icebreakers for {characterName}
-              </p>
+              <h2 className="text-2xl font-bold text-white mb-2">Conversation Starters</h2>
+              <p className="text-gray-300">Perfect icebreakers for {characterName}</p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
               ×
             </button>
           </div>
@@ -160,13 +135,11 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
 
           {/* Category Filters */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map((category) => {
+            {categories.map(category => {
               const categoryCount =
                 category.key === 'all'
                   ? availableMessages.length
-                  : availableMessages.filter(
-                      (msg) => msg.category === category.key
-                    ).length;
+                  : availableMessages.filter(msg => msg.category === category.key).length;
 
               return (
                 <button
@@ -180,9 +153,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
                 >
                   <span>{category.icon}</span>
                   <span>{category.name}</span>
-                  <span className="text-xs bg-black/20 px-2 py-1 rounded">
-                    {categoryCount}
-                  </span>
+                  <span className="text-xs bg-black/20 px-2 py-1 rounded">{categoryCount}</span>
                 </button>
               );
             })}
@@ -191,7 +162,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
           {/* Message Options */}
           <div className="space-y-3 mb-6">
             {filteredMessages.length > 0 ? (
-              filteredMessages.map((message) => (
+              filteredMessages.map(message => (
                 <div
                   key={message.id}
                   onClick={() => setSelectedMessage(message)}
@@ -204,10 +175,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center space-x-2">
                       <span className="text-lg">
-                        {
-                          categories.find((c) => c.key === message.category)
-                            ?.icon
-                        }
+                        {categories.find(c => c.key === message.category)?.icon}
                       </span>
                       <span className="text-white text-sm font-medium capitalize">
                         {message.category.replace('_', ' ')}
@@ -216,14 +184,11 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
                     <div
                       className={`px-2 py-1 rounded text-xs font-semibold ${getEffectivenessColor(message.effectiveness)}`}
                     >
-                      {getEffectivenessLabel(message.effectiveness)} (
-                      {message.effectiveness}%)
+                      {getEffectivenessLabel(message.effectiveness)} ({message.effectiveness}%)
                     </div>
                   </div>
 
-                  <p className="text-gray-300 mb-2 leading-relaxed">
-                    "{message.message}"
-                  </p>
+                  <p className="text-gray-300 mb-2 leading-relaxed">"{message.message}"</p>
 
                   {/* Context Info */}
                   <div className="flex flex-wrap gap-2 text-xs">
@@ -248,9 +213,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
             ) : (
               <div className="text-center py-8">
                 <div className="text-4xl mb-4">😔</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  No messages available
-                </h3>
+                <h3 className="text-xl font-semibold text-white mb-2">No messages available</h3>
                 <p className="text-gray-400">
                   {selectedCategory === 'all'
                     ? 'Try building more affection or check back later for new conversation starters.'
@@ -263,9 +226,7 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
           {/* Selected Message Preview */}
           {selectedMessage && (
             <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-4 mb-6">
-              <h5 className="text-purple-300 font-semibold mb-2">
-                Selected Message:
-              </h5>
+              <h5 className="text-purple-300 font-semibold mb-2">Selected Message:</h5>
               <p className="text-white mb-3">"{selectedMessage.message}"</p>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-400">
