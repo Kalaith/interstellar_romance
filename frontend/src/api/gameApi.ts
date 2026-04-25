@@ -33,6 +33,27 @@ async function request<T>(method: HttpMethod, url: string, payload?: unknown): P
 }
 
 export const gameApi = {
+  getLoginInfo: () =>
+    request<{
+      login_url: string;
+    }>('get', '/api/auth/login-info'),
+  createGuestSession: () =>
+    request<{
+      token: string;
+      user: {
+        id: string;
+        username: string;
+        display_name: string;
+        roles: string[];
+        is_guest: boolean;
+        auth_type: 'guest';
+      };
+    }>('post', '/api/auth/guest-session'),
+  linkGuestAccount: (guestToken: string) =>
+    request<{
+      merged: boolean;
+      game_state: unknown;
+    }>('post', '/api/auth/link-guest', { guest_token: guestToken }),
   loadGame: () => request<unknown>('get', '/api/game'),
   startGame: (player: PlayerCreationInput) => request<unknown>('post', '/api/game/start', player),
   selectCharacter: (characterId: string) =>

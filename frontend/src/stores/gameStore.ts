@@ -84,9 +84,17 @@ interface GameState {
   availableStorylines: Record<string, StorylineEvent[]>;
   advancedState: PlayerAdvancedState;
   content: GameContent;
+  isGuest: boolean;
+  isAuthenticated: boolean;
+  hasMergeableGuestSession: boolean;
+  authDisplayName: string | null;
+  webHatcheryLoginUrl: string | null;
 
   setScreen: (screen: GameScreen) => void;
   initializeGame: () => Promise<void>;
+  continueAsGuest: () => Promise<void>;
+  mergeGuestSession: () => Promise<void>;
+  visitWebHatcheryLogin: () => Promise<void>;
   loadGame: () => Promise<void>;
   createPlayer: (player: PlayerCreationInput) => Promise<void>;
   selectCharacter: (characterId: string) => Promise<void>;
@@ -168,6 +176,11 @@ const initialState = {
   availableStorylines: {},
   advancedState: emptyAdvancedState,
   content: emptyContent,
+  isGuest: false,
+  isAuthenticated: false,
+  hasMergeableGuestSession: false,
+  authDisplayName: null,
+  webHatcheryLoginUrl: null,
 };
 
 const gameScreens: GameScreen[] = [
@@ -196,7 +209,79 @@ export const useGameStore = create<GameState>()(
           return;
         }
 
+        if (!getAuthToken()) {
+          set({
+            isInitialized: true,
+            isLoading: false,
+            error: null,
+            isGuest: isGuestAuthSession(),
+            isAuthenticated: Boolean(getGuestAuthToken()),
+            hasMergeableGuestSession: hasMergeableGuestSession(),
+            authDisplayName: getAuthDisplayName(),
+          });
+          return;
+        }
+
         await get().loadGame();
+      },
+
+      continueAsGuest: async () => {
+        set({ isSaving: true, error: null });
+        try {
+          const session = await gameApi.createGuestSession();
+          saveGuestSession(session.token, session.user);
+          const payload = await gameApi.loadGame();
+          set({
+            ...normalizeGameState(payload, 'character-creation'),
+            isInitialized: true,
+            isSaving: false,
+            error: null,
+            isGuest: true,
+            isAuthenticated: true,
+            hasMergeableGuestSession: false,
+            authDisplayName: session.user.display_name || session.user.username,
+          });
+        } catch (error) {
+          set({ isSaving: false, error: errorMessage(error) });
+        }
+      },
+
+      mergeGuestSession: async () => {
+        const guestToken = getGuestAuthToken();
+        if (!getFrontpageAuthToken() || !guestToken) {
+          set({ hasMergeableGuestSession: false });
+          return;
+        }
+
+        set({ isSaving: true, error: null });
+        try {
+          const payload = await gameApi.linkGuestAccount(guestToken);
+          clearGuestSession();
+          set({
+            ...normalizeGameState(payload.game_state, 'main-menu'),
+            isInitialized: true,
+            isSaving: false,
+            error: null,
+            isGuest: false,
+            isAuthenticated: true,
+            hasMergeableGuestSession: false,
+            authDisplayName: getAuthDisplayName(),
+          });
+        } catch (error) {
+          set({ isSaving: false, error: errorMessage(error) });
+        }
+      },
+
+      visitWebHatcheryLogin: async () => {
+        set({ isSaving: true, error: null });
+        try {
+          const { login_url: loginUrl } = await gameApi.getLoginInfo();
+          const targetUrl = withReturnTo(normalizeLoginUrl(loginUrl));
+          set({ isSaving: false, webHatcheryLoginUrl: targetUrl });
+          window.location.assign(targetUrl);
+        } catch (error) {
+          set({ isSaving: false, error: errorMessage(error) });
+        }
       },
 
       loadGame: async () => {
@@ -208,12 +293,19 @@ export const useGameStore = create<GameState>()(
             isInitialized: true,
             isLoading: false,
             error: null,
+            isGuest: isGuestAuthSession(),
+            isAuthenticated: Boolean(getAuthToken()),
+            hasMergeableGuestSession: hasMergeableGuestSession(),
+            authDisplayName: getAuthDisplayName(),
           }));
         } catch (error) {
           set({
             isInitialized: true,
             isLoading: false,
             error: errorMessage(error),
+            isAuthenticated: Boolean(getAuthToken()),
+            hasMergeableGuestSession: hasMergeableGuestSession(),
+            authDisplayName: getAuthDisplayName(),
           });
         }
       },
@@ -227,6 +319,10 @@ export const useGameStore = create<GameState>()(
             isInitialized: true,
             isSaving: false,
             error: null,
+            isGuest: isGuestAuthSession(),
+            isAuthenticated: Boolean(getAuthToken()),
+            hasMergeableGuestSession: hasMergeableGuestSession(),
+            authDisplayName: getAuthDisplayName(),
           });
         } catch (error) {
           set({ isSaving: false, error: errorMessage(error) });
@@ -422,6 +518,10 @@ export const useGameStore = create<GameState>()(
           ...initialState,
           isInitialized: true,
           currentScreen: 'character-creation',
+          isGuest: isGuestAuthSession(),
+          isAuthenticated: Boolean(getAuthToken()),
+          hasMergeableGuestSession: hasMergeableGuestSession(),
+          authDisplayName: getAuthDisplayName(),
         });
       },
 
@@ -970,4 +1070,101 @@ function isGameScreen(value: unknown): value is GameScreen {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Backend request failed.';
+}
+
+function getAuthToken(): string | null {
+  return getFrontpageAuthToken() ?? getGuestAuthToken();
+}
+
+function getFrontpageAuthToken(): string | null {
+  try {
+    const raw = localStorage.getItem('auth-storage');
+    const parsed = raw ? JSON.parse(raw) : null;
+    const isGuestToken = Boolean(parsed?.state?.user?.is_guest || parsed?.state?.isGuest);
+    return !isGuestToken && typeof parsed?.state?.token === 'string' ? parsed.state.token : null;
+  } catch {
+    return null;
+  }
+}
+
+function getGuestAuthToken(): string | null {
+  try {
+    const raw = localStorage.getItem('interstellar-romance-guest-session');
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (typeof parsed?.token === 'string') {
+      return parsed.token;
+    }
+
+    const authRaw = localStorage.getItem('auth-storage');
+    const authParsed = authRaw ? JSON.parse(authRaw) : null;
+    const isGuestToken = Boolean(authParsed?.state?.user?.is_guest || authParsed?.state?.isGuest);
+    return isGuestToken && typeof authParsed?.state?.token === 'string'
+      ? authParsed.state.token
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveGuestSession(
+  token: string,
+  user: {
+    id: string;
+    username: string;
+    display_name: string;
+    roles: string[];
+    is_guest: boolean;
+    auth_type: 'guest';
+  }
+): void {
+  localStorage.setItem('interstellar-romance-guest-session', JSON.stringify({ token, user }));
+}
+
+function clearGuestSession(): void {
+  localStorage.removeItem('interstellar-romance-guest-session');
+}
+
+function isGuestAuthSession(): boolean {
+  if (getFrontpageAuthToken()) {
+    return false;
+  }
+
+  return Boolean(getGuestAuthToken());
+}
+
+function hasMergeableGuestSession(): boolean {
+  return Boolean(getFrontpageAuthToken() && getGuestAuthToken());
+}
+
+function getAuthDisplayName(): string | null {
+  try {
+    const raw = localStorage.getItem('auth-storage');
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (getFrontpageAuthToken()) {
+      const user = parsed?.state?.user;
+      return user?.display_name || user?.username || user?.email || null;
+    }
+
+    const guestRaw = localStorage.getItem('interstellar-romance-guest-session');
+    const guestParsed = guestRaw ? JSON.parse(guestRaw) : null;
+    const guestUser = guestParsed?.user ?? parsed?.state?.user;
+    return guestUser?.display_name || guestUser?.username || null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeLoginUrl(loginUrl: string): string {
+  const trimmed = loginUrl.trim();
+  if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('/')) {
+    return trimmed;
+  }
+
+  return `http://${trimmed}`;
+}
+
+function withReturnTo(loginUrl: string): string {
+  const url = new URL(loginUrl, window.location.origin);
+  url.searchParams.set('return_to', window.location.href);
+  return url.toString();
 }

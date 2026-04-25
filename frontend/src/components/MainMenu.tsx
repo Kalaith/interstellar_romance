@@ -6,7 +6,19 @@ import { ConfirmModal } from './ui/Modal';
 const SETTINGS_KEY = 'interstellar-romance-ui-settings';
 
 export const MainMenu: React.FC = () => {
-  const { setScreen, resetGame, player } = useGameStore();
+  const {
+    setScreen,
+    resetGame,
+    player,
+    continueAsGuest,
+    mergeGuestSession,
+    visitWebHatcheryLogin,
+    isSaving,
+    isGuest,
+    isAuthenticated,
+    hasMergeableGuestSession,
+    authDisplayName,
+  } = useGameStore();
   const [showSettings, setShowSettings] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [settings, setSettings] = useState(() => {
@@ -58,8 +70,41 @@ export const MainMenu: React.FC = () => {
 
         {/* Navigation Buttons */}
         <div className="space-y-4">
+          {isAuthenticated && (
+            <div className="mx-auto w-80 rounded-lg border border-[var(--accent-cyan)]/30 bg-[var(--accent-cyan)]/10 p-3 text-sm text-[var(--text-secondary)] space-y-3">
+              Signed in{authDisplayName ? ` as ${authDisplayName}` : ''}.
+              {hasMergeableGuestSession && (
+                <div className="space-y-2 border-t border-[var(--accent-cyan)]/20 pt-3">
+                  <p>Guest progress is available on this browser.</p>
+                  <button
+                    onClick={() => void mergeGuestSession()}
+                    disabled={isSaving}
+                    className="w-full px-4 py-2 text-sm font-semibold text-[var(--bg-space)] bg-[var(--accent-cyan)] hover:bg-[var(--accent-teal)] border border-[var(--accent-cyan)] rounded transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] disabled:opacity-60 disabled:cursor-wait"
+                  >
+                    {isSaving ? 'Merging Guest Progress...' : 'Merge Guest Progress'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {player ? (
             <>
+              {isGuest && (
+                <div className="mx-auto w-80 rounded-lg border border-[var(--resource-energy)]/40 bg-[var(--resource-energy)]/10 p-3 text-sm text-[var(--text-secondary)] space-y-3">
+                  <p>
+                    Guest progress stays on this browser. Sign in with a full account to keep saves
+                    across devices and cache resets.
+                  </p>
+                  <button
+                    onClick={() => void visitWebHatcheryLogin()}
+                    disabled={isSaving}
+                    className="w-full px-4 py-2 text-sm font-semibold text-[var(--bg-space)] bg-[var(--resource-energy)] hover:bg-[var(--accent-cyan)] border border-[var(--resource-energy)] rounded transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--resource-energy)] disabled:opacity-60 disabled:cursor-wait"
+                  >
+                    {isSaving ? 'Opening Login...' : 'Sign in with WebHatchery'}
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() => setScreen('main-hub')}
                 className="block w-64 mx-auto px-6 py-4 text-xl font-semibold text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] border border-[var(--accent-cyan)] rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)]"
@@ -74,13 +119,36 @@ export const MainMenu: React.FC = () => {
                 👤 New Character
               </button>
             </>
+          ) : isAuthenticated ? (
+            <>
+              <button
+                onClick={() => setScreen('character-creation')}
+                className="block w-64 mx-auto px-6 py-4 text-xl font-semibold text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] border border-[var(--accent-cyan)] rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)]"
+              >
+                👤 Create Character
+              </button>
+            </>
           ) : (
-            <button
-              onClick={() => setScreen('character-creation')}
-              className="block w-64 mx-auto px-6 py-4 text-xl font-semibold text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] border border-[var(--accent-cyan)] rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)]"
-            >
-              🚀 Start New Game
-            </button>
+            <>
+              <button
+                onClick={() => void continueAsGuest()}
+                disabled={isSaving}
+                className="block w-64 mx-auto px-6 py-4 text-xl font-semibold text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] border border-[var(--accent-cyan)] rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] disabled:opacity-60 disabled:cursor-wait"
+              >
+                {isSaving ? 'Opening Guest Session...' : '🚀 Continue as Guest'}
+              </button>
+              <button
+                onClick={() => void visitWebHatcheryLogin()}
+                disabled={isSaving}
+                className="block w-64 mx-auto px-6 py-4 text-xl font-semibold text-[var(--text-primary)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] disabled:opacity-60 disabled:cursor-wait"
+              >
+                {isSaving ? 'Opening Login...' : 'Sign in with WebHatchery'}
+              </button>
+              <p className="mx-auto max-w-sm text-sm text-[var(--text-muted)]">
+                Guest play continues from this browser cache. Use a full account if you want saves
+                protected across cache resets or devices.
+              </p>
+            </>
           )}
 
           <button

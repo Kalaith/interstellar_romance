@@ -39,6 +39,7 @@ spl_autoload_register(static function (string $class): void {
     }
 }, true, true);
 
+use App\Core\Environment;
 use App\Core\Router;
 use Dotenv\Dotenv;
 
@@ -49,7 +50,7 @@ if (!file_exists($envPath . '/.env')) {
 
 Dotenv::createImmutable($envPath)->load();
 
-$allowedOrigin = $_ENV['CORS_ORIGIN'] ?? '*';
+$allowedOrigin = Environment::required('CORS_ALLOWED_ORIGINS');
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     header('Access-Control-Allow-Origin: ' . $allowedOrigin);
@@ -64,8 +65,9 @@ header('Access-Control-Allow-Origin: ' . $allowedOrigin);
 
 $router = new Router();
 
-if (!empty($_ENV['APP_BASE_PATH'] ?? '')) {
-    $router->setBasePath((string) $_ENV['APP_BASE_PATH']);
+$appBasePath = Environment::required('APP_BASE_PATH', allowEmpty: true);
+if ($appBasePath !== '') {
+    $router->setBasePath($appBasePath);
 } else {
     $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
     $apiPos = strpos($requestPath, '/api');

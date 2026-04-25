@@ -12,12 +12,14 @@ use App\Actions\CompleteStorylineChoiceAction;
 use App\Actions\CreateConflictAction;
 use App\Actions\GetContentAction;
 use App\Actions\LoadGameAction;
+use App\Actions\LinkGuestAccountAction;
 use App\Actions\RefreshMoodsAction;
 use App\Actions\ResolveConflictAction;
 use App\Actions\SelectCharacterAction;
 use App\Actions\StartGameAction;
 use App\Actions\UseSuperLikeAction;
 use App\Controllers\ContentController;
+use App\Controllers\AuthController;
 use App\Controllers\GameController;
 use App\Controllers\SystemController;
 use App\Repositories\ContentRepository;
@@ -41,6 +43,9 @@ final class ServiceFactory
     {
         return match ($class) {
             SystemController::class => new SystemController(),
+            AuthController::class => new AuthController(
+                new LinkGuestAccountAction($this->gameRepository(), $this->progressionService(), $this->stateService())
+            ),
             ContentController::class => new ContentController(
                 new GetContentAction($this->stateService())
             ),

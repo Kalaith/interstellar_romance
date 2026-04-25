@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Core\Environment;
 use App\Core\Request;
 use App\Core\Response;
 use Firebase\JWT\JWT;
@@ -19,12 +20,8 @@ final class WebHatcheryJwtMiddleware
             return $this->unauthorized($response);
         }
 
-        $secret = $_ENV['JWT_SECRET'] ?? '';
-        if (!is_string($secret) || $secret === '') {
-            return $this->unauthorized($response);
-        }
-
         try {
+            $secret = Environment::required('JWT_SECRET');
             $decoded = JWT::decode($matches[1], new Key($secret, 'HS256'));
             $userId = $decoded->sub ?? $decoded->user_id ?? null;
             if ($userId === null) {
@@ -39,6 +36,8 @@ final class WebHatcheryJwtMiddleware
                     ? (string) $decoded->display_name
                     : (isset($decoded->username) ? (string) $decoded->username : null),
                 'roles' => is_array($decoded->roles ?? null) ? $decoded->roles : [],
+                'is_guest' => (bool) ($decoded->is_guest ?? false),
+                'auth_type' => isset($decoded->auth_type) ? (string) $decoded->auth_type : 'frontpage',
             ]);
 
             return $request;
@@ -53,7 +52,7 @@ final class WebHatcheryJwtMiddleware
             'success' => false,
             'error' => 'Authentication required',
             'message' => 'Authentication required',
-            'login_url' => $_ENV['WEB_HATCHERY_LOGIN_URL'] ?? '',
+                'login_url' => Environment::required('WEB_HATCHERY_LOGIN_URL'),
         ]);
 
         return $response;

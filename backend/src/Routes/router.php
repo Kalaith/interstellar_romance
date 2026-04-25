@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\ContentController;
+use App\Controllers\AuthController;
 use App\Controllers\GameController;
 use App\Controllers\SystemController;
 use App\Middleware\WebHatcheryJwtMiddleware;
@@ -11,6 +12,9 @@ return static function (\App\Core\Router $router): void {
     $auth = [WebHatcheryJwtMiddleware::class];
 
     $router->get('/api/health', [SystemController::class, 'health']);
+    $router->get('/api/auth/login-info', [AuthController::class, 'loginInfo']);
+    $router->post('/api/auth/guest-session', [AuthController::class, 'guestSession']);
+    $router->post('/api/auth/link-guest', [AuthController::class, 'linkGuest'], $auth);
     $router->get('/api/content/bootstrap', [ContentController::class, 'bootstrap'], $auth);
 
     $router->get('/api/game', [GameController::class, 'current'], $auth);

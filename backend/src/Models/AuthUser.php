@@ -11,7 +11,9 @@ final class AuthUser
         public readonly ?string $email,
         public readonly ?string $username,
         public readonly ?string $displayName,
-        public readonly array $roles = []
+        public readonly array $roles = [],
+        public readonly bool $isGuest = false,
+        public readonly string $authType = 'frontpage'
     ) {
     }
 
@@ -22,7 +24,9 @@ final class AuthUser
             isset($user['email']) ? (string) $user['email'] : null,
             isset($user['username']) ? (string) $user['username'] : null,
             isset($user['display_name']) ? (string) $user['display_name'] : null,
-            is_array($user['roles'] ?? null) ? $user['roles'] : []
+            is_array($user['roles'] ?? null) ? $user['roles'] : [],
+            (bool) ($user['is_guest'] ?? false),
+            isset($user['auth_type']) ? (string) $user['auth_type'] : 'frontpage'
         );
     }
 
@@ -34,6 +38,8 @@ final class AuthUser
             'username' => $this->username,
             'display_name' => $this->displayName,
             'roles' => $this->roles,
+            'is_guest' => $this->isGuest,
+            'auth_type' => $this->authType,
         ];
     }
 }

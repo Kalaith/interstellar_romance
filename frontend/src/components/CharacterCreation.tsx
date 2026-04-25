@@ -25,6 +25,7 @@ export const CharacterCreation: React.FC = () => {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const handleTraitToggle = (trait: string) => {
+    setValidationMessage(null);
     setFormData(prev => {
       const newTraits = prev.traits.includes(trait)
         ? prev.traits.filter(t => t !== trait)
@@ -36,9 +37,7 @@ export const CharacterCreation: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleCreateCharacter = async () => {
     if (!formData.name.trim() || formData.traits.length !== 2) {
       setValidationMessage('Enter your name and select exactly two traits before launching.');
       return;
@@ -60,6 +59,11 @@ export const CharacterCreation: React.FC = () => {
         error instanceof Error ? error.message : 'Unable to create your character.'
       );
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void handleCreateCharacter();
   };
 
   const selectionClass = (selected: boolean, disabled = false) =>
@@ -255,7 +259,10 @@ export const CharacterCreation: React.FC = () => {
                   <button
                     key={spec.value}
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, species: spec.value }))}
+                    onClick={() => {
+                      setValidationMessage(null);
+                      setFormData(prev => ({ ...prev, species: spec.value }));
+                    }}
                     className={selectionClass(formData.species === spec.value)}
                   >
                     <div className="text-3xl mb-2">{spec.icon}</div>
@@ -280,7 +287,10 @@ export const CharacterCreation: React.FC = () => {
                   <button
                     key={gender.value}
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, gender: gender.value }))}
+                    onClick={() => {
+                      setValidationMessage(null);
+                      setFormData(prev => ({ ...prev, gender: gender.value }));
+                    }}
                     className={selectionClass(formData.gender === gender.value)}
                   >
                     <div className="text-3xl mb-2">{gender.icon}</div>
@@ -335,12 +345,13 @@ export const CharacterCreation: React.FC = () => {
                   <button
                     key={preference.value}
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setValidationMessage(null);
                       setFormData(prev => ({
                         ...prev,
                         sexualPreference: preference.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className={`${selectionClass(formData.sexualPreference === preference.value)} text-left`}
                   >
                     <div className="flex items-center gap-3 mb-2">
@@ -367,12 +378,13 @@ export const CharacterCreation: React.FC = () => {
                   <button
                     key={backstory.value}
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setValidationMessage(null);
                       setFormData(prev => ({
                         ...prev,
                         backstory: backstory.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className={`${selectionClass(formData.backstory === backstory.value)} text-left`}
                   >
                     <div className="flex items-center gap-3 mb-2">
@@ -390,6 +402,12 @@ export const CharacterCreation: React.FC = () => {
             </div>
 
             {/* Action Buttons */}
+            {validationMessage && (
+              <div className="rounded-lg border border-[var(--state-warning)]/50 bg-[var(--state-warning)]/10 p-3 text-sm text-[var(--resource-energy)]">
+                {validationMessage}
+              </div>
+            )}
+
             <div className="flex flex-col gap-4 pt-4 sm:flex-row">
               <Button
                 type="button"
@@ -400,7 +418,14 @@ export const CharacterCreation: React.FC = () => {
               >
                 🏠 Back to Menu
               </Button>
-              <Button type="submit" variant="primary" size="lg" fullWidth disabled={isSaving}>
+              <Button
+                type="button"
+                onClick={() => void handleCreateCharacter()}
+                variant="primary"
+                size="lg"
+                fullWidth
+                disabled={isSaving}
+              >
                 {isSaving ? 'Creating...' : '✨ Create Character'}
               </Button>
             </div>

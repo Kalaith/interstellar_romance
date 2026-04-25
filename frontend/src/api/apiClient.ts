@@ -25,9 +25,29 @@ apiClient.interceptors.request.use(
       const authStorageStr = localStorage.getItem('auth-storage');
       if (authStorageStr) {
         const authData = JSON.parse(authStorageStr);
-        // Zustand persist wraps state in a `state` object
+        // Zustand persist wraps state in a `state` object.
         const token = authData?.state?.token;
-        if (token) {
+        const isGuestToken = Boolean(authData?.state?.user?.is_guest || authData?.state?.isGuest);
+        if (token && !isGuestToken) {
+          config.headers.Authorization = `Bearer ${token}`;
+          return config;
+        }
+      }
+
+      const guestStorageStr = localStorage.getItem('interstellar-romance-guest-session');
+      if (guestStorageStr) {
+        const guestData = JSON.parse(guestStorageStr);
+        if (guestData?.token) {
+          config.headers.Authorization = `Bearer ${guestData.token}`;
+          return config;
+        }
+      }
+
+      if (authStorageStr) {
+        const authData = JSON.parse(authStorageStr);
+        const token = authData?.state?.token;
+        const isGuestToken = Boolean(authData?.state?.user?.is_guest || authData?.state?.isGuest);
+        if (token && isGuestToken) {
           config.headers.Authorization = `Bearer ${token}`;
         }
       }

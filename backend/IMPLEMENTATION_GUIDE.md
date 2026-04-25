@@ -59,11 +59,11 @@ Copy `backend/.env.example` to `backend/.env` and set database and shared auth v
 - `DB_HOST`
 - `DB_PORT`
 - `DB_NAME`
-- `DB_USERNAME`
+- `DB_USER`
 - `DB_PASSWORD`
 - `JWT_SECRET`
 - `WEB_HATCHERY_LOGIN_URL`
-- `CORS_ORIGIN`
+- `CORS_ALLOWED_ORIGINS`
 - `APP_BASE_PATH` when deployed below a subdirectory
 
 ## API Cutover Notes

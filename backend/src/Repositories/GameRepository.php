@@ -133,6 +133,51 @@ final class GameRepository
         return $this->getSave((int) $this->db->lastInsertId());
     }
 
+    public function moveGuestSaveToUser(string $guestUserId, AuthUser $targetUser): array
+    {
+        if ($guestUserId === $targetUser->id) {
+            throw new RuntimeException('Guest session is already linked to this account.');
+        }
+
+        $this->begin();
+        try {
+            $this->upsertPlayer($targetUser);
+
+            $guestSave = $this->findSaveByUserId($guestUserId);
+            if ($guestSave === null) {
+                throw new RuntimeException('Guest save not found.');
+            }
+
+            $targetSave = $this->findSaveByUserId($targetUser->id);
+            if ($targetSave !== null) {
+                $delete = $this->db->prepare('DELETE FROM game_saves WHERE id = :id');
+                $delete->execute(['id' => (int) $targetSave['id']]);
+            }
+
+            $now = $this->now();
+            $move = $this->db->prepare(
+                'UPDATE game_saves
+                 SET auth_user_id = :target_user_id,
+                     updated_at = :updated_at
+                 WHERE id = :save_id'
+            );
+            $move->execute([
+                'target_user_id' => $targetUser->id,
+                'updated_at' => $now,
+                'save_id' => (int) $guestSave['id'],
+            ]);
+
+            $deleteGuest = $this->db->prepare('DELETE FROM players WHERE auth_user_id = :guest_user_id');
+            $deleteGuest->execute(['guest_user_id' => $guestUserId]);
+
+            $this->commit();
+            return $this->getSave((int) $guestSave['id']);
+        } catch (\Throwable $error) {
+            $this->rollBack();
+            throw $error;
+        }
+    }
+
     public function initializeContentState(
         int $saveId,
         array $characters,
@@ -375,12 +420,16 @@ final class GameRepository
             'UPDATE achievement_states
              SET progress = :progress,
                  achieved = :achieved,
-                 achieved_at = CASE WHEN :achieved = 1 AND achieved_at IS NULL THEN :achieved_at ELSE achieved_at END
+                 achieved_at = CASE
+                    WHEN :achieved_for_timestamp = 1 AND achieved_at IS NULL THEN :achieved_at
+                    ELSE achieved_at
+                 END
              WHERE save_id = :save_id AND achievement_id = :achievement_id'
         );
         $statement->execute([
             'progress' => $progress,
             'achieved' => $achieved ? 1 : 0,
+            'achieved_for_timestamp' => $achieved ? 1 : 0,
             'achieved_at' => $this->now(),
             'save_id' => $saveId,
             'achievement_id' => $achievementId,
