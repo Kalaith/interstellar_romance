@@ -153,11 +153,12 @@ export const usePerformanceMonitor = (componentName: string) => {
 export const useOptimizedStorylines = () => {
   const availableStorylines = useGameStore(state => state.availableStorylines);
   const selectedCharacter = useGameStore(state => state.selectedCharacter);
+  const selectedCharacterId = selectedCharacter?.id;
 
   const characterStorylines = useMemo(() => {
-    if (!selectedCharacter) return [];
-    return availableStorylines[selectedCharacter.id] || [];
-  }, [availableStorylines, selectedCharacter?.id]);
+    if (!selectedCharacterId) return [];
+    return availableStorylines[selectedCharacterId] || [];
+  }, [availableStorylines, selectedCharacterId]);
 
   const unlockedStorylines = useMemo(() => {
     return characterStorylines.filter(storyline => storyline.unlocked && !storyline.completed);

@@ -39,13 +39,7 @@ export const CharacterInteraction: React.FC = () => {
     logSlowOperation('getAvailableDialogueOptions', startTime);
 
     return options;
-  }, [
-    selectedCharacter?.id,
-    selectedCharacter?.affection,
-    selectedCharacter?.mood,
-    selectedCharacter,
-    logSlowOperation,
-  ]);
+  }, [selectedCharacter, logSlowOperation]);
 
   // Update available options when memoized calculation changes
   useEffect(() => {

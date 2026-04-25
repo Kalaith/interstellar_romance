@@ -38,8 +38,6 @@ export const useDailyInteractions = (characterId: string) => {
     timeUntilResetFormatted: 'Now',
   });
 
-  const [updateInterval, setUpdateInterval] = useState<ReturnType<typeof setInterval> | null>(null);
-
   // Initialize or update daily interaction state
   const updateDailyInteractionState = useCallback(() => {
     if (!character) return;
@@ -138,12 +136,6 @@ export const useDailyInteractions = (characterId: string) => {
   useEffect(() => {
     updateDailyInteractionState();
 
-    // Clear existing interval
-    if (updateInterval) {
-      clearInterval(updateInterval);
-    }
-
-    // Set up new interval to update every second
     const interval = setInterval(() => {
       if (!character?.dailyInteractions) return;
 
@@ -165,25 +157,15 @@ export const useDailyInteractions = (characterId: string) => {
       }
     }, 1000);
 
-    setUpdateInterval(interval);
-
     return () => {
-      if (interval) clearInterval(interval);
+      clearInterval(interval);
     };
   }, [
+    character?.dailyInteractions,
     character?.dailyInteractions.lastResetDate,
     character?.dailyInteractions.timezone,
     updateDailyInteractionState,
   ]);
-
-  // Clean up interval on unmount
-  useEffect(() => {
-    return () => {
-      if (updateInterval) {
-        clearInterval(updateInterval);
-      }
-    };
-  }, [updateInterval]);
 
   return {
     // State

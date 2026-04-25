@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAssetLoader } from '../hooks/useAssets';
+import { getCharacterImage } from '../utils/assetManager';
 
 interface AssetLoaderProps {
   children: React.ReactNode;
@@ -101,12 +102,9 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   const [imageSrc, setImageSrc] = React.useState<string>('');
 
   React.useEffect(() => {
-    // Dynamically import assetManager to avoid circular dependencies
-    import('../utils/assetManager').then(({ getCharacterImage }) => {
-      const src = getCharacterImage(characterId);
-      setImageSrc(src);
-      setImageState(prev => ({ ...prev, src }));
-    });
+    const src = getCharacterImage(characterId);
+    setImageSrc(src);
+    setImageState({ loaded: false, error: false, src });
   }, [characterId]);
 
   const handleImageLoad = () => {
