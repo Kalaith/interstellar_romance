@@ -1,5 +1,33 @@
 @import 'tailwindcss';
 
+:root {
+  --bg-space: #0a0e13;
+  --bg-panel: #1a2330;
+  --bg-section: #152028;
+  --bg-item: #1e2d3a;
+
+  --text-primary: #e8f4fa;
+  --text-secondary: #b8d4e3;
+  --text-muted: #6b8395;
+
+  --accent-cyan: #00d4ff;
+  --accent-teal: #4ae6c8;
+  --border-frame: rgba(0, 212, 255, 0.2);
+  --border-inner: rgba(74, 230, 200, 0.15);
+
+  --resource-energy: #f1c40f;
+  --resource-minerals: #e74c3c;
+  --resource-food: #27ae60;
+  --resource-alloys: #9b59b6;
+  --resource-research: #3498db;
+  --resource-influence: #f39c12;
+
+  --state-available: #2ed573;
+  --state-building: #f39c12;
+  --state-locked: #7f8c8d;
+  --state-deficit: #e74c3c;
+}
+
 /* Base styles for Stellaris theme */
 .stellaris-theme {
   font-family:

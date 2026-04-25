@@ -34,6 +34,9 @@ export const CharacterProfile: React.FC = () => {
 
   const compatibility = player ? calculateCompatibility(player, selectedCharacter.profile) : null;
   const knownInfo = selectedCharacter.knownInfo;
+  const recentMemories = [...selectedCharacter.relationshipMemories]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
 
   const tabs = [
     {
@@ -199,6 +202,66 @@ export const CharacterProfile: React.FC = () => {
                   <span>Timeline</span>
                 </button>
               </div>
+            </div>
+
+            {/* Recent Memories */}
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <h3 className="text-lg font-bold text-[var(--accent-cyan)] uppercase tracking-wide">
+                  Recent Memories
+                </h3>
+                {recentMemories.length > 0 && (
+                  <button
+                    onClick={() => setScreen('relationship-timeline')}
+                    className="px-3 py-2 text-sm text-[var(--text-primary)] bg-[var(--bg-item)] hover:bg-[var(--bg-panel)] border border-[var(--border-inner)] rounded-lg transition-colors"
+                  >
+                    View Timeline
+                  </button>
+                )}
+              </div>
+
+              {recentMemories.length > 0 ? (
+                <div className="space-y-3">
+                  {recentMemories.map(memory => (
+                    <div
+                      key={memory.id}
+                      className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4"
+                    >
+                      <div className="flex justify-between gap-4 mb-2">
+                        <div>
+                          <div className="font-semibold text-[var(--text-primary)]">
+                            {memory.title}
+                          </div>
+                          <div className="text-xs text-[var(--text-muted)] capitalize">
+                            {memory.type.replaceAll('_', ' ')} •{' '}
+                            {new Date(memory.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <span
+                          className={`text-sm font-bold ${
+                            memory.emotionalImpact >= 0
+                              ? 'text-[var(--state-available)]'
+                              : 'text-[var(--state-deficit)]'
+                          }`}
+                        >
+                          {memory.emotionalImpact > 0 ? '+' : ''}
+                          {memory.emotionalImpact}
+                        </span>
+                      </div>
+                      <p className="text-sm text-[var(--text-secondary)]">{memory.description}</p>
+                      {memory.consequence && (
+                        <div className="mt-2 text-xs text-[var(--resource-energy)]">
+                          {memory.consequence}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4 text-[var(--text-muted)] text-sm">
+                  Shared memories will appear here after dates and major relationship moments.
+                </div>
+              )}
             </div>
 
             {/* Milestones */}

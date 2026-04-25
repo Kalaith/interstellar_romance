@@ -9,9 +9,16 @@ export const DatePlanning: React.FC = () => {
     useGameStore();
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [selectedDatePlan, setSelectedDatePlan] = useState<DatePlan | null>(null);
-  const [planningStep, setPlanningStep] = useState<'activity' | 'plan' | 'confirmation'>(
-    'activity'
-  );
+  const [planningStep, setPlanningStep] = useState<
+    'activity' | 'plan' | 'confirmation' | 'outcome'
+  >('activity');
+  const [dateOutcome, setDateOutcome] = useState<{
+    title: string;
+    description: string;
+    affectionGained: number;
+    success: boolean;
+    memoryTitle: string;
+  } | null>(null);
 
   if (!selectedCharacter || !player) {
     return (
@@ -96,20 +103,24 @@ export const DatePlanning: React.FC = () => {
     );
     const dateSuccess = totalAffectionGain > 0 && compatibility.overall >= 40;
 
-    // Update affection and add to date history
-    updateAffection(selectedCharacter.id, totalAffectionGain);
+    // Record the date before applying affection so the memory captures the full date result.
     addDateToHistory(selectedCharacter.id, selectedDatePlan.id, totalAffectionGain, dateSuccess);
+    updateAffection(selectedCharacter.id, totalAffectionGain);
+
+    setDateOutcome({
+      title: dateSuccess ? 'Date Completed Successfully' : 'Date Was Challenging',
+      description: dateSuccess
+        ? `${selectedCharacter.name} will remember the ${selectedDatePlan.name.toLowerCase()} as a meaningful shared experience.`
+        : `${selectedCharacter.name} may need time to process the ${selectedDatePlan.name.toLowerCase()}, but the moment is now part of your shared history.`,
+      affectionGained: totalAffectionGain,
+      success: dateSuccess,
+      memoryTitle: `${dateSuccess ? 'Memorable' : 'Complicated'} Date: ${selectedDatePlan.name}`,
+    });
 
     // Reset planning state
     setSelectedActivity(null);
     setSelectedDatePlan(null);
-    setPlanningStep('activity');
-
-    // Show success message and return to interaction
-    alert(
-      `Date ${dateSuccess ? 'completed successfully' : 'was challenging but memorable'}! You gained ${totalAffectionGain} affection with ${selectedCharacter.name}.`
-    );
-    setScreen('character-interaction');
+    setPlanningStep('outcome');
   };
 
   const filteredPlans = selectedActivity
@@ -163,7 +174,7 @@ export const DatePlanning: React.FC = () => {
               <div className="w-12 h-1 bg-gray-600"></div>
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                  planningStep === 'confirmation'
+                  planningStep === 'confirmation' || planningStep === 'outcome'
                     ? 'bg-purple-600 text-white'
                     : 'bg-gray-600 text-gray-300'
                 }`}
@@ -444,6 +455,74 @@ export const DatePlanning: React.FC = () => {
                 >
                   Confirm Date Plan
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Date Outcome */}
+          {planningStep === 'outcome' && dateOutcome && (
+            <div className="bg-slate-900 rounded-lg p-6 text-white">
+              <div className="max-w-3xl mx-auto">
+                <div
+                  className={`rounded-lg border-2 p-6 mb-6 ${
+                    dateOutcome.success
+                      ? 'border-pink-400 bg-pink-900/20'
+                      : 'border-yellow-400 bg-yellow-900/20'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">{dateOutcome.success ? '💕' : '🌙'}</div>
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-semibold mb-2">{dateOutcome.title}</h2>
+                      <p className="text-gray-300 mb-4">{dateOutcome.description}</p>
+                      <div className="text-lg font-semibold">
+                        Affection:{' '}
+                        <span
+                          className={
+                            dateOutcome.affectionGained >= 0 ? 'text-green-400' : 'text-red-400'
+                          }
+                        >
+                          {dateOutcome.affectionGained > 0 ? '+' : ''}
+                          {dateOutcome.affectionGained}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-800 rounded-lg border border-purple-400/40 p-5 mb-8">
+                  <div className="text-sm uppercase tracking-wide text-purple-300 mb-2">
+                    Relationship Memory Recorded
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {dateOutcome.memoryTitle}
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    This memory now appears in {selectedCharacter.name}'s profile and relationship
+                    timeline.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-3">
+                  <button
+                    onClick={() => setScreen('character-profile')}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => setScreen('relationship-timeline')}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    View Timeline
+                  </button>
+                  <button
+                    onClick={() => setScreen('character-interaction')}
+                    className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Continue Chat
+                  </button>
+                </div>
               </div>
             </div>
           )}

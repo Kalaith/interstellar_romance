@@ -8,13 +8,15 @@ import {
   Achievement,
   DateHistoryEntry,
   CharacterKnownInfo,
+  RelationshipMemory,
 } from '../types/game';
 import { CHARACTERS, calculateMaxInteractions } from '../data/characters';
 import { getRandomMood } from '../data/moods';
 import { checkMilestones } from '../data/milestones';
 import { ACHIEVEMENTS, checkAchievements } from '../data/achievements';
 import { checkPhotoUnlocks } from '../data/photo-galleries';
-import { updateRelationshipStatus } from '../utils/relationshipUtils';
+import { createRelationshipMemory, updateRelationshipStatus } from '../utils/relationshipUtils';
+import { getDatePlanById } from '../data/date-plans';
 import {
   checkStorylineUnlocks,
   processStorylineChoice,
@@ -53,6 +55,7 @@ interface GameState {
     affectionGained: number,
     success: boolean
   ) => void;
+  addRelationshipMemory: (characterId: string, memory: RelationshipMemory) => void;
   incrementConversations: () => void;
   updateAchievements: () => void;
   canTalkToCharacterToday: (characterId: string) => boolean;
@@ -315,6 +318,10 @@ export const useGameStore = create<GameState>()(
 
       addDateToHistory: (characterId, datePlanId, affectionGained, success) =>
         set(state => {
+          const character = state.characters.find(c => c.id === characterId);
+          if (!character) return state;
+
+          const datePlan = getDatePlanById(datePlanId);
           const dateEntry: DateHistoryEntry = {
             id: `date_${Date.now()}`,
             datePlanId,
@@ -323,12 +330,31 @@ export const useGameStore = create<GameState>()(
             affectionGained,
             compatibilityAtTime: 75, // Would calculate this properly
             playerLevel: 1, // Would track this
-            notes: undefined,
+            notes: datePlan?.name,
           };
+
+          const dateMemory = createRelationshipMemory(
+            'date_experience',
+            `${success ? 'Memorable' : 'Complicated'} Date: ${datePlan?.name || 'Unknown Date'}`,
+            success
+              ? `${character.name} shared a meaningful ${datePlan?.activityType || 'date'} experience with you at ${datePlan?.location || 'a quiet corner of the station'}.`
+              : `The date with ${character.name} did not go smoothly, but it still became part of your shared history.`,
+            affectionGained,
+            Math.max(0, Math.min(100, character.affection + affectionGained)),
+            `${affectionGained > 0 ? '+' : ''}${affectionGained} affection`
+          );
 
           const updatedCharacters = state.characters.map(char =>
             char.id === characterId
-              ? { ...char, dateHistory: [...char.dateHistory, dateEntry] }
+              ? {
+                  ...char,
+                  dateHistory: [...char.dateHistory, dateEntry],
+                  relationshipMemories: [...char.relationshipMemories, dateMemory],
+                  relationshipStatus: {
+                    ...char.relationshipStatus,
+                    sharedExperiences: char.relationshipStatus.sharedExperiences + 1,
+                  },
+                }
               : char
           );
 
@@ -344,6 +370,23 @@ export const useGameStore = create<GameState>()(
             characters: updatedCharacters,
             selectedCharacter: updatedSelectedCharacter,
             totalDates: state.totalDates + 1,
+          };
+        }),
+
+      addRelationshipMemory: (characterId, memory) =>
+        set(state => {
+          const updatedCharacters = state.characters.map(char =>
+            char.id === characterId
+              ? { ...char, relationshipMemories: [...char.relationshipMemories, memory] }
+              : char
+          );
+
+          return {
+            characters: updatedCharacters,
+            selectedCharacter:
+              state.selectedCharacter?.id === characterId
+                ? updatedCharacters.find(c => c.id === characterId) || state.selectedCharacter
+                : state.selectedCharacter,
           };
         }),
 

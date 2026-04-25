@@ -52,7 +52,8 @@ Players create an interstellar persona, meet alien companions, build affection t
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── publish.ps1              # WebHatchery publish wrapper
-└── README.md
+├── README.md
+└── STYLE_GUIDE.md           # Current UI style guide and migration checklist
 ```
 
 ## Getting Started
@@ -98,6 +99,10 @@ npm run ci            # Run lint, type-check, format, tests, and build
 - ESLint and Prettier
 - Axios helper client for WebHatchery-style API/auth integration
 
+## UI Style Guide
+
+UI direction, Tailwind conventions, theme tokens, and the current UI migration checklist are maintained in `STYLE_GUIDE.md`.
+
 ## Roadmap
 
 ### Near Term
@@ -110,7 +115,6 @@ npm run ci            # Run lint, type-check, format, tests, and build
 ### Gameplay
 
 - Add more dialogue branches per companion and make choices produce clearer long-term consequences.
-- Surface relationship memories more directly in profiles, timelines, and date outcomes.
 - Finish wiring advanced systems such as conflicts, super likes, temporary boosts, and icebreakers into the main gameplay loop.
 - Add more companion-specific story events and unlockable scenes.
 - Balance affection gains, date requirements, achievement progress, and daily activity pacing.

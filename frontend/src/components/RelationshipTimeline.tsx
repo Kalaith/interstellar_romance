@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { TimelineEvent } from '../types/game';
+import { MemoryType, TimelineEvent } from '../types/game';
 
 export const RelationshipTimeline: React.FC = () => {
   const { selectedCharacter, setScreen } = useGameStore();
@@ -21,6 +21,32 @@ export const RelationshipTimeline: React.FC = () => {
     );
   }
 
+  const getEventDate = (date: Date | string): Date => new Date(date);
+
+  const getMemoryIcon = (type: MemoryType): string => {
+    const icons: Record<MemoryType, string> = {
+      first_meeting: '✨',
+      meaningful_conversation: '💬',
+      romantic_moment: '💕',
+      conflict_resolution: '🕊️',
+      shared_activity: '🤝',
+      milestone_achievement: '🏆',
+      gift_exchange: '🎁',
+      date_experience: '🌹',
+      personal_revelation: '📖',
+      crisis_support: '🛡️',
+    };
+
+    return icons[type];
+  };
+
+  const getMemoryTimelineType = (type: MemoryType): TimelineEvent['type'] => {
+    if (type === 'date_experience') return 'date';
+    if (type === 'milestone_achievement') return 'milestone';
+    if (type === 'first_meeting') return 'first_meeting';
+    return 'conversation';
+  };
+
   // Generate timeline events from character data
   const generateTimelineEvents = (): TimelineEvent[] => {
     const events: TimelineEvent[] = [];
@@ -31,7 +57,7 @@ export const RelationshipTimeline: React.FC = () => {
         events.push({
           id: `milestone_${milestone.id}`,
           type: 'milestone',
-          date: milestone.achievedDate,
+          date: getEventDate(milestone.achievedDate),
           title: milestone.name,
           description: milestone.description,
           affectionLevel: milestone.unlockedAt,
@@ -41,14 +67,25 @@ export const RelationshipTimeline: React.FC = () => {
       }
     });
 
+    const dateMemoryTimes = selectedCharacter.relationshipMemories
+      .filter(memory => memory.type === 'date_experience')
+      .map(memory => getEventDate(memory.date).getTime());
+
     // Add date events
     selectedCharacter.dateHistory.forEach((dateEntry, index) => {
+      const date = getEventDate(dateEntry.date);
+      const alreadyRepresentedByMemory = dateMemoryTimes.some(
+        memoryTime => Math.abs(memoryTime - date.getTime()) < 2000
+      );
+
+      if (alreadyRepresentedByMemory) return;
+
       events.push({
         id: `date_${dateEntry.id}`,
         type: 'date',
-        date: dateEntry.date,
-        title: `${dateEntry.success ? 'Successful' : 'Challenging'} Date`,
-        description: `Affection ${dateEntry.success ? 'gained' : 'adjusted'}: ${dateEntry.affectionGained > 0 ? '+' : ''}${dateEntry.affectionGained}`,
+        date,
+        title: dateEntry.notes || `${dateEntry.success ? 'Successful' : 'Challenging'} Date`,
+        description: `Date ${dateEntry.success ? 'went well' : 'was challenging'}; affection ${dateEntry.affectionGained > 0 ? '+' : ''}${dateEntry.affectionGained}`,
         affectionLevel: Math.max(
           0,
           selectedCharacter.affection - (selectedCharacter.dateHistory.length - index - 1) * 5
@@ -58,13 +95,34 @@ export const RelationshipTimeline: React.FC = () => {
       });
     });
 
+    // Add relationship memories as first-class timeline events
+    selectedCharacter.relationshipMemories.forEach(memory => {
+      events.push({
+        id: `memory_${memory.id}`,
+        type: getMemoryTimelineType(memory.type),
+        date: getEventDate(memory.date),
+        title: memory.title,
+        description: memory.consequence
+          ? `${memory.description} ${memory.consequence}`
+          : memory.description,
+        affectionLevel: memory.affectionAtTime,
+        icon: getMemoryIcon(memory.type),
+        significance:
+          Math.abs(memory.emotionalImpact) >= 10
+            ? 'epic'
+            : Math.abs(memory.emotionalImpact) >= 5
+              ? 'major'
+              : 'minor',
+      });
+    });
+
     // Add photo unlock events
     selectedCharacter.photoGallery.forEach(photo => {
       if (photo.unlocked && photo.unlockedDate) {
         events.push({
           id: `photo_${photo.id}`,
           type: 'photo_unlock',
-          date: photo.unlockedDate,
+          date: getEventDate(photo.unlockedDate),
           title: `New Photo: ${photo.title}`,
           description: `Unlocked ${photo.rarity} rarity photo`,
           affectionLevel: photo.unlockedAt,
@@ -94,7 +152,7 @@ export const RelationshipTimeline: React.FC = () => {
     }
 
     // Sort by date (newest first)
-    return events.sort((a, b) => b.date.getTime() - a.date.getTime());
+    return events.sort((a, b) => getEventDate(b.date).getTime() - getEventDate(a.date).getTime());
   };
 
   const timelineEvents = generateTimelineEvents();
@@ -144,7 +202,7 @@ export const RelationshipTimeline: React.FC = () => {
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-bold mb-2">{selectedCharacter.name}</h2>
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-pink-400">
                       {selectedCharacter.affection}
@@ -160,6 +218,12 @@ export const RelationshipTimeline: React.FC = () => {
                   <div>
                     <div className="text-2xl font-bold text-blue-400">{timelineEvents.length}</div>
                     <div className="text-xs text-gray-400">Total Events</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-cyan-400">
+                      {selectedCharacter.relationshipMemories.length}
+                    </div>
+                    <div className="text-xs text-gray-400">Memories</div>
                   </div>
                 </div>
               </div>
@@ -194,7 +258,7 @@ export const RelationshipTimeline: React.FC = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-sm text-gray-400">
-                            {event.date.toLocaleDateString()}
+                            {getEventDate(event.date).toLocaleDateString()}
                           </div>
                           <div className="text-xs text-purple-300">
                             Affection: {event.affectionLevel}
@@ -248,7 +312,7 @@ export const RelationshipTimeline: React.FC = () => {
           {timelineEvents.length > 0 && (
             <div className="bg-slate-900 rounded-lg p-6 mt-8 text-white">
               <h3 className="text-lg font-semibold mb-4 text-purple-300">Timeline Statistics</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">
                     {timelineEvents.filter(e => e.type === 'first_meeting').length}
@@ -272,6 +336,12 @@ export const RelationshipTimeline: React.FC = () => {
                     {timelineEvents.filter(e => e.type === 'photo_unlock').length}
                   </div>
                   <div className="text-xs text-gray-400">Photos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-cyan-400">
+                    {selectedCharacter.relationshipMemories.length}
+                  </div>
+                  <div className="text-xs text-gray-400">Memories</div>
                 </div>
               </div>
             </div>
