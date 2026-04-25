@@ -2,7 +2,8 @@ import React from 'react';
 import { useGameStore } from '../stores/gameStore';
 
 export const SelfImprovementScreen: React.FC = () => {
-  const { player, setScreen, content, completeSelfImprovement, isSaving } = useGameStore();
+  const { player, setScreen, content, completeSelfImprovement, isSaving, selfImprovementState } =
+    useGameStore();
   const [activeActivityId, setActiveActivityId] = React.useState<string | null>(null);
 
   if (!player) {
@@ -23,11 +24,18 @@ export const SelfImprovementScreen: React.FC = () => {
 
   const handleActivityClick = async (activityId: string) => {
     setActiveActivityId(activityId);
-    await completeSelfImprovement(activityId);
-    setActiveActivityId(null);
+    try {
+      await completeSelfImprovement(activityId);
+    } finally {
+      setActiveActivityId(null);
+    }
   };
 
   const selfImprovementActivities = content.selfImprovementActivities;
+  const remainingEnergy =
+    selfImprovementState.energyAvailable - selfImprovementState.energyUsed;
+  const remainingTimeSlots =
+    selfImprovementState.timeSlotsAvailable - selfImprovementState.timeSlotsUsed;
 
   return (
     <div className="min-h-screen">
@@ -46,13 +54,17 @@ export const SelfImprovementScreen: React.FC = () => {
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   Energy
                 </div>
-                <div className="text-[var(--resource-energy)] font-semibold">100/100</div>
+                <div className="text-[var(--resource-energy)] font-semibold">
+                  {remainingEnergy}/{selfImprovementState.energyAvailable}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                   Free Time Slots
                 </div>
-                <div className="text-[var(--accent-cyan)] font-semibold">5</div>
+                <div className="text-[var(--accent-cyan)] font-semibold">
+                  {remainingTimeSlots}/{selfImprovementState.timeSlotsAvailable}
+                </div>
               </div>
             </div>
           </div>
@@ -119,14 +131,23 @@ export const SelfImprovementScreen: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {selfImprovementActivities.map(activity => (
-              <div
-                key={activity.id}
-                onClick={() => !isSaving && void handleActivityClick(activity.id)}
-                className={`bg-[var(--bg-section)] border-2 border-[var(--border-inner)] rounded-lg p-4 transition-all duration-300 hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-item)] hover:shadow-[0_0_15px_rgba(0,212,255,0.2)] transform hover:scale-105 ${
-                  isSaving ? 'cursor-wait opacity-70' : 'cursor-pointer'
-                }`}
-              >
+            {selfImprovementActivities.map(activity => {
+              const isCompleted = selfImprovementState.completedActivityIds.includes(activity.id);
+              const canAfford =
+                (activity.energyCost ?? 0) <= remainingEnergy &&
+                (activity.timeSlots ?? 0) <= remainingTimeSlots;
+              const canRun = !isSaving && !isCompleted && canAfford;
+
+              return (
+                <div
+                  key={activity.id}
+                  onClick={() => canRun && void handleActivityClick(activity.id)}
+                  className={`bg-[var(--bg-section)] border-2 rounded-lg p-4 transition-all duration-300 ${
+                    canRun
+                      ? 'border-[var(--border-inner)] hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-item)] hover:shadow-[0_0_15px_rgba(0,212,255,0.2)] transform hover:scale-105 cursor-pointer'
+                      : 'border-[var(--state-locked)] opacity-60 cursor-not-allowed'
+                  }`}
+                >
                 {/* Activity Icon */}
                 <div className="w-full h-20 bg-[var(--bg-item)] rounded-lg mb-3 flex items-center justify-center text-3xl">
                   {activity.category === 'fitness'
@@ -162,11 +183,18 @@ export const SelfImprovementScreen: React.FC = () => {
 
                   {/* Rewards */}
                   <div className="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--state-available)] text-[var(--bg-space)]">
-                    {activeActivityId === activity.id ? 'Applying...' : activity.reward}
+                    {activeActivityId === activity.id
+                      ? 'Applying...'
+                      : isCompleted
+                        ? 'Completed this week'
+                        : canAfford
+                          ? activity.reward
+                          : 'Not enough energy or time'}
                   </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
 

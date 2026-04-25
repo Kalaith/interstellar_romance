@@ -113,6 +113,14 @@ final class GameStateService
                     (string) $relationship['mood'],
                     $this->timeOfDay()
                 ),
+                'relationshipGoals' => $this->relationshipGoals($save, $relationship, $character, $characterMilestones),
+                'journal' => [
+                    'knownInfo' => $relationship['known_info'],
+                    'recentMemories' => array_slice($memories[$character['id']] ?? [], 0, 5),
+                    'activeConflicts' => $activeConflicts,
+                    'milestones' => $characterMilestones,
+                ],
+                'cooldowns' => $this->cooldownPayload((int) $save['id'], (string) $character['id'], (int) $save['current_week']),
                 'romanticallyCompatible' => $this->rules->isRomanticallyCompatible($save, $character),
             ];
         }
@@ -130,6 +138,13 @@ final class GameStateService
                 'superLikesAvailable' => $save['super_likes_available'],
                 'conflictResolutionSkill' => $save['conflict_resolution_skill'],
                 'icebreakerUnlocks' => $save['icebreaker_unlocks'],
+            ],
+            'selfImprovementState' => $this->selfImprovementPayload($save),
+            'weeklySummary' => $this->weeklySummaryPayload((int) $save['id'], (int) $save['current_week']),
+            'randomEvents' => $this->randomEventPayload((int) $save['id']),
+            'accountStatus' => [
+                'authUserId' => $save['auth_user_id'],
+                'saveId' => $save['id'],
             ],
             'characters' => $characters,
             'achievements' => $this->achievementPayload($saveId),
@@ -184,6 +199,112 @@ final class GameStateService
         }
 
         return $payload;
+    }
+
+    private function selfImprovementPayload(array $save): array
+    {
+        $energyAvailable = 100;
+        $timeSlotsAvailable = 5;
+        $energyUsed = 0;
+        $timeSlotsUsed = 0;
+        $completedActivityIds = [];
+        $week = (int) $save['current_week'];
+
+        foreach ($this->gameRepository->listEvents((int) $save['id'], 'self_improvement_completed') as $event) {
+            $payload = $event['payload'];
+            if ((int) ($payload['week'] ?? 0) !== $week) {
+                continue;
+            }
+
+            if (is_string($payload['activity_id'] ?? null)) {
+                $completedActivityIds[] = (string) $payload['activity_id'];
+            }
+            $energyUsed += (int) ($payload['energy_cost'] ?? 0);
+            $timeSlotsUsed += (int) ($payload['time_slots'] ?? 0);
+        }
+
+        return [
+            'energyAvailable' => $energyAvailable,
+            'energyUsed' => $energyUsed,
+            'timeSlotsAvailable' => $timeSlotsAvailable,
+            'timeSlotsUsed' => $timeSlotsUsed,
+            'completedActivityIds' => array_values(array_unique($completedActivityIds)),
+        ];
+    }
+
+    private function weeklySummaryPayload(int $saveId, int $currentWeek): ?array
+    {
+        foreach ($this->gameRepository->listEvents($saveId, 'weekly_activities_completed') as $event) {
+            $payload = $event['payload'];
+            if ((int) ($payload['week'] ?? 0) === $currentWeek - 1) {
+                return $payload;
+            }
+        }
+        return null;
+    }
+
+    private function randomEventPayload(int $saveId): array
+    {
+        return array_slice(array_map(
+            static fn(array $event): array => $event['payload']['event'] ?? [],
+            $this->gameRepository->listEvents($saveId, 'weekly_random_event')
+        ), 0, 3);
+    }
+
+    private function cooldownPayload(int $saveId, string $characterId, int $week): array
+    {
+        $dialogues = 0;
+        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'dialogue_choice') as $event) {
+            if ((int) ($event['payload']['week'] ?? 0) === $week) {
+                $dialogues++;
+            }
+        }
+        $dateUsed = false;
+        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'date_completed') as $event) {
+            if ((int) ($event['payload']['week'] ?? 0) === $week) {
+                $dateUsed = true;
+                break;
+            }
+        }
+
+        return [
+            'dialoguesUsedThisWeek' => $dialogues,
+            'dialoguesAllowedThisWeek' => 3,
+            'dateAvailableThisWeek' => !$dateUsed,
+        ];
+    }
+
+    private function relationshipGoals(array $save, array $relationship, array $character, array $milestones): array
+    {
+        $knownCount = count(array_filter($relationship['known_info'], static fn(bool $known): bool => $known));
+        $achievedCount = count(array_filter($milestones, static fn(array $milestone): bool => $milestone['achieved']));
+
+        return [
+            [
+                'id' => 'learn_more',
+                'title' => 'Learn more about ' . $character['name'],
+                'description' => 'Reveal at least 4 profile facts through conversation.',
+                'progress' => min(4, $knownCount),
+                'target' => 4,
+                'completed' => $knownCount >= 4,
+            ],
+            [
+                'id' => 'build_milestones',
+                'title' => 'Build relationship milestones',
+                'description' => 'Reach two shared milestones.',
+                'progress' => min(2, $achievedCount),
+                'target' => 2,
+                'completed' => $achievedCount >= 2,
+            ],
+            [
+                'id' => 'plan_date',
+                'title' => 'Plan a compatible date',
+                'description' => 'Use the date planner when affection is high enough.',
+                'progress' => (int) $relationship['shared_experiences'] > 0 ? 1 : 0,
+                'target' => 1,
+                'completed' => (int) $relationship['shared_experiences'] > 0,
+            ],
+        ];
     }
 
     private function availableStorylinePayload(int $saveId): array

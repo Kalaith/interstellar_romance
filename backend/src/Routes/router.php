@@ -22,6 +22,7 @@ return static function (\App\Core\Router $router): void {
     $router->post('/api/character/select', [GameController::class, 'selectCharacter'], $auth);
     $router->post('/api/dialogue/choose', [GameController::class, 'chooseDialogue'], $auth);
     $router->post('/api/date/complete', [GameController::class, 'completeDate'], $auth);
+    $router->post('/api/date/follow-up', [GameController::class, 'completeDateFollowUp'], $auth);
     $router->post('/api/week/activities', [GameController::class, 'completeActivities'], $auth);
     $router->post('/api/self-improvement', [GameController::class, 'completeSelfImprovement'], $auth);
     $router->post('/api/storyline/choice', [GameController::class, 'completeStorylineChoice'], $auth);

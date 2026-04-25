@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Actions\ChooseDialogueAction;
 use App\Actions\CompleteActivitiesAction;
 use App\Actions\CompleteDateAction;
+use App\Actions\CompleteDateFollowUpAction;
 use App\Actions\CompleteSelfImprovementAction;
 use App\Actions\CompleteStorylineChoiceAction;
 use App\Actions\CreateConflictAction;
@@ -28,6 +29,7 @@ final class GameController
         private readonly SelectCharacterAction $selectCharacterAction,
         private readonly ChooseDialogueAction $chooseDialogueAction,
         private readonly CompleteDateAction $completeDateAction,
+        private readonly CompleteDateFollowUpAction $completeDateFollowUpAction,
         private readonly CompleteActivitiesAction $completeActivitiesAction,
         private readonly CompleteSelfImprovementAction $completeSelfImprovementAction,
         private readonly CompleteStorylineChoiceAction $completeStorylineChoiceAction,
@@ -61,6 +63,11 @@ final class GameController
     public function completeDate(Request $request, Response $response): void
     {
         $response->success($this->completeDateAction->execute($this->user($request), $request->getBody()));
+    }
+
+    public function completeDateFollowUp(Request $request, Response $response): void
+    {
+        $response->success($this->completeDateFollowUpAction->execute($this->user($request), $request->getBody()));
     }
 
     public function completeActivities(Request $request, Response $response): void

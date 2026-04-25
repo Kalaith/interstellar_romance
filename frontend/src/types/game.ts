@@ -27,7 +27,32 @@ export interface Character {
   temporaryBoosts: TemporaryBoost[];
   availableDialogueOptions?: DialogueOption[];
   availableIcebreakers?: IcebreakerMessage[];
+  relationshipGoals?: RelationshipGoal[];
+  journal?: CharacterJournal;
+  cooldowns?: CharacterCooldowns;
   romanticallyCompatible?: boolean;
+}
+
+export interface RelationshipGoal {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  completed: boolean;
+}
+
+export interface CharacterJournal {
+  knownInfo: CharacterKnownInfo;
+  recentMemories: RelationshipMemory[];
+  activeConflicts: RelationshipConflict[];
+  milestones: RelationshipMilestone[];
+}
+
+export interface CharacterCooldowns {
+  dialoguesUsedThisWeek: number;
+  dialoguesAllowedThisWeek: number;
+  dateAvailableThisWeek: boolean;
 }
 
 export interface PlayerCharacter {

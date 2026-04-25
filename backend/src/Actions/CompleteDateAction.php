@@ -35,6 +35,9 @@ final class CompleteDateAction
             $character = $this->contentRepository->getCharacter($characterId);
             $relationship = $this->gameRepository->getRelationshipState((int) $save['id'], $characterId);
             $datePlan = $this->contentRepository->getDatePlan($datePlanId);
+            if ($this->hasDateThisWeek((int) $save['id'], $characterId, (int) $save['current_week'])) {
+                throw new DomainException('This character is already scheduled for a date this cycle.');
+            }
             if ((int) $relationship['affection'] < (int) $datePlan['required_affection']) {
                 throw new DomainException('This date plan requires more affection.');
             }
@@ -74,8 +77,10 @@ final class CompleteDateAction
                 'total_dates' => (int) $save['total_dates'] + 1,
             ]);
             $this->gameRepository->addEvent((int) $save['id'], 'date_completed', $characterId, [
+                'week' => (int) $save['current_week'],
                 'date_plan_id' => $datePlanId,
                 'outcome' => $outcome,
+                'follow_up_pending' => true,
             ]);
 
             $this->progressionService->sync((int) $save['id']);
@@ -103,5 +108,15 @@ final class CompleteDateAction
         }
 
         return $body[$key];
+    }
+
+    private function hasDateThisWeek(int $saveId, string $characterId, int $week): bool
+    {
+        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'date_completed') as $event) {
+            if ((int) ($event['payload']['week'] ?? 0) === $week) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -36,6 +36,35 @@ interface GameContent {
   moods: MoodContent[];
 }
 
+interface SelfImprovementState {
+  energyAvailable: number;
+  energyUsed: number;
+  timeSlotsAvailable: number;
+  timeSlotsUsed: number;
+  completedActivityIds: string[];
+}
+
+interface WeeklySummary {
+  activity_ids: string[];
+  activities: unknown[];
+  energy_used: number;
+  time_slots_used: number;
+  previous_stats: Record<string, number>;
+  stats: Record<string, number>;
+  relationship_effects: {
+    character_id: string;
+    character_name: string;
+    affection_change: number;
+    mood: string;
+    reason: string;
+  }[];
+  random_event?: {
+    type: string;
+    title: string;
+    description: string;
+  };
+}
+
 interface DialogueResult {
   option: DialogueOption;
   response: {
@@ -84,6 +113,9 @@ interface GameState {
   availableStorylines: Record<string, StorylineEvent[]>;
   advancedState: PlayerAdvancedState;
   content: GameContent;
+  selfImprovementState: SelfImprovementState;
+  weeklySummary: WeeklySummary | null;
+  randomEvents: { type: string; title: string; description: string }[];
   isGuest: boolean;
   isAuthenticated: boolean;
   hasMergeableGuestSession: boolean;
@@ -159,6 +191,14 @@ const emptyContent: GameContent = {
   moods: [],
 };
 
+const emptySelfImprovementState: SelfImprovementState = {
+  energyAvailable: 100,
+  energyUsed: 0,
+  timeSlotsAvailable: 5,
+  timeSlotsUsed: 0,
+  completedActivityIds: [],
+};
+
 const initialState = {
   currentScreen: 'main-menu' as GameScreen,
   isInitialized: false,
@@ -176,6 +216,9 @@ const initialState = {
   availableStorylines: {},
   advancedState: emptyAdvancedState,
   content: emptyContent,
+  selfImprovementState: emptySelfImprovementState,
+  weeklySummary: null,
+  randomEvents: [],
   isGuest: false,
   isAuthenticated: false,
   hasMergeableGuestSession: false,
@@ -606,6 +649,61 @@ function normalizeGameState(payload: unknown, requestedScreen?: GameScreen): Par
     availableStorylines: normalizeStorylines(state.availableStorylines),
     advancedState: normalizeAdvancedState(state.advancedState),
     content,
+    selfImprovementState: normalizeSelfImprovementState(state.selfImprovementState),
+    weeklySummary: normalizeWeeklySummary(state.weeklySummary),
+    randomEvents: asArray(state.randomEvents).map(event => {
+      const record = asRecord(event);
+      return {
+        type: asString(record.type),
+        title: asString(record.title),
+        description: asString(record.description),
+      };
+    }),
+  };
+}
+
+function normalizeWeeklySummary(raw: unknown): WeeklySummary | null {
+  if (!raw) {
+    return null;
+  }
+  const summary = asRecord(raw);
+  return {
+    activity_ids: asArray<string>(summary.activity_ids),
+    activities: asArray(summary.activities),
+    energy_used: toNumber(summary.energy_used),
+    time_slots_used: toNumber(summary.time_slots_used),
+    previous_stats: asRecord(summary.previous_stats) as Record<string, number>,
+    stats: asRecord(summary.stats) as Record<string, number>,
+    relationship_effects: asArray(summary.relationship_effects).map(effect => {
+      const record = asRecord(effect);
+      return {
+        character_id: asString(record.character_id),
+        character_name: asString(record.character_name),
+        affection_change: toNumber(record.affection_change),
+        mood: asString(record.mood),
+        reason: asString(record.reason),
+      };
+    }),
+    random_event: summary.random_event
+      ? {
+          type: asString(asRecord(summary.random_event).type),
+          title: asString(asRecord(summary.random_event).title),
+          description: asString(asRecord(summary.random_event).description),
+        }
+      : undefined,
+  };
+}
+
+function normalizeSelfImprovementState(raw: unknown): SelfImprovementState {
+  const state = asRecord(raw);
+  return {
+    energyAvailable: toNumber(state.energyAvailable ?? state.energy_available, 100),
+    energyUsed: toNumber(state.energyUsed ?? state.energy_used, 0),
+    timeSlotsAvailable: toNumber(state.timeSlotsAvailable ?? state.time_slots_available, 5),
+    timeSlotsUsed: toNumber(state.timeSlotsUsed ?? state.time_slots_used, 0),
+    completedActivityIds: asArray<string>(
+      state.completedActivityIds ?? state.completed_activity_ids
+    ),
   };
 }
 

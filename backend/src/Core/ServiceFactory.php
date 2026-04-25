@@ -7,6 +7,7 @@ namespace App\Core;
 use App\Actions\ChooseDialogueAction;
 use App\Actions\CompleteActivitiesAction;
 use App\Actions\CompleteDateAction;
+use App\Actions\CompleteDateFollowUpAction;
 use App\Actions\CompleteSelfImprovementAction;
 use App\Actions\CompleteStorylineChoiceAction;
 use App\Actions\CreateConflictAction;
@@ -74,6 +75,11 @@ final class ServiceFactory
                     $this->contentRepository(),
                     $this->gameRepository(),
                     $this->rules(),
+                    $this->progressionService(),
+                    $this->stateService()
+                ),
+                new CompleteDateFollowUpAction(
+                    $this->gameRepository(),
                     $this->progressionService(),
                     $this->stateService()
                 ),

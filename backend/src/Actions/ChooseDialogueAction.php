@@ -48,6 +48,9 @@ final class ChooseDialogueAction
             if ((int) $relationship['interactions_used'] >= (int) $relationship['max_interactions']) {
                 throw new DomainException('No daily interactions remain for this character.');
             }
+            if ($this->weeklyDialogueCount((int) $save['id'], $characterId, (int) $save['current_week']) >= 3) {
+                throw new DomainException('This character needs space until the next cycle.');
+            }
 
             $option = $this->contentRepository->getDialogueOption($optionId);
             if ($option['character_id'] !== $characterId) {
@@ -101,6 +104,7 @@ final class ChooseDialogueAction
                 'tags' => ['conversation', $option['topic']],
             ]);
             $this->gameRepository->addEvent((int) $save['id'], 'dialogue_choice', $characterId, [
+                'week' => (int) $save['current_week'],
                 'option_id' => $optionId,
                 'topic' => $option['topic'],
                 'affection_change' => $affectionChange,
@@ -133,5 +137,16 @@ final class ChooseDialogueAction
         }
 
         return $body[$key];
+    }
+
+    private function weeklyDialogueCount(int $saveId, string $characterId, int $week): int
+    {
+        $count = 0;
+        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'dialogue_choice') as $event) {
+            if ((int) ($event['payload']['week'] ?? 0) === $week) {
+                $count++;
+            }
+        }
+        return $count;
     }
 }

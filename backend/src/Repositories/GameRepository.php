@@ -677,6 +677,44 @@ final class GameRepository
         ]);
     }
 
+    public function listEvents(int $saveId, ?string $eventType = null): array
+    {
+        $sql = 'SELECT * FROM game_events WHERE save_id = :save_id';
+        $params = ['save_id' => $saveId];
+        if ($eventType !== null) {
+            $sql .= ' AND event_type = :event_type';
+            $params['event_type'] = $eventType;
+        }
+        $sql .= ' ORDER BY created_at DESC, id DESC';
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute($params);
+        return array_map(static function (array $row): array {
+            $payload = json_decode((string) $row['payload_json'], true);
+            $row['payload'] = is_array($payload) ? $payload : [];
+            return $row;
+        }, $statement->fetchAll());
+    }
+
+    public function listEventsForCharacter(int $saveId, string $characterId, ?string $eventType = null): array
+    {
+        $sql = 'SELECT * FROM game_events WHERE save_id = :save_id AND character_id = :character_id';
+        $params = ['save_id' => $saveId, 'character_id' => $characterId];
+        if ($eventType !== null) {
+            $sql .= ' AND event_type = :event_type';
+            $params['event_type'] = $eventType;
+        }
+        $sql .= ' ORDER BY created_at DESC, id DESC';
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute($params);
+        return array_map(static function (array $row): array {
+            $payload = json_decode((string) $row['payload_json'], true);
+            $row['payload'] = is_array($payload) ? $payload : [];
+            return $row;
+        }, $statement->fetchAll());
+    }
+
     private function updateTable(string $table, string $idColumn, int $id, array $fields, array $allowed): void
     {
         $fields['updated_at'] = $this->now();

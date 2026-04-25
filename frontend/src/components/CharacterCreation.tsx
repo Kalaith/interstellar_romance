@@ -403,7 +403,7 @@ export const CharacterCreation: React.FC = () => {
 
             {/* Action Buttons */}
             {validationMessage && (
-              <div className="rounded-lg border border-[var(--state-warning)]/50 bg-[var(--state-warning)]/10 p-3 text-sm text-[var(--resource-energy)]">
+              <div className="rounded-lg border border-yellow-400/50 bg-yellow-950/40 p-3 text-sm text-yellow-100">
                 {validationMessage}
               </div>
             )}
@@ -418,16 +418,14 @@ export const CharacterCreation: React.FC = () => {
               >
                 🏠 Back to Menu
               </Button>
-              <Button
+              <button
                 type="button"
                 onClick={() => void handleCreateCharacter()}
-                variant="primary"
-                size="lg"
-                fullWidth
                 disabled={isSaving}
+                className="w-full rounded-lg border border-[var(--accent-cyan)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] px-6 py-3 text-lg font-medium text-[var(--bg-space)] shadow-lg shadow-[0_0_20px_rgba(0,212,255,0.18)] transition-all duration-200 hover:from-[var(--accent-teal)] hover:to-[var(--accent-cyan)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] active:scale-95 disabled:cursor-not-allowed disabled:bg-none disabled:bg-[var(--state-locked)] disabled:text-[var(--text-muted)] disabled:opacity-60 disabled:active:scale-100"
               >
                 {isSaving ? 'Creating...' : '✨ Create Character'}
-              </Button>
+              </button>
             </div>
           </form>
         </div>
