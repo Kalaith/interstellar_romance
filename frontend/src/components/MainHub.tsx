@@ -288,11 +288,25 @@ export const MainHub: React.FC = () => {
                           size="xs"
                           onClick={e => {
                             e.stopPropagation();
-                            void selectCharacter(character.id).then(() => setScreen('date-planning'));
+                            void selectCharacter(character.id).then(() =>
+                              setScreen('date-planning')
+                            );
                           }}
                           iconLeft="📅"
                         >
                           Date
+                        </SecondaryButton>
+                        <SecondaryButton
+                          size="xs"
+                          onClick={e => {
+                            e.stopPropagation();
+                            void selectCharacter(character.id).then(() =>
+                              setScreen('character-journal')
+                            );
+                          }}
+                          iconLeft="📓"
+                        >
+                          Journal
                         </SecondaryButton>
                       </div>
 

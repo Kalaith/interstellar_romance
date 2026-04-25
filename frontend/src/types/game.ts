@@ -104,7 +104,8 @@ export type GameScreen =
   | 'date-planning'
   | 'photo-gallery'
   | 'achievements'
-  | 'relationship-timeline';
+  | 'relationship-timeline'
+  | 'character-journal';
 
 export interface DialogueOption {
   id: string;

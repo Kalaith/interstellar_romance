@@ -11,6 +11,7 @@ import { PhotoGallery } from '../components/PhotoGallery';
 import { Achievements } from '../components/Achievements';
 import { RelationshipTimeline } from '../components/RelationshipTimeline';
 import { SelfImprovementScreen } from '../components/SelfImprovementScreen';
+import { CharacterJournal } from '../components/CharacterJournal';
 
 export function GamePage() {
   const currentScreen = useGameStore(state => state.currentScreen);
@@ -37,6 +38,8 @@ export function GamePage() {
         return <Achievements />;
       case 'relationship-timeline':
         return <RelationshipTimeline />;
+      case 'character-journal':
+        return <CharacterJournal />;
       case 'activities':
         return <ActivitiesScreen />;
       case 'self-improvement':

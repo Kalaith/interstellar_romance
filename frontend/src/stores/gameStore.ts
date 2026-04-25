@@ -238,6 +238,7 @@ const gameScreens: GameScreen[] = [
   'photo-gallery',
   'achievements',
   'relationship-timeline',
+  'character-journal',
 ];
 
 export const useGameStore = create<GameState>()(
@@ -580,8 +581,7 @@ export const useGameStore = create<GameState>()(
 
         return Math.max(
           0,
-          character.dailyInteractions.maxInteractions -
-            character.dailyInteractions.interactionsUsed
+          character.dailyInteractions.maxInteractions - character.dailyInteractions.interactionsUsed
         );
       },
 
@@ -613,9 +613,7 @@ export const useGameStore = create<GameState>()(
         const persistedScreen = asRecord(persisted).currentScreen;
         return {
           ...current,
-          currentScreen: isGameScreen(persistedScreen)
-            ? persistedScreen
-            : current.currentScreen,
+          currentScreen: isGameScreen(persistedScreen) ? persistedScreen : current.currentScreen,
         };
       },
     }
@@ -750,6 +748,20 @@ function normalizePlayer(raw: unknown): PlayerCharacter | null {
 function normalizeCharacter(raw: unknown): Character {
   const character = asRecord(raw);
   const relationshipStatus = asRecord(character.relationshipStatus);
+  const milestones = asArray(character.milestones).map(milestone => {
+    const item = asRecord(milestone);
+    return {
+      id: asString(item.id),
+      name: asString(item.name),
+      description: asString(item.description),
+      unlockedAt: toNumber(item.unlockedAt ?? item.unlocked_at),
+      achieved: toBoolean(item.achieved),
+      achievedDate: toOptionalDate(item.achievedDate ?? item.achieved_at),
+    };
+  });
+  const knownInfo = normalizeKnownInfo(character.knownInfo);
+  const activeConflicts = asArray(character.activeConflicts).map(normalizeConflict);
+  const journal = asRecord(character.journal);
 
   return {
     id: asString(character.id),
@@ -760,17 +772,7 @@ function normalizeCharacter(raw: unknown): Character {
     image: asString(character.image),
     affection: toNumber(character.affection),
     mood: asString(character.mood, 'neutral') as CharacterMood,
-    milestones: asArray(character.milestones).map(milestone => {
-      const item = asRecord(milestone);
-      return {
-        id: asString(item.id),
-        name: asString(item.name),
-        description: asString(item.description),
-        unlockedAt: toNumber(item.unlockedAt ?? item.unlocked_at),
-        achieved: toBoolean(item.achieved),
-        achievedDate: toOptionalDate(item.achievedDate ?? item.achieved_at),
-      };
-    }),
+    milestones,
     profile: asRecord(character.profile) as unknown as Character['profile'],
     lastInteractionDate: asOptionalString(
       character.lastInteractionDate ?? character.last_interaction_date
@@ -789,7 +791,7 @@ function normalizeCharacter(raw: unknown): Character {
       };
     }),
     dateHistory: asArray(character.dateHistory).map(normalizeDateHistory),
-    knownInfo: normalizeKnownInfo(character.knownInfo),
+    knownInfo,
     dailyInteractions: {
       lastResetDate: asString(
         asRecord(character.dailyInteractions).lastResetDate ??
@@ -807,7 +809,10 @@ function normalizeCharacter(raw: unknown): Character {
       timezone: asOptionalString(asRecord(character.dailyInteractions).timezone),
     },
     relationshipStatus: {
-      level: asString(relationshipStatus.level, 'stranger') as Character['relationshipStatus']['level'],
+      level: asString(
+        relationshipStatus.level,
+        'stranger'
+      ) as Character['relationshipStatus']['level'],
       title: asString(relationshipStatus.title),
       description: asString(relationshipStatus.description),
       compatibility: toNumber(relationshipStatus.compatibility),
@@ -828,7 +833,7 @@ function normalizeCharacter(raw: unknown): Character {
     relationshipMemories: asArray(character.relationshipMemories).map(normalizeMemory),
     personalityGrowth: asArray(character.personalityGrowth),
     superLikesReceived: asArray(character.superLikesReceived),
-    activeConflicts: asArray(character.activeConflicts).map(normalizeConflict),
+    activeConflicts,
     conflictHistory: asArray(character.conflictHistory).map(normalizeConflict),
     icebreakerMessages: asArray(character.availableIcebreakers).map(icebreaker => {
       const item = asRecord(icebreaker);
@@ -837,7 +842,9 @@ function normalizeCharacter(raw: unknown): Character {
         characterId: asString(item.characterId ?? item.character_id),
         category: asString(item.category) as Character['icebreakerMessages'][number]['category'],
         message: asString(item.message),
-        context: asRecord(item.context) as unknown as Character['icebreakerMessages'][number]['context'],
+        context: asRecord(
+          item.context
+        ) as unknown as Character['icebreakerMessages'][number]['context'],
         effectiveness: toNumber(item.effectiveness),
         used: toBoolean(item.used),
         usedDate: toOptionalDate(item.usedDate ?? item.used_at),
@@ -845,7 +852,9 @@ function normalizeCharacter(raw: unknown): Character {
       };
     }),
     temporaryBoosts: asArray(character.temporaryBoosts),
-    availableDialogueOptions: asArray(character.availableDialogueOptions).map(normalizeDialogueOption),
+    availableDialogueOptions: asArray(character.availableDialogueOptions).map(
+      normalizeDialogueOption
+    ),
     availableIcebreakers: asArray(character.availableIcebreakers).map(icebreaker => {
       const item = asRecord(icebreaker);
       return {
@@ -853,11 +862,58 @@ function normalizeCharacter(raw: unknown): Character {
         characterId: asString(item.characterId ?? item.character_id),
         category: asString(item.category) as Character['icebreakerMessages'][number]['category'],
         message: asString(item.message),
-        context: asRecord(item.context) as unknown as Character['icebreakerMessages'][number]['context'],
+        context: asRecord(
+          item.context
+        ) as unknown as Character['icebreakerMessages'][number]['context'],
         effectiveness: toNumber(item.effectiveness),
         used: toBoolean(item.used),
       };
     }),
+    relationshipGoals: asArray(character.relationshipGoals).map(goal => {
+      const item = asRecord(goal);
+      return {
+        id: asString(item.id),
+        title: asString(item.title),
+        description: asString(item.description),
+        progress: toNumber(item.progress),
+        target: toNumber(item.target),
+        completed: toBoolean(item.completed),
+      };
+    }),
+    journal: character.journal
+      ? {
+          knownInfo: normalizeKnownInfo(journal.knownInfo ?? knownInfo),
+          recentMemories: asArray(journal.recentMemories).map(normalizeMemory),
+          activeConflicts: asArray(journal.activeConflicts).map(normalizeConflict),
+          milestones: asArray(journal.milestones).map(milestone => {
+            const item = asRecord(milestone);
+            return {
+              id: asString(item.id),
+              name: asString(item.name),
+              description: asString(item.description),
+              unlockedAt: toNumber(item.unlockedAt ?? item.unlocked_at),
+              achieved: toBoolean(item.achieved),
+              achievedDate: toOptionalDate(item.achievedDate ?? item.achieved_at),
+            };
+          }),
+        }
+      : undefined,
+    cooldowns: character.cooldowns
+      ? {
+          dialoguesUsedThisWeek: toNumber(
+            asRecord(character.cooldowns).dialoguesUsedThisWeek ??
+              asRecord(character.cooldowns).dialogues_used_this_week
+          ),
+          dialoguesAllowedThisWeek: toNumber(
+            asRecord(character.cooldowns).dialoguesAllowedThisWeek ??
+              asRecord(character.cooldowns).dialogues_allowed_this_week
+          ),
+          dateAvailableThisWeek: toBoolean(
+            asRecord(character.cooldowns).dateAvailableThisWeek ??
+              asRecord(character.cooldowns).date_available_this_week
+          ),
+        }
+      : undefined,
     romanticallyCompatible: toBoolean(character.romanticallyCompatible, true),
   };
 }
@@ -945,9 +1001,7 @@ function normalizeDateHistory(raw: unknown): DateHistoryEntry {
     date: toDate(entry.date ?? entry.occurred_at),
     success: toBoolean(entry.success),
     affectionGained: toNumber(entry.affectionGained ?? entry.affection_gained),
-    compatibilityAtTime: toNumber(
-      entry.compatibilityAtTime ?? entry.compatibility_at_time
-    ),
+    compatibilityAtTime: toNumber(entry.compatibilityAtTime ?? entry.compatibility_at_time),
     playerLevel: toNumber(entry.playerLevel ?? entry.player_level),
     notes: asOptionalString(entry.notes),
   };

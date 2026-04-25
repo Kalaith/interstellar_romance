@@ -187,11 +187,11 @@ export const CharacterProfile: React.FC = () => {
                   <span>Photos</span>
                 </button>
                 <button
-                  onClick={() => setScreen('relationship-timeline')}
+                  onClick={() => setScreen('character-journal')}
                   className="flex items-center gap-3 px-4 py-3 text-[var(--text-primary)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg font-semibold transition-all duration-300"
                 >
                   <span className="text-xl">📖</span>
-                  <span>Timeline</span>
+                  <span>Journal</span>
                 </button>
               </div>
             </div>
