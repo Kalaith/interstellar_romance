@@ -1,21 +1,24 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { MemoryType, TimelineEvent } from '../types/game';
+import { Button } from './ui/Button';
+import { StatePanel } from './ui/StatePanel';
 
 export const RelationshipTimeline: React.FC = () => {
   const { selectedCharacter, setScreen } = useGameStore();
 
   if (!selectedCharacter) {
     return (
-      <div className="min-h-screen bg-slate-800 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-xl mb-4">No character selected!</p>
-          <button
-            onClick={() => setScreen('main-hub')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
-          >
-            Back to Hub
-          </button>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md">
+          <StatePanel
+            variant="unavailable"
+            icon="📖"
+            title="No Character Selected"
+            message="Choose a companion before opening the relationship timeline."
+            actionLabel="Back to Hub"
+            onAction={() => setScreen('main-hub')}
+          />
         </div>
       </div>
     );
@@ -158,42 +161,45 @@ export const RelationshipTimeline: React.FC = () => {
   const timelineEvents = generateTimelineEvents();
 
   const significanceColors = {
-    minor: 'border-gray-400 bg-gray-900/20',
-    major: 'border-blue-400 bg-blue-900/20',
-    epic: 'border-purple-400 bg-purple-900/20',
+    minor: 'border-[var(--border-inner)] bg-[var(--bg-section)]',
+    major: 'border-[var(--accent-cyan)] bg-[var(--accent-cyan)]/10',
+    epic: 'border-[var(--resource-alloys)] bg-[var(--resource-alloys)]/10',
   };
 
   const typeColors = {
-    first_meeting: 'bg-green-600',
-    milestone: 'bg-purple-600',
-    date: 'bg-pink-600',
-    conversation: 'bg-blue-600',
-    photo_unlock: 'bg-yellow-600',
-    achievement: 'bg-orange-600',
+    first_meeting: 'bg-[var(--state-available)] text-[var(--bg-space)]',
+    milestone: 'bg-[var(--resource-alloys)] text-[var(--text-primary)]',
+    date: 'bg-pink-600 text-[var(--text-primary)]',
+    conversation: 'bg-[var(--resource-research)] text-[var(--text-primary)]',
+    photo_unlock: 'bg-[var(--resource-energy)] text-[var(--bg-space)]',
+    achievement: 'bg-[var(--resource-influence)] text-[var(--bg-space)]',
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <div className="mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Relationship Timeline</h1>
-              <p className="text-gray-300">Your journey with {selectedCharacter.name}</p>
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-[var(--text-primary)] uppercase tracking-wide">
+                  Relationship Timeline
+                </h1>
+                <p className="text-[var(--text-secondary)]">
+                  Your journey with {selectedCharacter.name}
+                </p>
+              </div>
+              <Button onClick={() => setScreen('character-profile')} variant="secondary">
+                Back to Profile
+              </Button>
             </div>
-            <button
-              onClick={() => setScreen('character-profile')}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
-            >
-              Back to Profile
-            </button>
           </div>
 
           {/* Character Summary */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-8 text-white">
-            <div className="flex items-center space-x-6">
-              <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-700">
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+              <div className="w-20 h-20 rounded-lg overflow-hidden bg-[var(--bg-item)] border border-[var(--border-inner)]">
                 <img
                   src={selectedCharacter.image}
                   alt={selectedCharacter.name}
@@ -201,29 +207,33 @@ export const RelationshipTimeline: React.FC = () => {
                 />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold mb-2">{selectedCharacter.name}</h2>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+                  {selectedCharacter.name}
+                </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-pink-400">
                       {selectedCharacter.affection}
                     </div>
-                    <div className="text-xs text-gray-400">Current Affection</div>
+                    <div className="text-xs text-[var(--text-muted)]">Current Affection</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-purple-400">
+                    <div className="text-2xl font-bold text-[var(--resource-alloys)]">
                       {selectedCharacter.milestones.filter(m => m.achieved).length}
                     </div>
-                    <div className="text-xs text-gray-400">Milestones</div>
+                    <div className="text-xs text-[var(--text-muted)]">Milestones</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-blue-400">{timelineEvents.length}</div>
-                    <div className="text-xs text-gray-400">Total Events</div>
+                    <div className="text-2xl font-bold text-[var(--resource-research)]">
+                      {timelineEvents.length}
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Total Events</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-cyan-400">
+                    <div className="text-2xl font-bold text-[var(--accent-cyan)]">
                       {selectedCharacter.relationshipMemories.length}
                     </div>
-                    <div className="text-xs text-gray-400">Memories</div>
+                    <div className="text-xs text-[var(--text-muted)]">Memories</div>
                   </div>
                 </div>
               </div>
@@ -234,7 +244,7 @@ export const RelationshipTimeline: React.FC = () => {
           {timelineEvents.length > 0 ? (
             <div className="relative">
               {/* Timeline Line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500 to-pink-500"></div>
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[var(--accent-cyan)] to-pink-500"></div>
 
               {/* Timeline Events */}
               <div className="space-y-6">
@@ -242,7 +252,7 @@ export const RelationshipTimeline: React.FC = () => {
                   <div key={event.id} className="relative flex items-start space-x-4">
                     {/* Timeline Dot */}
                     <div
-                      className={`relative z-10 w-16 h-16 rounded-full ${typeColors[event.type]} flex items-center justify-center text-white text-2xl shadow-lg`}
+                      className={`relative z-10 w-16 h-16 rounded-full ${typeColors[event.type]} flex items-center justify-center text-2xl shadow-lg`}
                     >
                       {event.icon}
                     </div>
@@ -253,14 +263,18 @@ export const RelationshipTimeline: React.FC = () => {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h3 className="text-lg font-semibold text-white">{event.title}</h3>
-                          <p className="text-gray-300 text-sm">{event.description}</p>
+                          <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                            {event.title}
+                          </h3>
+                          <p className="text-[var(--text-secondary)] text-sm">
+                            {event.description}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-400">
+                          <div className="text-sm text-[var(--text-muted)]">
                             {getEventDate(event.date).toLocaleDateString()}
                           </div>
-                          <div className="text-xs text-purple-300">
+                          <div className="text-xs text-[var(--accent-cyan)]">
                             Affection: {event.affectionLevel}
                           </div>
                         </div>
@@ -269,17 +283,17 @@ export const RelationshipTimeline: React.FC = () => {
                       {/* Event Type Badge */}
                       <div className="flex items-center space-x-2 mt-3">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold text-white capitalize ${typeColors[event.type]}`}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${typeColors[event.type]}`}
                         >
                           {event.type.replace('_', ' ')}
                         </span>
                         <span
                           className={`px-2 py-1 rounded text-xs capitalize ${
                             event.significance === 'epic'
-                              ? 'bg-purple-600 text-white'
+                              ? 'bg-[var(--resource-alloys)] text-[var(--text-primary)]'
                               : event.significance === 'major'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-600 text-white'
+                                ? 'bg-[var(--resource-research)] text-[var(--text-primary)]'
+                                : 'bg-[var(--bg-item)] text-[var(--text-secondary)] border border-[var(--border-inner)]'
                           }`}
                         >
                           {event.significance}
@@ -292,56 +306,52 @@ export const RelationshipTimeline: React.FC = () => {
             </div>
           ) : (
             /* Empty State */
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📖</div>
-              <h3 className="text-xl font-semibold text-white mb-2">Your Story Begins Here</h3>
-              <p className="text-gray-400 mb-6">
-                Start interacting with {selectedCharacter.name} to create your relationship
-                timeline.
-              </p>
-              <button
-                onClick={() => setScreen('character-interaction')}
-                className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors"
-              >
-                Start Your Story
-              </button>
-            </div>
+            <StatePanel
+              variant="empty"
+              icon="📖"
+              title="Your Story Begins Here"
+              message={`Start interacting with ${selectedCharacter.name} to create your relationship timeline.`}
+              actionLabel="Start Your Story"
+              onAction={() => setScreen('character-interaction')}
+            />
           )}
 
           {/* Timeline Stats */}
           {timelineEvents.length > 0 && (
-            <div className="bg-slate-900 rounded-lg p-6 mt-8 text-white">
-              <h3 className="text-lg font-semibold mb-4 text-purple-300">Timeline Statistics</h3>
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mt-8">
+              <h3 className="text-lg font-semibold mb-4 text-[var(--accent-cyan)] uppercase tracking-wide">
+                Timeline Statistics
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">
                     {timelineEvents.filter(e => e.type === 'first_meeting').length}
                   </div>
-                  <div className="text-xs text-gray-400">First Meetings</div>
+                  <div className="text-xs text-[var(--text-muted)]">First Meetings</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">
+                  <div className="text-2xl font-bold text-[var(--resource-alloys)]">
                     {timelineEvents.filter(e => e.type === 'milestone').length}
                   </div>
-                  <div className="text-xs text-gray-400">Milestones</div>
+                  <div className="text-xs text-[var(--text-muted)]">Milestones</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-pink-400">
                     {timelineEvents.filter(e => e.type === 'date').length}
                   </div>
-                  <div className="text-xs text-gray-400">Dates</div>
+                  <div className="text-xs text-[var(--text-muted)]">Dates</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-yellow-400">
                     {timelineEvents.filter(e => e.type === 'photo_unlock').length}
                   </div>
-                  <div className="text-xs text-gray-400">Photos</div>
+                  <div className="text-xs text-[var(--text-muted)]">Photos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-400">
+                  <div className="text-2xl font-bold text-[var(--accent-cyan)]">
                     {selectedCharacter.relationshipMemories.length}
                   </div>
-                  <div className="text-xs text-gray-400">Memories</div>
+                  <div className="text-xs text-[var(--text-muted)]">Memories</div>
                 </div>
               </div>
             </div>

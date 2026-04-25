@@ -5,6 +5,8 @@ import { getDialogueTree, getDialogueResponse } from '../data/dialogue-trees';
 import { getMoodModifier } from '../data/moods';
 import { EmotionalText } from './ui/EmotionalText';
 import { MoodDisplay } from './ui/MoodDisplay';
+import { Button } from './ui/Button';
+import { StatePanel } from './ui/StatePanel';
 
 export const EnhancedCharacterInteraction: React.FC = () => {
   const {
@@ -45,14 +47,15 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   if (!selectedCharacter) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
-          <p className="text-xl text-[var(--text-primary)] mb-4">No character selected!</p>
-          <button
-            onClick={() => setScreen('main-hub')}
-            className="px-6 py-3 text-[var(--bg-space)] bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)] rounded-lg font-semibold"
-          >
-            Back to Hub
-          </button>
+        <div className="max-w-md">
+          <StatePanel
+            variant="unavailable"
+            icon="💬"
+            title="No Character Selected"
+            message="Choose a companion before opening the communication interface."
+            actionLabel="Back to Hub"
+            onAction={() => setScreen('main-hub')}
+          />
         </div>
       </div>
     );
@@ -458,13 +461,10 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
         {/* Bottom Action Panel */}
         <div className="flex justify-center">
-          <button
-            onClick={() => setScreen('main-hub')}
-            className="flex items-center gap-3 px-8 py-4 text-lg font-semibold text-[var(--text-primary)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg transition-all duration-300"
-          >
+          <Button onClick={() => setScreen('main-hub')} variant="secondary" size="lg">
             <span className="text-2xl">🏠</span>
             <span>Return to Hub</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

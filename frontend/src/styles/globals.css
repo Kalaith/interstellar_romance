@@ -87,3 +87,35 @@
   margin-left: 8px;
   animation: blink 1.1s steps(2, start) infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .starfield,
+  .cursor {
+    animation: none;
+  }
+
+  .hover\:scale-105:hover,
+  .active\:scale-95:active {
+    transform: none;
+  }
+}
+
+:root[data-animations='off'] *,
+:root[data-animations='off'] *::before,
+:root[data-animations='off'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.001ms !important;
+}
+
+:root[data-animations='off'] .starfield,
+:root[data-animations='off'] .cursor {
+  animation: none !important;
+}

@@ -31,9 +31,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = props => {
   const variantClasses = React.useMemo(
     () => ({
       affection: 'bg-gradient-to-r from-pink-500 to-red-500',
-      compatibility: 'bg-gradient-to-r from-blue-500 to-purple-500',
-      progress: 'bg-blue-500',
-      health: 'bg-gradient-to-r from-green-500 to-emerald-500',
+      compatibility: 'bg-gradient-to-r from-[var(--resource-research)] to-[var(--accent-cyan)]',
+      progress: 'bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-teal)]',
+      health: 'bg-gradient-to-r from-[var(--state-available)] to-[var(--accent-teal)]',
     }),
     []
   );
@@ -52,12 +52,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = props => {
     <div className={`relative ${className || ''}`} {...restProps}>
       {label && (
         <div className="flex items-center justify-between mb-1">
-          <span className="text-sm text-gray-300">{label}</span>
-          {showValue && <span className="text-sm font-semibold text-white">{safeValue}%</span>}
+          <span className="text-sm text-[var(--text-secondary)]">{label}</span>
+          {showValue && (
+            <span className="text-sm font-semibold text-[var(--text-primary)]">{safeValue}%</span>
+          )}
         </div>
       )}
 
-      <div className={`w-full bg-gray-700 rounded-full ${sizeClasses[size]} overflow-hidden`}>
+      <div
+        className={`w-full bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-full ${sizeClasses[size]} overflow-hidden`}
+      >
         <div
           className={progressClasses}
           style={{ width: `${safeValue}%` }}
@@ -71,7 +75,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = props => {
 
       {showValue && !label && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-semibold text-white drop-shadow-sm">{safeValue}%</span>
+          <span className="text-xs font-semibold text-[var(--text-primary)] drop-shadow-sm">
+            {safeValue}%
+          </span>
         </div>
       )}
     </div>

@@ -3,6 +3,8 @@ import { useGameStore } from '../stores/gameStore';
 import { DatePlan, ActivityType } from '../types/game';
 import { getDatePlansByActivity } from '../data/date-plans';
 import { calculateCompatibility } from '../utils/compatibility';
+import { Button } from './ui/Button';
+import { StatePanel } from './ui/StatePanel';
 
 export const DatePlanning: React.FC = () => {
   const { selectedCharacter, player, setScreen, updateAffection, addDateToHistory } =
@@ -22,15 +24,16 @@ export const DatePlanning: React.FC = () => {
 
   if (!selectedCharacter || !player) {
     return (
-      <div className="min-h-screen bg-slate-800 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-xl mb-4">Date planning not available!</p>
-          <button
-            onClick={() => setScreen('main-hub')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
-          >
-            Back to Hub
-          </button>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md">
+          <StatePanel
+            variant="unavailable"
+            icon="🌹"
+            title="Date Planning Unavailable"
+            message="Choose a companion and create a player profile before planning a date."
+            actionLabel="Back to Hub"
+            onAction={() => setScreen('main-hub')}
+          />
         </div>
       </div>
     );
@@ -123,28 +126,25 @@ export const DatePlanning: React.FC = () => {
     setPlanningStep('outcome');
   };
 
-  const filteredPlans = selectedActivity
-    ? getDatePlansByActivity(selectedActivity).filter(
-        plan => selectedCharacter.affection >= plan.requiredAffection
-      )
-    : [];
+  const filteredPlans = selectedActivity ? getDatePlansByActivity(selectedActivity) : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <div className="mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Plan a Date</h1>
-              <p className="text-gray-300">with {selectedCharacter.name}</p>
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-[var(--text-primary)] uppercase tracking-wide">
+                  Plan a Date
+                </h1>
+                <p className="text-[var(--text-secondary)]">with {selectedCharacter.name}</p>
+              </div>
+              <Button onClick={() => setScreen('character-profile')} variant="secondary">
+                Back to Profile
+              </Button>
             </div>
-            <button
-              onClick={() => setScreen('character-profile')}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
-            >
-              Back to Profile
-            </button>
           </div>
 
           {/* Progress Indicator */}
@@ -153,30 +153,30 @@ export const DatePlanning: React.FC = () => {
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
                   planningStep === 'activity'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-green-600 text-white'
+                    ? 'bg-[var(--accent-cyan)] text-[var(--bg-space)]'
+                    : 'bg-[var(--state-available)] text-[var(--bg-space)]'
                 }`}
               >
                 1
               </div>
-              <div className="w-12 h-1 bg-gray-600"></div>
+              <div className="w-12 h-1 bg-[var(--border-inner)]"></div>
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
                   planningStep === 'plan'
-                    ? 'bg-purple-600 text-white'
+                    ? 'bg-[var(--accent-cyan)] text-[var(--bg-space)]'
                     : planningStep === 'confirmation'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-600 text-gray-300'
+                      ? 'bg-[var(--state-available)] text-[var(--bg-space)]'
+                      : 'bg-[var(--bg-item)] text-[var(--text-muted)]'
                 }`}
               >
                 2
               </div>
-              <div className="w-12 h-1 bg-gray-600"></div>
+              <div className="w-12 h-1 bg-[var(--border-inner)]"></div>
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
                   planningStep === 'confirmation' || planningStep === 'outcome'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-600 text-gray-300'
+                    ? 'bg-[var(--accent-cyan)] text-[var(--bg-space)]'
+                    : 'bg-[var(--bg-item)] text-[var(--text-muted)]'
                 }`}
               >
                 3
@@ -186,8 +186,10 @@ export const DatePlanning: React.FC = () => {
 
           {/* Step 1: Activity Type Selection */}
           {planningStep === 'activity' && (
-            <div className="bg-slate-900 rounded-lg p-6 text-white">
-              <h2 className="text-2xl font-semibold mb-6 text-center">Choose Activity Type</h2>
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6">
+              <h2 className="text-2xl font-semibold mb-6 text-center text-[var(--text-primary)]">
+                Choose Activity Type
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {activityTypes.map(activity => {
                   const isPreferred = selectedCharacter.profile.preferredActivities.includes(
@@ -201,19 +203,23 @@ export const DatePlanning: React.FC = () => {
                       onClick={() => handleActivitySelection(activity.type)}
                       className={`p-6 rounded-lg border-2 transition-all duration-200 text-left ${
                         isPreferred
-                          ? 'border-green-500 bg-green-900/20 hover:bg-green-800/30'
-                          : 'border-slate-600 bg-slate-800 hover:bg-slate-700'
+                          ? 'border-[var(--state-available)] bg-[var(--state-available)]/10 hover:bg-[var(--state-available)]/15'
+                          : 'border-[var(--border-inner)] bg-[var(--bg-section)] hover:bg-[var(--bg-item)] hover:border-[var(--accent-cyan)]'
                       }`}
                     >
                       <div className="flex items-center space-x-3 mb-3">
                         <span className="text-3xl">{activity.icon}</span>
                         <h3 className="text-lg font-semibold capitalize">{activity.type}</h3>
                         {isPreferred && (
-                          <span className="text-green-400 text-sm">✨ Preferred</span>
+                          <span className="text-[var(--state-available)] text-sm">
+                            ✨ Preferred
+                          </span>
                         )}
                       </div>
-                      <p className="text-gray-300 text-sm mb-3">{activity.description}</p>
-                      <div className="text-xs text-gray-400">
+                      <p className="text-[var(--text-secondary)] text-sm mb-3">
+                        {activity.description}
+                      </p>
+                      <div className="text-xs text-[var(--text-muted)]">
                         Compatibility: {compatibilityScore}%
                       </div>
                     </button>
@@ -225,73 +231,109 @@ export const DatePlanning: React.FC = () => {
 
           {/* Step 2: Specific Date Plan Selection */}
           {planningStep === 'plan' && selectedActivity && (
-            <div className="bg-slate-900 rounded-lg p-6 text-white">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-semibold">Choose {selectedActivity} Activity</h2>
-                <button
-                  onClick={() => setPlanningStep('activity')}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm"
-                >
+                <h2 className="text-2xl font-semibold text-[var(--text-primary)]">
+                  Choose {selectedActivity} Activity
+                </h2>
+                <Button onClick={() => setPlanningStep('activity')} variant="secondary" size="sm">
                   Back to Activity Types
-                </button>
+                </Button>
               </div>
 
               {filteredPlans.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-400 text-lg mb-4">
-                    No {selectedActivity} activities available at your current affection level.
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Build more affection with {selectedCharacter.name} to unlock more date options.
-                  </p>
-                </div>
+                <StatePanel
+                  variant="empty"
+                  icon="📅"
+                  title={`No ${selectedActivity} dates found`}
+                  message={`Build more affection with ${selectedCharacter.name} to unlock more date options.`}
+                />
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {filteredPlans.map(plan => (
-                    <button
-                      key={plan.id}
-                      onClick={() => handlePlanSelection(plan)}
-                      className="p-6 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-600 transition-colors text-left"
-                    >
-                      <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-                      <p className="text-gray-300 text-sm mb-4">{plan.description}</p>
+                  {filteredPlans.map(plan => {
+                    const isLocked = selectedCharacter.affection < plan.requiredAffection;
 
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Location:</span>
-                          <span>{plan.location}</span>
+                    return (
+                      <button
+                        key={plan.id}
+                        onClick={() => !isLocked && handlePlanSelection(plan)}
+                        disabled={isLocked}
+                        className={`p-6 rounded-lg border transition-colors text-left focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] ${
+                          isLocked
+                            ? 'bg-[var(--bg-item)]/60 border-[var(--state-locked)] opacity-70 cursor-not-allowed'
+                            : 'bg-[var(--bg-section)] hover:bg-[var(--bg-item)] border-[var(--border-inner)] hover:border-[var(--accent-cyan)]'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h3 className="text-xl font-semibold">{plan.name}</h3>
+                          {isLocked && (
+                            <span className="px-2 py-1 text-xs font-semibold rounded bg-[var(--state-locked)]/30 border border-[var(--state-locked)] text-[var(--text-muted)]">
+                              Locked
+                            </span>
+                          )}
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Duration:</span>
-                          <span>{plan.duration} minutes</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Compatibility Bonus:</span>
-                          <span className="text-green-400">
-                            +{plan.compatibilityBonus} affection
-                          </span>
-                        </div>
-                      </div>
+                        <p className="text-[var(--text-secondary)] text-sm mb-4">
+                          {plan.description}
+                        </p>
 
-                      {plan.preferredTopics.length > 0 && (
-                        <div className="mt-4">
-                          <div className="text-xs text-gray-400 mb-2">
-                            Great conversation topics:
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-[var(--text-muted)]">Location:</span>
+                            <span>{plan.location}</span>
                           </div>
-                          <div className="flex flex-wrap gap-1">
-                            {plan.preferredTopics.slice(0, 3).map((topic, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-purple-900/30 text-purple-300 rounded text-xs"
-                              >
-                                {topic}
-                              </span>
-                            ))}
+                          <div className="flex justify-between">
+                            <span className="text-[var(--text-muted)]">Duration:</span>
+                            <span>{plan.duration} minutes</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-[var(--text-muted)]">Required Affection:</span>
+                            <span
+                              className={isLocked ? 'text-yellow-300' : 'text-[var(--accent-teal)]'}
+                            >
+                              {plan.requiredAffection}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-[var(--text-muted)]">Compatibility Bonus:</span>
+                            <span
+                              className={
+                                isLocked
+                                  ? 'text-[var(--text-muted)]'
+                                  : 'text-[var(--state-available)]'
+                              }
+                            >
+                              +{plan.compatibilityBonus} affection
+                            </span>
                           </div>
                         </div>
-                      )}
-                    </button>
-                  ))}
+
+                        {isLocked && (
+                          <div className="mt-4 p-3 rounded border border-[var(--resource-influence)]/40 bg-[var(--resource-influence)]/10 text-sm text-[var(--resource-energy)]">
+                            Build {plan.requiredAffection - selectedCharacter.affection} more
+                            affection to unlock this date.
+                          </div>
+                        )}
+
+                        {plan.preferredTopics.length > 0 && (
+                          <div className="mt-4">
+                            <div className="text-xs text-[var(--text-muted)] mb-2">
+                              Great conversation topics:
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {plan.preferredTopics.slice(0, 3).map((topic, index) => (
+                                <span
+                                  key={index}
+                                  className="px-2 py-1 bg-[var(--resource-alloys)]/20 text-[var(--text-secondary)] rounded text-xs border border-[var(--resource-alloys)]/30"
+                                >
+                                  {topic}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -299,45 +341,50 @@ export const DatePlanning: React.FC = () => {
 
           {/* Step 3: Date Confirmation */}
           {planningStep === 'confirmation' && selectedDatePlan && (
-            <div className="bg-slate-900 rounded-lg p-6 text-white">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-semibold">Confirm Your Date</h2>
-                <button
-                  onClick={() => setPlanningStep('plan')}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm"
-                >
+                <h2 className="text-2xl font-semibold text-[var(--text-primary)]">
+                  Confirm Your Date
+                </h2>
+                <Button onClick={() => setPlanningStep('plan')} variant="secondary" size="sm">
                   Back to Plans
-                </button>
+                </Button>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Date Details */}
-                <div className="bg-slate-800 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold mb-4">{selectedDatePlan.name}</h3>
-                  <p className="text-gray-300 mb-6">{selectedDatePlan.description}</p>
+                <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-4">
+                    {selectedDatePlan.name}
+                  </h3>
+                  <p className="text-[var(--text-secondary)] mb-6">
+                    {selectedDatePlan.description}
+                  </p>
 
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Activity Type:</span>
+                      <span className="text-[var(--text-muted)]">Activity Type:</span>
                       <span className="capitalize">{selectedDatePlan.activityType}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Location:</span>
+                      <span className="text-[var(--text-muted)]">Location:</span>
                       <span>{selectedDatePlan.location}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Duration:</span>
+                      <span className="text-[var(--text-muted)]">Duration:</span>
                       <span>{selectedDatePlan.duration} minutes</span>
                     </div>
                   </div>
 
                   <div className="mt-6">
-                    <h4 className="font-semibold mb-2 text-purple-300">Conversation Topics:</h4>
+                    <h4 className="font-semibold mb-2 text-[var(--accent-cyan)]">
+                      Conversation Topics:
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedDatePlan.preferredTopics.map((topic, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-purple-900/30 text-purple-300 rounded-full text-sm"
+                          className="px-3 py-1 bg-[var(--resource-alloys)]/20 text-[var(--text-secondary)] rounded-full text-sm border border-[var(--resource-alloys)]/30"
                         >
                           {topic}
                         </span>
@@ -347,35 +394,39 @@ export const DatePlanning: React.FC = () => {
                 </div>
 
                 {/* Expected Outcome */}
-                <div className="bg-slate-800 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold mb-4">Expected Outcome</h3>
+                <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-4">
+                    Expected Outcome
+                  </h3>
 
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Base Affection Gain:</span>
-                        <span className="text-green-400">
+                        <span className="text-[var(--text-muted)]">Base Affection Gain:</span>
+                        <span className="text-[var(--state-available)]">
                           +{selectedDatePlan.compatibilityBonus}
                         </span>
                       </div>
                       <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Compatibility Multiplier:</span>
-                        <span className="text-blue-400">{compatibility.overall}%</span>
+                        <span className="text-[var(--text-muted)]">Compatibility Multiplier:</span>
+                        <span className="text-[var(--resource-research)]">
+                          {compatibility.overall}%
+                        </span>
                       </div>
                       {selectedCharacter.profile.preferredActivities.includes(
                         selectedDatePlan.activityType
                       ) && (
                         <div className="flex justify-between mb-2">
-                          <span className="text-gray-400">Preference Bonus:</span>
-                          <span className="text-purple-400">+5</span>
+                          <span className="text-[var(--text-muted)]">Preference Bonus:</span>
+                          <span className="text-[var(--resource-alloys)]">+5</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="border-t border-slate-600 pt-4">
+                    <div className="border-t border-[var(--border-inner)] pt-4">
                       <div className="flex justify-between text-lg font-semibold">
                         <span>Estimated Total:</span>
-                        <span className="text-green-400">
+                        <span className="text-[var(--state-available)]">
                           +
                           {Math.round(
                             (selectedDatePlan.compatibilityBonus * compatibility.overall) / 100 +
@@ -390,17 +441,19 @@ export const DatePlanning: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-blue-900/20 rounded p-4 mt-4">
-                      <h4 className="font-semibold mb-2 text-blue-300">Date Success Factors:</h4>
-                      <ul className="space-y-1 text-sm text-gray-300">
+                    <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded p-4 mt-4">
+                      <h4 className="font-semibold mb-2 text-[var(--accent-cyan)]">
+                        Date Success Factors:
+                      </h4>
+                      <ul className="space-y-1 text-sm text-[var(--text-secondary)]">
                         <li className="flex items-center space-x-2">
                           <span
                             className={
                               selectedCharacter.profile.preferredActivities.includes(
                                 selectedDatePlan.activityType
                               )
-                                ? 'text-green-400'
-                                : 'text-yellow-400'
+                                ? 'text-[var(--state-available)]'
+                                : 'text-[var(--resource-energy)]'
                             }
                           >
                             {selectedCharacter.profile.preferredActivities.includes(
@@ -421,10 +474,10 @@ export const DatePlanning: React.FC = () => {
                           <span
                             className={
                               compatibility.overall >= 70
-                                ? 'text-green-400'
+                                ? 'text-[var(--state-available)]'
                                 : compatibility.overall >= 50
-                                  ? 'text-yellow-400'
-                                  : 'text-red-400'
+                                  ? 'text-[var(--resource-energy)]'
+                                  : 'text-[var(--state-deficit)]'
                             }
                           >
                             {compatibility.overall >= 70
@@ -449,19 +502,16 @@ export const DatePlanning: React.FC = () => {
 
               {/* Confirmation Button */}
               <div className="flex justify-center mt-8">
-                <button
-                  onClick={handleDateConfirmation}
-                  className="px-8 py-4 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors text-lg"
-                >
+                <Button onClick={handleDateConfirmation} variant="primary" size="lg">
                   Confirm Date Plan
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* Step 4: Date Outcome */}
           {planningStep === 'outcome' && dateOutcome && (
-            <div className="bg-slate-900 rounded-lg p-6 text-white">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6">
               <div className="max-w-3xl mx-auto">
                 <div
                   className={`rounded-lg border-2 p-6 mb-6 ${
@@ -474,7 +524,7 @@ export const DatePlanning: React.FC = () => {
                     <div className="text-4xl">{dateOutcome.success ? '💕' : '🌙'}</div>
                     <div className="flex-1">
                       <h2 className="text-2xl font-semibold mb-2">{dateOutcome.title}</h2>
-                      <p className="text-gray-300 mb-4">{dateOutcome.description}</p>
+                      <p className="text-[var(--text-secondary)] mb-4">{dateOutcome.description}</p>
                       <div className="text-lg font-semibold">
                         Affection:{' '}
                         <span
@@ -490,38 +540,29 @@ export const DatePlanning: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-slate-800 rounded-lg border border-purple-400/40 p-5 mb-8">
-                  <div className="text-sm uppercase tracking-wide text-purple-300 mb-2">
+                <div className="bg-[var(--bg-section)] rounded-lg border border-[var(--border-inner)] p-5 mb-8">
+                  <div className="text-sm uppercase tracking-wide text-[var(--accent-cyan)] mb-2">
                     Relationship Memory Recorded
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">
+                  <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
                     {dateOutcome.memoryTitle}
                   </h3>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-[var(--text-secondary)] text-sm">
                     This memory now appears in {selectedCharacter.name}'s profile and relationship
                     timeline.
                   </p>
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-3">
-                  <button
-                    onClick={() => setScreen('character-profile')}
-                    className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors"
-                  >
+                  <Button onClick={() => setScreen('character-profile')} variant="primary">
                     View Profile
-                  </button>
-                  <button
-                    onClick={() => setScreen('relationship-timeline')}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
-                  >
+                  </Button>
+                  <Button onClick={() => setScreen('relationship-timeline')} variant="outline">
                     View Timeline
-                  </button>
-                  <button
-                    onClick={() => setScreen('character-interaction')}
-                    className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg transition-colors"
-                  >
+                  </Button>
+                  <Button onClick={() => setScreen('character-interaction')} variant="secondary">
                     Continue Chat
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

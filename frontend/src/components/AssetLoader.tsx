@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAssetLoader } from '../hooks/useAssets';
 import { getCharacterImage } from '../utils/assetManager';
+import { ProgressBar } from './ui/ProgressBar';
+import { StatePanel } from './ui/StatePanel';
 
 interface AssetLoaderProps {
   children: React.ReactNode;
@@ -29,35 +31,31 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
   // Default loading UI
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="mb-6">
-            <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-            <h2 className="text-2xl font-bold mb-2">Loading Game Assets</h2>
-            <p className="text-blue-200">Preparing your interstellar romance adventure...</p>
-          </div>
-
-          <div className="w-80 bg-slate-700 rounded-full h-3 mx-auto">
-            <div
-              className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-
-          <div className="mt-2 text-sm text-gray-300">
+      <div className="min-h-screen flex items-center justify-center">
+        <StatePanel
+          variant="loading"
+          icon={
+            <div className="w-16 h-16 mx-auto border-4 border-[var(--accent-cyan)] border-t-transparent rounded-full animate-spin" />
+          }
+          title="Loading Game Assets"
+          message="Preparing your interstellar romance adventure..."
+          className="w-full max-w-md"
+        >
+          <ProgressBar value={progress} variant="progress" size="md" showValue className="mt-4" />
+          <div className="mt-2 text-sm text-[var(--text-secondary)]">
             {loaded} of {total} assets loaded ({Math.round(progress)}%)
           </div>
 
           {hasErrors && (
-            <div className="mt-4 text-yellow-400 text-sm">
+            <div className="mt-4 text-[var(--resource-energy)] text-sm">
               <p>Some assets are using fallbacks</p>
               {import.meta.env.DEV && invalidAssets.length > 0 && (
                 <details className="mt-2">
                   <summary className="cursor-pointer">Debug Info</summary>
-                  <div className="text-xs text-left bg-slate-800 rounded p-2 mt-1">
+                  <div className="text-xs text-left bg-[var(--bg-item)] border border-[var(--border-inner)] rounded p-2 mt-1">
                     <p>Invalid assets: {invalidAssets.join(', ')}</p>
                     {errors.map((error, index) => (
-                      <p key={index} className="text-red-400">
+                      <p key={index} className="text-[var(--state-deficit)]">
                         {error}
                       </p>
                     ))}
@@ -66,7 +64,7 @@ export const AssetLoader: React.FC<AssetLoaderProps> = ({
               )}
             </div>
           )}
-        </div>
+        </StatePanel>
       </div>
     );
   }
@@ -87,7 +85,7 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   characterId,
   alt,
   className = '',
-  fallbackClassName = 'bg-slate-600',
+  fallbackClassName = 'bg-[var(--bg-item)]',
 }) => {
   const [imageState, setImageState] = React.useState<{
     loaded: boolean;
@@ -119,7 +117,7 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
   if (!imageSrc) {
     return (
       <div className={`${className} ${fallbackClassName} flex items-center justify-center`}>
-        <div className="animate-pulse text-gray-400 text-xs">Loading...</div>
+        <div className="animate-pulse text-[var(--text-muted)] text-xs">Loading...</div>
       </div>
     );
   }
@@ -130,7 +128,7 @@ export const CharacterImage: React.FC<CharacterImageProps> = ({
       <div
         className={`${className} ${fallbackClassName} flex items-center justify-center text-center p-2`}
       >
-        <div className="text-gray-400 text-xs">
+        <div className="text-[var(--text-muted)] text-xs">
           <div className="mb-1">📷</div>
           <div>Image Unavailable</div>
         </div>

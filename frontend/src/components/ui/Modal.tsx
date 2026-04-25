@@ -94,23 +94,23 @@ export const Modal: React.FC<ModalProps> = props => {
       onClick={handleOverlayClick}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm" />
+      <div className="fixed inset-0 bg-black/75 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
         ref={modalRef}
         className={`
           relative
-          bg-gray-800
+          bg-[var(--bg-panel)]
+          border
+          border-[var(--border-frame)]
           rounded-lg
           shadow-2xl
+          shadow-black/40
           w-full
           ${sizeClasses[modalSize as keyof typeof sizeClasses]}
           max-h-[90vh]
           overflow-hidden
-          animate-in
-          fade-in-0
-          zoom-in-95
           duration-200
           ${className || ''}
         `}
@@ -122,9 +122,9 @@ export const Modal: React.FC<ModalProps> = props => {
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <div className="flex items-center justify-between p-6 border-b border-[var(--border-inner)]">
             {title && (
-              <h2 id="modal-title" className="text-xl font-semibold text-white">
+              <h2 id="modal-title" className="text-xl font-semibold text-[var(--text-primary)]">
                 {title}
               </h2>
             )}
@@ -133,7 +133,7 @@ export const Modal: React.FC<ModalProps> = props => {
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="ml-4 text-gray-400 hover:text-white"
+                className="ml-4"
                 aria-label="Close modal"
               >
                 ✕
@@ -168,9 +168,9 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   ...modalProps
 }) => {
   const variantStyles = {
-    danger: 'text-red-400',
-    warning: 'text-yellow-400',
-    info: 'text-blue-400',
+    danger: 'text-[var(--state-deficit)]',
+    warning: 'text-[var(--resource-influence)]',
+    info: 'text-[var(--accent-cyan)]',
   };
 
   const handleConfirm = React.useCallback(() => {
@@ -209,10 +209,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   ...modalProps
 }) => {
   const variantStyles = {
-    success: 'text-green-400',
-    error: 'text-red-400',
-    warning: 'text-yellow-400',
-    info: 'text-blue-400',
+    success: 'text-[var(--state-available)]',
+    error: 'text-[var(--state-deficit)]',
+    warning: 'text-[var(--resource-influence)]',
+    info: 'text-[var(--accent-cyan)]',
   };
 
   const variantIcons = {
@@ -226,7 +226,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
     <Modal {...modalProps} onClose={onClose} size="sm">
       <div className="text-center">
         <div className={`text-4xl mb-4 ${variantStyles[variant]}`}>{variantIcons[variant]}</div>
-        <div className="text-lg font-medium mb-6 text-gray-200">{message}</div>
+        <div className="text-lg font-medium mb-6 text-[var(--text-secondary)]">{message}</div>
         <Button onClick={onClose} fullWidth>
           {buttonText}
         </Button>

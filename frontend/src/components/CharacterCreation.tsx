@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { PlayerCharacter, Gender, SexualPreference } from '../types/game';
+import { Button } from './ui/Button';
+import { StatePanel } from './ui/StatePanel';
 
 export const CharacterCreation: React.FC = () => {
   const { setScreen, createPlayer } = useGameStore();
@@ -20,6 +22,7 @@ export const CharacterCreation: React.FC = () => {
     traits: [],
     backstory: 'diplomat',
   });
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const handleTraitToggle = (trait: string) => {
     setFormData(prev => {
@@ -37,7 +40,7 @@ export const CharacterCreation: React.FC = () => {
     e.preventDefault();
 
     if (!formData.name.trim() || formData.traits.length !== 2) {
-      alert('Please fill in your name and select exactly 2 traits.');
+      setValidationMessage('Enter your name and select exactly two traits before launching.');
       return;
     }
 
@@ -59,6 +62,15 @@ export const CharacterCreation: React.FC = () => {
 
     createPlayer(player);
   };
+
+  const selectionClass = (selected: boolean, disabled = false) =>
+    `p-4 rounded-lg border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] ${
+      selected
+        ? 'border-[var(--accent-cyan)] bg-[var(--accent-cyan)]/15 shadow-lg shadow-[rgba(0,212,255,0.18)] scale-105'
+        : disabled
+          ? 'border-[var(--state-locked)] bg-[var(--bg-item)]/50 opacity-50 cursor-not-allowed'
+          : 'border-[var(--border-inner)] bg-[var(--bg-item)] hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-section)]'
+    }`;
 
   const traits = [
     {
@@ -189,41 +201,54 @@ export const CharacterCreation: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen py-8 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
+    <div className="min-h-screen py-8">
       {/* Space background with subtle stars */}
       <div className="fixed inset-0 opacity-30">
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-stellaris-cyan/5 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[var(--accent-cyan)]/5 to-transparent"></div>
       </div>
 
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         {/* Main Panel */}
-        <div className="bg-slate-800/90 border border-stellaris-cyan/30 rounded-xl p-8 backdrop-blur-md shadow-2xl">
+        <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 backdrop-blur-md shadow-2xl">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-white tracking-wide uppercase mb-2">
+            <h2 className="text-4xl font-bold text-[var(--text-primary)] tracking-wide uppercase mb-2">
               Character Creation
-              <span className="animate-pulse text-stellaris-cyan">|</span>
+              <span className="cursor"></span>
             </h2>
-            <p className="text-slate-300 text-lg">Design your interstellar persona</p>
+            <p className="text-[var(--text-secondary)] text-lg">Design your interstellar persona</p>
           </div>
+
+          {validationMessage && (
+            <StatePanel
+              variant="unavailable"
+              icon="⚠"
+              title="Launch Requirements Missing"
+              message={validationMessage}
+              className="mb-6 p-4"
+            />
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Name Input */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-3 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-3 uppercase tracking-wide">
                 Character Name
               </label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:border-stellaris-cyan focus:outline-none focus:ring-1 focus:ring-stellaris-cyan transition-colors"
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, name: e.target.value }));
+                  setValidationMessage(null);
+                }}
+                className="w-full px-4 py-3 bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-cyan)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-cyan)] transition-colors"
                 placeholder="Enter your name..."
               />
             </div>
 
             {/* Species Selection Grid */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-4 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-4 uppercase tracking-wide">
                 Species
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -232,27 +257,23 @@ export const CharacterCreation: React.FC = () => {
                     key={spec.value}
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, species: spec.value }))}
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 ${
-                      formData.species === spec.value
-                        ? 'border-stellaris-cyan bg-stellaris-cyan/20 shadow-lg shadow-stellaris-cyan/40 scale-105'
-                        : 'border-slate-600 bg-slate-800/60 hover:border-stellaris-cyan/60 hover:bg-stellaris-cyan/10'
-                    }`}
+                    className={selectionClass(formData.species === spec.value)}
                   >
                     <div className="text-3xl mb-2">{spec.icon}</div>
                     <div
-                      className={`font-semibold ${formData.species === spec.value ? 'text-stellaris-cyan' : 'text-white'}`}
+                      className={`font-semibold ${formData.species === spec.value ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}
                     >
                       {spec.label}
                     </div>
-                    <div className="text-xs text-slate-400">{spec.description}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{spec.description}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Gender Selection Grid */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-4 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-4 uppercase tracking-wide">
                 Gender
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -261,15 +282,11 @@ export const CharacterCreation: React.FC = () => {
                     key={gender.value}
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, gender: gender.value }))}
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 ${
-                      formData.gender === gender.value
-                        ? 'border-purple-400 bg-purple-400/20 shadow-lg shadow-purple-400/40 scale-105'
-                        : 'border-slate-600 bg-slate-800/60 hover:border-purple-400/60 hover:bg-purple-400/10'
-                    }`}
+                    className={selectionClass(formData.gender === gender.value)}
                   >
                     <div className="text-3xl mb-2">{gender.icon}</div>
                     <div
-                      className={`font-semibold ${formData.gender === gender.value ? 'text-purple-300' : 'text-white'}`}
+                      className={`font-semibold ${formData.gender === gender.value ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}
                     >
                       {gender.label}
                     </div>
@@ -279,8 +296,8 @@ export const CharacterCreation: React.FC = () => {
             </div>
 
             {/* Traits Selection Grid */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-3 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-3 uppercase tracking-wide">
                 Choose Traits ({formData.traits.length}/2 selected)
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -290,31 +307,28 @@ export const CharacterCreation: React.FC = () => {
                     type="button"
                     onClick={() => handleTraitToggle(trait.id)}
                     disabled={!formData.traits.includes(trait.id) && formData.traits.length >= 2}
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                      formData.traits.includes(trait.id)
-                        ? 'border-green-400 bg-green-400/20 shadow-lg shadow-green-400/40 scale-105'
-                        : formData.traits.length >= 2
-                          ? 'border-slate-600 bg-slate-800/40 opacity-50 cursor-not-allowed'
-                          : 'border-slate-600 bg-slate-800/60 hover:border-green-400/60 hover:bg-green-400/10'
-                    }`}
+                    className={`${selectionClass(
+                      formData.traits.includes(trait.id),
+                      !formData.traits.includes(trait.id) && formData.traits.length >= 2
+                    )} text-left`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-2xl">{trait.icon}</span>
                       <span
-                        className={`font-semibold ${formData.traits.includes(trait.id) ? 'text-green-300' : 'text-white'}`}
+                        className={`font-semibold ${formData.traits.includes(trait.id) ? 'text-[var(--state-available)]' : 'text-[var(--text-primary)]'}`}
                       >
                         {trait.label}
                       </span>
                     </div>
-                    <div className="text-xs text-yellow-300">{trait.bonus}</div>
+                    <div className="text-xs text-[var(--resource-energy)]">{trait.bonus}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Sexual Preference Selection Grid */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-4 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-4 uppercase tracking-wide">
                 Romantic Interest
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -328,29 +342,25 @@ export const CharacterCreation: React.FC = () => {
                         sexualPreference: preference.value,
                       }))
                     }
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                      formData.sexualPreference === preference.value
-                        ? 'border-pink-400 bg-pink-400/20 shadow-lg shadow-pink-400/40 scale-105'
-                        : 'border-slate-600 bg-slate-800/60 hover:border-pink-400/60 hover:bg-pink-400/10'
-                    }`}
+                    className={`${selectionClass(formData.sexualPreference === preference.value)} text-left`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-2xl">{preference.icon}</span>
                       <span
-                        className={`font-semibold ${formData.sexualPreference === preference.value ? 'text-pink-300' : 'text-white'}`}
+                        className={`font-semibold ${formData.sexualPreference === preference.value ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}
                       >
                         {preference.label}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-400">{preference.description}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{preference.description}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Backstory Selection Grid */}
-            <div className="bg-slate-700/50 border border-stellaris-cyan/20 rounded-lg p-6 mb-6">
-              <label className="block text-stellaris-cyan text-sm font-semibold mb-4 uppercase tracking-wide">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6 mb-6">
+              <label className="block text-[var(--accent-cyan)] text-sm font-semibold mb-4 uppercase tracking-wide">
                 Backstory
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -364,41 +374,36 @@ export const CharacterCreation: React.FC = () => {
                         backstory: backstory.value,
                       }))
                     }
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                      formData.backstory === backstory.value
-                        ? 'border-orange-400 bg-orange-400/20 shadow-lg shadow-orange-400/40 scale-105'
-                        : 'border-slate-600 bg-slate-800/60 hover:border-orange-400/60 hover:bg-orange-400/10'
-                    }`}
+                    className={`${selectionClass(formData.backstory === backstory.value)} text-left`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-2xl">{backstory.icon}</span>
                       <span
-                        className={`font-semibold ${formData.backstory === backstory.value ? 'text-orange-300' : 'text-white'}`}
+                        className={`font-semibold ${formData.backstory === backstory.value ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}
                       >
                         {backstory.label}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-400">{backstory.description}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{backstory.description}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
-              <button
+            <div className="flex flex-col gap-4 pt-4 sm:flex-row">
+              <Button
                 type="button"
                 onClick={() => setScreen('main-menu')}
-                className="flex-1 px-6 py-4 text-lg font-semibold text-white bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-lg transition-all duration-300 hover:scale-105"
+                variant="secondary"
+                size="lg"
+                fullWidth
               >
                 🏠 Back to Menu
-              </button>
-              <button
-                type="submit"
-                className="flex-1 px-6 py-4 text-lg font-semibold text-white bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-400 hover:to-blue-400 border border-green-400 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-400/50"
-              >
+              </Button>
+              <Button type="submit" variant="primary" size="lg" fullWidth>
                 ✨ Create Character
-              </button>
+              </Button>
             </div>
           </form>
         </div>

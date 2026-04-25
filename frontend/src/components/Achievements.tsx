@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { AchievementCategory } from '../types/game';
 import { getAchievementsByCategory } from '../data/achievements';
+import { Button } from './ui/Button';
+import { ProgressBar } from './ui/ProgressBar';
 
 export const Achievements: React.FC = () => {
   const { player, setScreen, achievements } = useGameStore();
@@ -9,15 +11,12 @@ export const Achievements: React.FC = () => {
 
   if (!player || !achievements) {
     return (
-      <div className="min-h-screen bg-slate-800 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-xl mb-4">Achievements not available!</p>
-          <button
-            onClick={() => setScreen('main-hub')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
-          >
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
+          <p className="text-xl text-[var(--text-primary)] mb-4">Achievements not available!</p>
+          <Button onClick={() => setScreen('main-hub')} variant="primary">
             Back to Hub
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -46,67 +45,70 @@ export const Achievements: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <div className="mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Achievements</h1>
-              <p className="text-gray-300">
-                {achievedCount} of {totalCount} achievements unlocked (
-                {Math.round((achievedCount / totalCount) * 100)}%)
-              </p>
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-[var(--text-primary)] uppercase tracking-wide">
+                  Achievements
+                </h1>
+                <p className="text-[var(--text-secondary)]">
+                  {achievedCount} of {totalCount} achievements unlocked (
+                  {Math.round((achievedCount / totalCount) * 100)}%)
+                </p>
+              </div>
+              <Button onClick={() => setScreen('main-hub')} variant="secondary">
+                Back to Hub
+              </Button>
             </div>
-            <button
-              onClick={() => setScreen('main-hub')}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
-            >
-              Back to Hub
-            </button>
           </div>
 
           {/* Overall Progress */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-8 text-white">
-            <h3 className="text-lg font-semibold mb-4 text-purple-300">Overall Progress</h3>
-            <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
-              <div
-                className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
-                style={{ width: `${(achievedCount / totalCount) * 100}%` }}
-              ></div>
-            </div>
-            <div className="text-center text-sm text-gray-300">
-              {achievedCount} / {totalCount} achievements completed
-            </div>
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-[var(--accent-cyan)] uppercase tracking-wide">
+              Overall Progress
+            </h3>
+            <ProgressBar
+              value={(achievedCount / totalCount) * 100}
+              variant="progress"
+              size="lg"
+              showValue
+              label={`${achievedCount} / ${totalCount} achievements completed`}
+            />
           </div>
 
           {/* Category Filter */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map(category => {
-              const categoryAchievements =
-                category.key === 'all'
-                  ? achievements
-                  : getAchievementsByCategory(achievements, category.key as AchievementCategory);
-              const categoryAchieved = categoryAchievements.filter(a => a.achieved).length;
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-4 mb-6">
+            <div className="flex flex-wrap gap-2">
+              {categories.map(category => {
+                const categoryAchievements =
+                  category.key === 'all'
+                    ? achievements
+                    : getAchievementsByCategory(achievements, category.key as AchievementCategory);
+                const categoryAchieved = categoryAchievements.filter(a => a.achieved).length;
 
-              return (
-                <button
-                  key={category.key}
-                  onClick={() => setSelectedCategory(category.key)}
-                  className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
-                    selectedCategory === category.key
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                  }`}
-                >
-                  <span>{category.icon}</span>
-                  <span>{category.name}</span>
-                  <span className="text-xs bg-black/20 px-2 py-1 rounded">
-                    {categoryAchieved}/{categoryAchievements.length}
-                  </span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={category.key}
+                    onClick={() => setSelectedCategory(category.key)}
+                    className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] ${
+                      selectedCategory === category.key
+                        ? 'bg-[var(--accent-cyan)] text-[var(--bg-space)]'
+                        : 'bg-[var(--bg-section)] text-[var(--text-secondary)] hover:bg-[var(--bg-item)] border border-[var(--border-inner)]'
+                    }`}
+                  >
+                    <span>{category.icon}</span>
+                    <span>{category.name}</span>
+                    <span className="text-xs bg-black/20 px-2 py-1 rounded">
+                      {categoryAchieved}/{categoryAchievements.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Achievements Grid */}
@@ -116,8 +118,8 @@ export const Achievements: React.FC = () => {
                 key={achievement.id}
                 className={`rounded-lg p-6 border-2 transition-all duration-300 ${
                   achievement.achieved
-                    ? 'bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-400 shadow-lg shadow-purple-500/20'
-                    : 'bg-slate-900 border-slate-600 hover:border-slate-500'
+                    ? 'bg-[var(--bg-section)] border-[var(--state-available)] shadow-lg shadow-[rgba(46,213,115,0.16)]'
+                    : 'bg-[var(--bg-section)] border-[var(--border-inner)] hover:border-[var(--accent-cyan)]'
                 }`}
               >
                 <div className="flex items-start space-x-4">
@@ -131,14 +133,18 @@ export const Achievements: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <h3
                       className={`text-lg font-semibold mb-2 ${
-                        achievement.achieved ? 'text-white' : 'text-gray-300'
+                        achievement.achieved
+                          ? 'text-[var(--text-primary)]'
+                          : 'text-[var(--text-secondary)]'
                       }`}
                     >
                       {achievement.name}
                     </h3>
                     <p
                       className={`text-sm mb-3 ${
-                        achievement.achieved ? 'text-gray-200' : 'text-gray-400'
+                        achievement.achieved
+                          ? 'text-[var(--text-secondary)]'
+                          : 'text-[var(--text-muted)]'
                       }`}
                     >
                       {achievement.description}
@@ -147,22 +153,19 @@ export const Achievements: React.FC = () => {
                     {/* Progress Bar */}
                     {!achievement.achieved && (
                       <div className="mb-3">
-                        <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Progress</span>
-                          <span>{achievement.progress}%</span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${achievement.progress}%` }}
-                          ></div>
-                        </div>
+                        <ProgressBar
+                          value={achievement.progress}
+                          variant="compatibility"
+                          size="sm"
+                          showValue
+                          label="Progress"
+                        />
                       </div>
                     )}
 
                     {/* Achievement Date */}
                     {achievement.achieved && achievement.achievedDate && (
-                      <div className="text-xs text-purple-300 mb-2">
+                      <div className="text-xs text-[var(--accent-teal)] mb-2">
                         ✨ Unlocked: {achievement.achievedDate.toLocaleDateString()}
                       </div>
                     )}
@@ -173,7 +176,7 @@ export const Achievements: React.FC = () => {
                         className={`text-xs p-2 rounded border-l-4 ${
                           achievement.achieved
                             ? 'bg-green-900/30 border-green-400 text-green-300'
-                            : 'bg-yellow-900/30 border-yellow-400 text-yellow-300'
+                            : 'bg-[var(--resource-influence)]/10 border-[var(--resource-influence)] text-[var(--resource-energy)]'
                         }`}
                       >
                         <div className="font-semibold mb-1">
@@ -185,7 +188,7 @@ export const Achievements: React.FC = () => {
 
                     {/* Category Badge */}
                     <div className="mt-3">
-                      <span className="px-2 py-1 bg-slate-700 text-gray-300 text-xs rounded capitalize">
+                      <span className="px-2 py-1 bg-[var(--bg-item)] border border-[var(--border-inner)] text-[var(--text-secondary)] text-xs rounded capitalize">
                         {achievement.category}
                       </span>
                     </div>
@@ -199,10 +202,12 @@ export const Achievements: React.FC = () => {
           {filteredAchievements.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🏆</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
                 No achievements in this category
               </h3>
-              <p className="text-gray-400">Try a different category to see more achievements.</p>
+              <p className="text-[var(--text-muted)]">
+                Try a different category to see more achievements.
+              </p>
             </div>
           )}
         </div>

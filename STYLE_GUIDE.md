@@ -224,7 +224,7 @@ Disabled:
 </button>
 ```
 
-Current debt: `src/components/ui/Button.tsx` still uses purple/gray direct utilities. Future work should migrate it to the same cyan/teal token system so shared and one-off buttons match.
+Current state: `src/components/ui/Button.tsx` is theme-aligned and should be preferred for reusable command buttons.
 
 ### Panels and Cards
 
@@ -247,7 +247,7 @@ Current shared component:
 - `src/components/ui/ProgressBar.tsx`
 - Variants: `affection`, `compatibility`, `progress`, `health`
 
-Current debt: the shared component still uses direct gray/purple/blue utilities. It should be migrated to theme tokens, but ad hoc bars should not proliferate further.
+Current state: the shared component is theme-aligned and should be preferred over ad hoc progress bar markup.
 
 ### Badges and Status
 
@@ -272,7 +272,7 @@ Badge pattern:
 
 The existing `Modal` component handles focus return, escape close, and body scroll lock. Keep those behaviors.
 
-Current debt: modal surfaces still use direct `bg-gray-800`, `border-gray-700`, and gray text utilities. Migrate them to theme tokens when touching modal UI.
+Current state: modal surfaces use theme tokens and should be used for confirmation and image preview overlays.
 
 ### Icons
 
@@ -295,8 +295,8 @@ Current style:
 
 Needed polish:
 
-- Settings toggles are visual placeholders and should become functional or be removed.
-- Reset confirmation should be converted to the shared modal style.
+- Settings toggles persist local UI preferences; animation toggles apply to the document.
+- Reset confirmation uses the shared modal style.
 
 ### Character Creation
 
@@ -304,11 +304,10 @@ Current style:
 
 - Dense form sections.
 - Selection grids for species, gender, traits, preference, and backstory.
-- Uses some legacy direct `slate` and `purple` utilities.
+- Uses tokenized panels, selection cards, and in-flow validation states.
 
 Needed polish:
 
-- Migrate colors to theme tokens.
 - Review mobile spacing and long labels.
 - Replace broad emoji reliance with consistent icon/text controls if a formal icon library is introduced.
 
@@ -344,9 +343,8 @@ Current style:
 
 Needed polish:
 
-- Migrate remaining direct `slate`/`blue`/`purple` utilities to theme tokens.
 - Replace alert-style thinking completely with in-flow panels or shared modals. The date flow now does this.
-- Add clearer locked-date previews instead of hiding unavailable plans completely.
+- Locked date options are visible with requirements.
 
 ### Relationship Timeline
 
@@ -357,7 +355,6 @@ Current style:
 
 Needed polish:
 
-- Migrate direct gradient/slate utilities to theme tokens.
 - Improve event filtering or grouping once more event types are added.
 - Ensure old persisted dates and new memory dates render consistently.
 
@@ -370,8 +367,8 @@ Current style:
 
 Needed polish:
 
-- Migrate to tokenized panel hierarchy.
-- Use the shared `ProgressBar` once that component is theme-aligned.
+- Uses the tokenized panel hierarchy.
+- Uses the shared `ProgressBar`.
 - Improve category controls for mobile wrapping and focus states.
 
 ### Photo Gallery
@@ -379,7 +376,7 @@ Needed polish:
 Needed polish:
 
 - Keep portrait/image presentation inspection-friendly.
-- Use tokenized empty, locked, and unlocked states.
+- Uses tokenized empty, locked, and unlocked states.
 - Add stronger visual distinction for rarity without overwhelming the main palette.
 
 ## Accessibility
@@ -398,7 +395,7 @@ Current debt:
 
 - Many hand-written buttons need focus ring review.
 - Some icon/emoji-only affordances need accessible labels.
-- Starfield animation does not yet respect reduced motion.
+- Starfield and cursor respect reduced-motion preferences, and the settings animation toggle disables app motion.
 
 ## Responsive Design
 
@@ -457,15 +454,19 @@ Done:
 - [x] Move the main hub and character profile toward tokenized panel patterns.
 - [x] Surface relationship memories in profile, timeline, and date outcome flow.
 - [x] Remove dependency on deleted root `style.css`.
+- [x] Migrate shared `Button`, `ProgressBar`, `Modal`, and `DailyInteractionStatus` components to theme tokens.
+- [x] Migrate Achievements and Photo Gallery to tokenized panel states.
+- [x] Add reduced-motion handling and a persisted animation setting.
+- [x] Replace main-menu reset overlay with the shared modal.
+- [x] Show locked date plans with unlock requirements.
+- [x] Finish migrating DatePlanning, RelationshipTimeline, CharacterCreation, MainMenu, and older interaction screens from direct slate/purple utilities to the tokenized Stellaris palette.
+- [x] Standardize empty, loading, error, locked, and unavailable states around shared state panels and themed components.
 
 Still needed:
 
-- [ ] Migrate `Button`, `ProgressBar`, `Modal`, `DailyInteractionStatus`, `Achievements`, `DatePlanning`, `RelationshipTimeline`, `PhotoGallery`, and older interaction screens from direct `slate`/`purple` utilities to the tokenized Stellaris palette.
-- [ ] Standardize all empty, loading, error, locked, and unavailable states.
 - [ ] Review mobile layouts for tab navigation, timeline entries, achievements, date planning, and profile sections.
 - [ ] Add visible focus states to hand-written buttons and clickable cards.
-- [ ] Add reduced-motion handling for starfield, cursor, hover scaling, and pulsing states.
-- [ ] Replace or formalize placeholder settings controls.
+- [ ] Connect sound and music settings to real audio once audio exists.
 - [ ] Audit icon/emoji-only controls for accessible labels.
 - [ ] Add UI screenshots or visual regression tests for main menu, creation, hub, profile, date flow, timeline, achievements, and gallery.
 - [ ] Review color contrast after token migration, especially muted text on nested panels.
@@ -474,15 +475,11 @@ Still needed:
 
 High priority:
 
-- Make shared UI components theme-compliant so new screens do not need one-off button and progress styles.
-- Make settings real, especially audio/animation toggles, or remove them until implemented.
 - Improve mobile behavior on dense screens.
-- Add explicit reduced-motion support.
 - Replace remaining alert/modal inconsistencies with in-flow panels or the shared modal.
 
 Medium priority:
 
-- Add clearer date plan locked previews and requirements.
 - Add timeline filtering by memories, dates, photos, and milestones.
 - Add profile summary cards for trust, intimacy, commitment, and shared experiences.
 - Improve achievement category controls and progress presentation.

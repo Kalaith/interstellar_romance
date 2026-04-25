@@ -13,6 +13,9 @@ import {
   useDebouncedAffectionUpdate,
   useOptimizedNavigation,
 } from '../hooks/useOptimizedGame';
+import { Button } from './ui/Button';
+import { ProgressBar } from './ui/ProgressBar';
+import { StatePanel } from './ui/StatePanel';
 
 export const CharacterInteraction: React.FC = () => {
   const { selectedCharacter } = useGameStore();
@@ -102,75 +105,78 @@ export const CharacterInteraction: React.FC = () => {
 
   if (!selectedCharacter) {
     return (
-      <div className="min-h-screen bg-slate-800 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-xl mb-4">No character selected!</p>
-          <button
-            onClick={() => navigateToScreen('main-hub')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg"
-          >
-            Back to Hub
-          </button>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md">
+          <StatePanel
+            variant="unavailable"
+            icon="💬"
+            title="No Character Selected"
+            message="Choose a companion before opening the conversation console."
+            actionLabel="Back to Hub"
+            onAction={() => navigateToScreen('main-hub')}
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-blue-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <div className="mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Character Display */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-6">
             <div className="flex items-center space-x-6 mb-6">
               <CharacterImage
                 characterId={selectedCharacter.id}
                 alt={selectedCharacter.name}
                 className="w-32 h-32 rounded-lg object-cover"
-                fallbackClassName="bg-slate-700"
+                fallbackClassName="bg-[var(--bg-item)]"
               />
               <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2">{selectedCharacter.name}</h3>
-                <p className="text-blue-300 mb-2">{selectedCharacter.species}</p>
-                <p className="text-purple-300 mb-2">Mood: {selectedCharacter.mood}</p>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+                  {selectedCharacter.name}
+                </h3>
+                <p className="text-[var(--accent-teal)] mb-2">{selectedCharacter.species}</p>
+                <p className="text-[var(--accent-cyan)] mb-2">Mood: {selectedCharacter.mood}</p>
 
                 {/* Relationship Status */}
                 <div className="mb-3">
-                  <p className="text-yellow-400 font-semibold text-sm">
+                  <p className="text-[var(--resource-energy)] font-semibold text-sm">
                     {selectedCharacter.relationshipStatus.title}
                   </p>
-                  <p className="text-gray-300 text-xs mt-1">
+                  <p className="text-[var(--text-secondary)] text-xs mt-1">
                     {selectedCharacter.relationshipStatus.description}
                   </p>
                 </div>
 
                 <div className="mb-2">
-                  <div className="w-full bg-gray-700 rounded-full h-3">
-                    <div
-                      className="bg-pink-500 h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${selectedCharacter.affection}%` }}
-                    ></div>
-                  </div>
-                  <div className="text-sm text-gray-400 mt-1">
-                    Affection: {selectedCharacter.affection}/100
-                  </div>
+                  <ProgressBar
+                    value={selectedCharacter.affection}
+                    variant="affection"
+                    size="md"
+                    showValue
+                    label="Affection"
+                  />
                 </div>
 
                 {/* Advanced Relationship Metrics */}
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="text-center">
-                    <div className="text-blue-400">Trust</div>
-                    <div className="text-white">{selectedCharacter.relationshipStatus.trust}</div>
+                    <div className="text-[var(--resource-research)]">Trust</div>
+                    <div className="text-[var(--text-primary)]">
+                      {selectedCharacter.relationshipStatus.trust}
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-green-400">Intimacy</div>
-                    <div className="text-white">
+                    <div className="text-[var(--state-available)]">Intimacy</div>
+                    <div className="text-[var(--text-primary)]">
                       {selectedCharacter.relationshipStatus.intimacy}
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-purple-400">Compatibility</div>
-                    <div className="text-white">
+                    <div className="text-[var(--resource-alloys)]">Compatibility</div>
+                    <div className="text-[var(--text-primary)]">
                       {selectedCharacter.relationshipStatus.compatibility}
                     </div>
                   </div>
@@ -180,9 +186,11 @@ export const CharacterInteraction: React.FC = () => {
           </div>
 
           {/* Dialogue Area */}
-          <div className="bg-slate-900 rounded-lg p-6 mb-6 text-white">
-            <div className="bg-slate-800 rounded-lg p-4 mb-4 min-h-[120px] flex items-center">
-              <p className="text-lg leading-relaxed">{currentDialogue}</p>
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-6">
+            <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-4 mb-4 min-h-[120px] flex items-center">
+              <p className="text-lg leading-relaxed text-[var(--text-primary)]">
+                {currentDialogue}
+              </p>
             </div>
 
             {/* Consequences Display */}
@@ -191,9 +199,9 @@ export const CharacterInteraction: React.FC = () => {
                 {consequences.map((consequence, index) => (
                   <div
                     key={index}
-                    className="bg-purple-900/40 border border-purple-500/30 rounded p-3"
+                    className="bg-[var(--resource-alloys)]/15 border border-[var(--resource-alloys)]/30 rounded p-3"
                   >
-                    <p className="text-purple-200 text-sm italic">{consequence}</p>
+                    <p className="text-[var(--text-secondary)] text-sm italic">{consequence}</p>
                   </div>
                 ))}
               </div>
@@ -206,11 +214,11 @@ export const CharacterInteraction: React.FC = () => {
                   <button
                     key={option.id}
                     onClick={() => handleDialogue(option)}
-                    className={`px-4 py-3 text-white rounded-lg transition-colors text-left relative ${
+                    className={`px-4 py-3 rounded-lg transition-colors text-left relative border focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--bg-space)] ${
                       option.requiresAffection &&
                       selectedCharacter.affection < option.requiresAffection
-                        ? 'bg-slate-600 opacity-60 cursor-not-allowed'
-                        : 'bg-slate-700 hover:bg-slate-600'
+                        ? 'bg-[var(--bg-item)] border-[var(--state-locked)] text-[var(--text-muted)] opacity-60 cursor-not-allowed'
+                        : 'bg-[var(--bg-section)] border-[var(--border-inner)] text-[var(--text-primary)] hover:bg-[var(--bg-item)] hover:border-[var(--accent-cyan)]'
                     }`}
                     disabled={
                       !!(
@@ -228,17 +236,20 @@ export const CharacterInteraction: React.FC = () => {
                       )}
                     </div>
                     {option.emotion && (
-                      <div className="text-xs text-blue-300 mt-1 capitalize">
+                      <div className="text-xs text-[var(--accent-cyan)] mt-1 capitalize">
                         {option.emotion} • {option.topic}
                       </div>
                     )}
                   </button>
                 ))
               ) : (
-                <div className="text-center text-gray-400 py-4">
-                  <p>No dialogue options available for this character yet.</p>
-                  <p className="text-sm mt-1">Try building more affection or check back later!</p>
-                </div>
+                <StatePanel
+                  variant="empty"
+                  icon="💬"
+                  title="No Dialogue Available"
+                  message="Try building more affection or check back later."
+                  className="p-4"
+                />
               )}
             </div>
           </div>
@@ -247,25 +258,16 @@ export const CharacterInteraction: React.FC = () => {
           <StorylinePanel characterId={selectedCharacter.id} />
 
           {/* Action Buttons */}
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={handleGift}
-              className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors"
-            >
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button onClick={handleGift} variant="outline">
               Give Gift
-            </button>
-            <button
-              onClick={handleDate}
-              className="px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors"
-            >
+            </Button>
+            <Button onClick={handleDate} variant="primary">
               Ask on Date
-            </button>
-            <button
-              onClick={() => navigateToScreen('main-hub')}
-              className="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors"
-            >
+            </Button>
+            <Button onClick={() => navigateToScreen('main-hub')} variant="secondary">
               Back to Hub
-            </button>
+            </Button>
           </div>
         </div>
       </div>
