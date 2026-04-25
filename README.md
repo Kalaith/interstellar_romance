@@ -1,133 +1,146 @@
 # Interstellar Romance
 
-A captivating dating simulator set in a vibrant interstellar universe, where players navigate romance, diplomacy, and adventure among diverse alien species.
+Interstellar Romance is a Stellaris-inspired browser dating simulator built with React, TypeScript, Vite, Tailwind CSS, and Zustand.
 
-## 🌟 Features
+Players create an interstellar persona, meet alien companions, build affection through conversations and activities, unlock relationship details over time, plan dates, collect photos, and track relationship milestones.
 
-- **Character Creation**: Customize your own character with unique species, traits, and backstory
-- **Diverse Alien Companions**: Meet and romance 6 distinct alien characters from different species:
-  - Zara'thul (Plantoid - Cactus Species)
-  - Captain Vel'nari (Humanoid - Blue-skinned)
-  - Dr. Keth'ra (Aquatic - Fish-like)
-  - Commander Ryx'tal (Reptilian - Lizard-like)
-  - Sage Mor'geth (Molluscoid - Tentacled)
-  - Engineer Thex'ik (Arthropoid - Insectoid)
-- **Interactive Dialogue**: Engage in meaningful conversations and build relationships
-- **Weekly Activities**: Choose activities to increase affection and deepen connections
-- **Progress Tracking**: Monitor your relationships and character development over time
+## Current Features
 
-## 🚀 Getting Started
+- Custom player creation with species, gender, romantic preference, traits, backstory, and starting stats.
+- Eight romanceable companions:
+  - Kyra'then, Aviari sky warrior
+  - Seraphina Voidwhisper, Mystari dimensional sage
+  - Dr. Thessarian Brightleaf, Sylvani biotechnician
+  - Lyralynn Bloomheart, Florani garden keeper
+  - Commander Zarantha Scales, Draconi elite guard
+  - High Priest Thalassos, Aquari deep sage
+  - Nightshade Voidwalker, Umbra shadow operative
+  - Dr. Kronos Mindweave, Cephalopi neural engineer
+- Preference-based companion filtering by gender or open species preference.
+- Character profiles with progressive information disclosure for species, personality, interests, values, background, goals, dealbreakers, and favorite topics.
+- Compatibility scoring based on player stats, interests, values, conversation style, and preferred activities.
+- Enhanced character interaction screen with dialogue choices, affection changes, daily interaction limits, and relationship status.
+- Weekly activities and daily self-improvement options that support player progression.
+- Date planning with multiple date plans, required affection levels, compatibility bonuses, date history, and affection rewards.
+- Photo galleries with affection-gated unlocks.
+- Relationship timeline and milestones.
+- Achievement tracking across relationship, dating, conversation, collection, mastery, and exploration goals.
+- Local game state management with reset support.
+- Stellaris-style space UI theme and bundled character images.
+
+## Project Layout
+
+```text
+.
+├── .github/                 # GitHub workflow configuration
+├── frontend/                # React/Vite game client
+│   ├── public/              # Static assets and character images
+│   ├── src/
+│   │   ├── api/             # Shared API client helpers
+│   │   ├── components/      # Screens and reusable UI components
+│   │   ├── constants/       # Game tuning constants
+│   │   ├── data/            # Characters, dialogue, dates, achievements, activities
+│   │   ├── hooks/           # Game-specific React hooks
+│   │   ├── pages/           # Page shell
+│   │   ├── services/        # Logging/service helpers
+│   │   ├── stores/          # Zustand stores
+│   │   ├── styles/          # Global theme styles
+│   │   ├── types/           # TypeScript game types
+│   │   └── utils/           # Compatibility, assets, validation, timezone utilities
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── publish.ps1              # WebHatchery publish wrapper
+└── README.md
+```
+
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 18 or newer
+- npm
 
-### Installation
+### Install and Run
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Kalaith/interstellar_romance.git
-   cd interstellar_romance
-   ```
-
-2. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Open your browser and navigate to `http://localhost:5173`
-
-## 🛠️ Tech Stack
-
-- **Frontend Framework**: React 19
-- **Build Tool**: Vite
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
-- **Animations**: Framer Motion
-- **Charts**: Chart.js
-- **Routing**: React Router DOM
-- **Utilities**: React Use
-
-## 📁 Project Structure
-
-```
-frontend/
-├── public/                 # Static assets
-├── src/
-│   ├── api/               # API integration
-│   ├── components/        # React components
-│   │   ├── ActivitiesScreen.tsx
-│   │   ├── CharacterCreation.tsx
-│   │   ├── CharacterInteraction.tsx
-│   │   ├── MainHub.tsx
-│   │   └── MainMenu.tsx
-│   ├── constants/         # Application constants
-│   ├── data/              # Static game data
-│   │   ├── activities.ts
-│   │   └── characters.ts
-│   ├── hooks/             # Custom React hooks
-│   ├── pages/             # Page components
-│   │   └── GamePage.tsx
-│   ├── stores/            # Zustand state stores
-│   │   └── gameStore.ts
-│   ├── styles/            # Global styles
-│   │   └── globals.css
-│   ├── types/             # TypeScript type definitions
-│   │   └── game.ts
-│   ├── utils/             # Utility functions
-│   ├── App.tsx            # Main app component
-│   └── index.tsx          # App entry point
-├── package.json
-├── tailwind.config.js
-├── tsconfig.json
-├── vite.config.ts
-└── index.html
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-## 🎮 How to Play
+The Vite dev server will print the local URL, typically `http://localhost:5173`.
 
-1. **Start**: Begin at the main menu
-2. **Create Character**: Choose your species, traits, and backstory
-3. **Explore**: Navigate the main hub to meet potential companions
-4. **Interact**: Choose a character to start conversations and build relationships
-5. **Activities**: Select weekly activities to increase affection levels
-6. **Progress**: Watch your relationships develop over multiple weeks
+## Scripts
 
-## 🏗️ Architecture
+Run these from `frontend/`.
 
-This project follows clean architecture principles with:
-- **Separation of Concerns**: Clear separation between UI, business logic, and data
-- **Type Safety**: Full TypeScript implementation
-- **State Management**: Centralized state with Zustand
-- **Component Composition**: Reusable and composable React components
-- **Modern React Patterns**: Hooks, functional components, and context
+```bash
+npm run dev           # Start the local Vite dev server
+npm run build         # Type-check and build production assets
+npm run preview       # Preview the production build
+npm run lint          # Run ESLint
+npm run type-check    # Run TypeScript without emitting files
+npm run format:check  # Check Prettier formatting
+npm run test:run      # Run Vitest tests once
+npm run ci            # Run lint, type-check, format, tests, and build
+```
 
-## 📝 Available Scripts
+## Tech Stack
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
+- Vitest
+- ESLint and Prettier
+- Axios helper client for WebHatchery-style API/auth integration
 
-## 🤝 Contributing
+## Roadmap
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Near Term
+
+- Expand smoke tests into component tests for character creation, main hub filtering, dialogue interactions, and date planning.
+- Add regression tests around affection thresholds, daily interaction reset behavior, and photo unlocks.
+- Review unused dependencies and remove packages that are not part of the active app surface.
+- Improve README screenshots or add a short gameplay capture once the UI stabilizes.
+
+### Gameplay
+
+- Add more dialogue branches per companion and make choices produce clearer long-term consequences.
+- Surface relationship memories more directly in profiles, timelines, and date outcomes.
+- Finish wiring advanced systems such as conflicts, super likes, temporary boosts, and icebreakers into the main gameplay loop.
+- Add more companion-specific story events and unlockable scenes.
+- Balance affection gains, date requirements, achievement progress, and daily activity pacing.
+
+### UX and Polish
+
+- Replace placeholder/settings-only toggles with working audio, animation, and accessibility settings.
+- Add save/export/import controls for local game data.
+- Improve mobile layouts for dense screens like profiles, achievements, and galleries.
+- Add loading and empty states for all major screens.
+- Audit copy consistency across character names, species labels, and relationship status text.
+
+### Technical
+
+- Consolidate overlapping stores where practical, or document store ownership boundaries.
+- Add stricter validation around persisted local state migrations.
+- Add visual regression coverage for the main screens.
+- Improve asset handling so missing or invalid images are easier to detect in CI.
+- Consider adding a small backend integration only if shared accounts, cloud saves, or cross-device progress become required.
+
+## Publishing
+
+The root `publish.ps1` delegates to the shared WebHatchery publish script:
+
+```powershell
+.\publish.ps1
+```
 
 ## License
 
-This project is licensed under the MIT License - see the individual component README files for details.
+No standalone license file is currently included in this repository.
 
-Part of the WebHatchery game collection.</content>
-<parameter name="filePath">H:\WebHatchery\game_apps\interstellar_romance\README.md
+Part of the WebHatchery game collection.
