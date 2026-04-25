@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { CharacterPhoto, PhotoRarity } from '../types/game';
-import {
-  getPhotosByRarity,
-  getUnlockedPhotos,
-  getNextPhotoToUnlock,
-} from '../data/photo-galleries';
 import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
 import { ProgressBar } from './ui/ProgressBar';
@@ -27,11 +22,13 @@ export const PhotoGallery: React.FC = () => {
   }
 
   const allPhotos = selectedCharacter.photoGallery;
-  const unlockedPhotos = getUnlockedPhotos(allPhotos);
-  const nextPhoto = getNextPhotoToUnlock(allPhotos, selectedCharacter.affection);
+  const unlockedPhotos = allPhotos.filter(photo => photo.unlocked);
+  const nextPhoto = [...allPhotos]
+    .filter(photo => !photo.unlocked && photo.unlockedAt > selectedCharacter.affection)
+    .sort((a, b) => a.unlockedAt - b.unlockedAt)[0];
 
   const filteredPhotos =
-    filterRarity === 'all' ? allPhotos : getPhotosByRarity(allPhotos, filterRarity);
+    filterRarity === 'all' ? allPhotos : allPhotos.filter(photo => photo.rarity === filterRarity);
 
   const rarityColors: Record<PhotoRarity, string> = {
     common: 'border-gray-400 bg-gray-900/20',
@@ -81,8 +78,8 @@ export const PhotoGallery: React.FC = () => {
                 <div className="space-y-3">
                   {(['common', 'uncommon', 'rare', 'epic', 'legendary'] as PhotoRarity[]).map(
                     rarity => {
-                      const rarityPhotos = getPhotosByRarity(allPhotos, rarity);
-                      const unlockedRarity = getPhotosByRarity(unlockedPhotos, rarity);
+                      const rarityPhotos = allPhotos.filter(photo => photo.rarity === rarity);
+                      const unlockedRarity = unlockedPhotos.filter(photo => photo.rarity === rarity);
 
                       return (
                         <div key={rarity} className="flex items-center justify-between">

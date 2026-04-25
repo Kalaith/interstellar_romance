@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IcebreakerMessage, IcebreakerCategory } from '../types/game';
-import { getAvailableIcebreakers, generateContextualSuggestion } from '../data/icebreaker-messages';
+import { useGameStore } from '../stores/gameStore';
 
 interface IcebreakerMessagesProps {
   characterId: string;
@@ -23,6 +23,9 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
   onSendMessage,
   onClose,
 }) => {
+  const character = useGameStore(state =>
+    state.characters.find(candidate => candidate.id === characterId)
+  );
   const [selectedCategory, setSelectedCategory] = useState<IcebreakerCategory | 'all'>('all');
   const [availableMessages, setAvailableMessages] = useState<IcebreakerMessage[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<IcebreakerMessage | null>(null);
@@ -41,17 +44,14 @@ export const IcebreakerMessages: React.FC<IcebreakerMessagesProps> = ({
             : 'night';
 
   useEffect(() => {
-    const messages = getAvailableIcebreakers(
-      characterId,
-      currentAffection,
-      characterMood,
-      timeOfDay
-    );
+    const messages = character?.availableIcebreakers || character?.icebreakerMessages || [];
     setAvailableMessages(messages);
     setContextualSuggestion(
-      generateContextualSuggestion(characterId, currentAffection, recentInteractions)
+      recentInteractions.length > 0
+        ? 'The backend has ranked these starters from your latest relationship state.'
+        : `Start with one of the backend-ranked messages for ${characterName}.`
     );
-  }, [characterId, currentAffection, characterMood, timeOfDay, recentInteractions]);
+  }, [character, characterName, recentInteractions.length]);
 
   const categories: {
     key: IcebreakerCategory | 'all';

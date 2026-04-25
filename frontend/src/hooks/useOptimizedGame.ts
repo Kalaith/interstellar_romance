@@ -62,9 +62,7 @@ export const useDialogueOptions = () => {
       (character: Character | null) => {
         if (!character) return [];
 
-        // This would normally call getAvailableDialogueOptions
-        // For now, return empty array as placeholder
-        return [];
+        return character.availableDialogueOptions || [];
       },
       character =>
         `${character?.id || 'none'}-${character?.affection || 0}-${character?.mood || 'none'}`

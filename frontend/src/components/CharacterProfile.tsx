@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import {
-  calculateCompatibility,
-  getCompatibilityColor,
-  getCompatibilityLabel,
-  isRomanticallyCompatible,
-  getRomanceCompatibilityLabel,
-  getRomanceCompatibilityColor,
-} from '../utils/compatibility';
 import { MoodDisplay } from './ui/MoodDisplay';
 
 type TabType = 'overview' | 'interests' | 'values' | 'background' | 'compatibility';
@@ -32,7 +24,7 @@ export const CharacterProfile: React.FC = () => {
     );
   }
 
-  const compatibility = player ? calculateCompatibility(player, selectedCharacter.profile) : null;
+  const compatibility = selectedCharacter.relationshipStatus.compatibility;
   const knownInfo = selectedCharacter.knownInfo;
   const recentMemories = [...selectedCharacter.relationshipMemories]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -67,7 +59,7 @@ export const CharacterProfile: React.FC = () => {
       id: 'compatibility' as TabType,
       label: 'Analysis',
       icon: '📊',
-      available: compatibility !== null,
+      available: true,
     },
   ];
 
@@ -109,14 +101,14 @@ export const CharacterProfile: React.FC = () => {
                     {player && (
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs px-2 py-1 rounded-full ${getRomanceCompatibilityColor(player, selectedCharacter)}`}
+                          className={`text-xs px-2 py-1 rounded-full ${getRomanceCompatibilityColor(selectedCharacter.romanticallyCompatible)}`}
                         >
-                          {isRomanticallyCompatible(player, selectedCharacter) ? '💕' : '🚫'}
+                          {selectedCharacter.romanticallyCompatible ? '💕' : '🚫'}
                         </span>
                         <span
-                          className={`text-xs ${getRomanceCompatibilityColor(player, selectedCharacter)}`}
+                          className={`text-xs ${getRomanceCompatibilityColor(selectedCharacter.romanticallyCompatible)}`}
                         >
-                          {getRomanceCompatibilityLabel(player, selectedCharacter)}
+                          {getRomanceCompatibilityLabel(selectedCharacter.romanticallyCompatible)}
                         </span>
                       </div>
                     )}
@@ -453,80 +445,61 @@ export const CharacterProfile: React.FC = () => {
         );
 
       case 'compatibility':
-        if (!compatibility) {
-          return (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                Analysis Unavailable
-              </h3>
-              <p className="text-[var(--text-secondary)]">
-                Compatibility analysis requires more data.
-              </p>
-            </div>
-          );
-        }
         return (
           <div className="space-y-6">
             <div className="bg-[var(--bg-section)] border border-[var(--border-inner)] rounded-lg p-6">
               <div className="text-center mb-6">
-                <div
-                  className={`text-4xl font-bold ${getCompatibilityColor(compatibility.overall)}`}
-                >
-                  {compatibility.overall}%
+                <div className={`text-4xl font-bold ${getCompatibilityColor(compatibility)}`}>
+                  {compatibility}%
                 </div>
-                <div className={`text-lg ${getCompatibilityColor(compatibility.overall)}`}>
-                  {getCompatibilityLabel(compatibility.overall)}
+                <div className={`text-lg ${getCompatibilityColor(compatibility)}`}>
+                  {getCompatibilityLabel(compatibility)}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center">
                   <div
-                    className={`text-2xl font-bold ${getCompatibilityColor(compatibility.breakdown.interests)}`}
+                    className={`text-2xl font-bold ${getCompatibilityColor(selectedCharacter.relationshipStatus.trust)}`}
                   >
-                    {compatibility.breakdown.interests}%
+                    {selectedCharacter.relationshipStatus.trust}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">Interests</div>
+                  <div className="text-sm text-[var(--text-muted)]">Trust</div>
                 </div>
                 <div className="text-center">
                   <div
-                    className={`text-2xl font-bold ${getCompatibilityColor(compatibility.breakdown.values)}`}
+                    className={`text-2xl font-bold ${getCompatibilityColor(selectedCharacter.relationshipStatus.intimacy)}`}
                   >
-                    {compatibility.breakdown.values}%
+                    {selectedCharacter.relationshipStatus.intimacy}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">Values</div>
+                  <div className="text-sm text-[var(--text-muted)]">Intimacy</div>
                 </div>
                 <div className="text-center">
                   <div
-                    className={`text-2xl font-bold ${getCompatibilityColor(compatibility.breakdown.conversationStyle)}`}
+                    className={`text-2xl font-bold ${getCompatibilityColor(selectedCharacter.relationshipStatus.commitment)}`}
                   >
-                    {compatibility.breakdown.conversationStyle}%
+                    {selectedCharacter.relationshipStatus.commitment}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">Communication</div>
+                  <div className="text-sm text-[var(--text-muted)]">Commitment</div>
                 </div>
                 <div className="text-center">
                   <div
-                    className={`text-2xl font-bold ${getCompatibilityColor(compatibility.breakdown.activities)}`}
+                    className={`text-2xl font-bold ${getCompatibilityColor(selectedCharacter.affection)}`}
                   >
-                    {compatibility.breakdown.activities}%
+                    {selectedCharacter.affection}%
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">Activities</div>
+                  <div className="text-sm text-[var(--text-muted)]">Affection</div>
                 </div>
               </div>
 
               <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-4">
                 <h4 className="font-bold text-[var(--resource-energy)] mb-3">
-                  Compatibility Insights
+                  Backend Relationship Analysis
                 </h4>
-                <ul className="space-y-2">
-                  {compatibility.explanation.map((insight, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-[var(--resource-energy)] mt-1">•</span>
-                      <span className="text-[var(--text-secondary)] text-sm">{insight}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-[var(--text-secondary)] text-sm">
+                  These values are loaded from the authoritative backend save state and are updated
+                  after conversations, dates, story choices, and conflict resolutions.
+                </p>
               </div>
             </div>
           </div>
@@ -591,3 +564,24 @@ export const CharacterProfile: React.FC = () => {
     </div>
   );
 };
+
+function getCompatibilityColor(score: number): string {
+  if (score >= 70) return 'text-[var(--state-available)]';
+  if (score >= 40) return 'text-[var(--resource-energy)]';
+  return 'text-[var(--state-deficit)]';
+}
+
+function getCompatibilityLabel(score: number): string {
+  if (score >= 80) return 'Excellent Match';
+  if (score >= 60) return 'Strong Match';
+  if (score >= 40) return 'Developing Match';
+  return 'Uncertain Match';
+}
+
+function getRomanceCompatibilityColor(isCompatible?: boolean): string {
+  return isCompatible ? 'text-pink-300 bg-pink-900/30' : 'text-red-300 bg-red-900/30';
+}
+
+function getRomanceCompatibilityLabel(isCompatible?: boolean): string {
+  return isCompatible ? 'Romantic match' : 'Outside stated preference';
+}

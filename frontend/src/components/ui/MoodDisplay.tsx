@@ -1,6 +1,6 @@
 import React from 'react';
 import { CharacterMood } from '../../types/game';
-import { moodDescriptions } from '../../data/moods';
+import { useGameStore } from '../../stores/gameStore';
 
 interface MoodDisplayProps {
   mood: CharacterMood;
@@ -35,6 +35,8 @@ export const MoodDisplay: React.FC<MoodDisplayProps> = ({
   characterName,
   className = '',
 }) => {
+  const description = useGameStore(state => state.getMoodDescription(mood));
+
   return (
     <div
       className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full border ${moodColors[mood]} ${className}`}
@@ -42,7 +44,7 @@ export const MoodDisplay: React.FC<MoodDisplayProps> = ({
       <span className="text-sm">{moodIcons[mood]}</span>
       <span className="text-sm font-medium capitalize">{mood}</span>
       <span className="text-xs opacity-75">
-        {characterName} {moodDescriptions[mood]}
+        {characterName} {description}
       </span>
     </div>
   );

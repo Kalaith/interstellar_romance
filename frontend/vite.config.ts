@@ -17,4 +17,17 @@ export default defineConfig({
     globals: true,
     setupFiles: [],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/interstellar_romance/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/interstellar_romance\/api/, '/api'),
+      },
+    },
+  },
 });

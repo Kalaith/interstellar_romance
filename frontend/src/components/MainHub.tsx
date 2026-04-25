@@ -1,23 +1,14 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { useCharacterStore } from '../stores/characterStore';
 import { MoodDisplay } from './ui/MoodDisplay';
 import { ProgressBar } from './ui/ProgressBar';
 import { Button, PrimaryButton, SecondaryButton } from './ui/Button';
 import { CharacterImage } from './AssetLoader';
-import { calculateCompatibility } from '../utils/compatibility';
-import {
-  filterCharactersByPreference,
-  getPreferenceDescription,
-} from '../utils/character-filtering';
-import { affectionThresholds } from '../constants/gameConstants';
 import { Logger } from '../services/Logger';
-import { createCharacterId } from '../types/brandedTypes';
 
 export const MainHub: React.FC = () => {
-  const { player, currentWeek, setScreen } = useGameStore();
-
-  const { characters, selectCharacter, canTalkToCharacterToday } = useCharacterStore();
+  const { player, currentWeek, setScreen, characters, selectCharacter, canTalkToCharacterToday } =
+    useGameStore();
 
   React.useEffect(() => {
     Logger.info('MainHub component mounted', {
@@ -40,8 +31,7 @@ export const MainHub: React.FC = () => {
     );
   }
 
-  // Filter characters based on player's sexual preference
-  const filteredCharacters = filterCharactersByPreference(characters, player.sexualPreference);
+  const filteredCharacters = characters.filter(character => character.romanticallyCompatible);
   const preferenceDescription = getPreferenceDescription(player.sexualPreference);
 
   return (
@@ -169,15 +159,13 @@ export const MainHub: React.FC = () => {
               </div>
             ) : (
               filteredCharacters.map(character => {
-                const canTalkToday = canTalkToCharacterToday(createCharacterId(character.id));
-                const compatibility = player
-                  ? calculateCompatibility(player, character.profile)
-                  : null;
+                const canTalkToday = canTalkToCharacterToday(character.id);
+                const compatibility = character.relationshipStatus.compatibility;
 
                 return (
                   <div
                     key={character.id}
-                    onClick={() => selectCharacter(createCharacterId(character.id))}
+                    onClick={() => void selectCharacter(character.id)}
                     className="bg-[var(--bg-section)] border-2 border-[var(--border-inner)] hover:border-[var(--accent-cyan)] cursor-pointer hover:shadow-[0_0_20px_rgba(0,212,255,0.2)] transform hover:scale-105 rounded-lg overflow-hidden transition-all duration-300"
                   >
                     {/* Character Portrait */}
@@ -190,20 +178,20 @@ export const MainHub: React.FC = () => {
                       />
 
                       {/* Compatibility Badge */}
-                      {compatibility && (
+                      {compatibility > 0 && (
                         <div className="absolute top-3 right-3">
                           <div className="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--bg-item)] border border-[var(--border-inner)]">
                             <span
                               style={{
                                 color:
-                                  compatibility.overall >= 70
+                                  compatibility >= 70
                                     ? 'var(--state-available)'
-                                    : compatibility.overall >= 40
+                                    : compatibility >= 40
                                       ? 'var(--resource-energy)'
                                       : 'var(--state-deficit)',
                               }}
                             >
-                              {compatibility.overall}%
+                              {compatibility}%
                             </span>
                           </div>
                         </div>
@@ -289,31 +277,23 @@ export const MainHub: React.FC = () => {
                           size="xs"
                           onClick={e => {
                             e.stopPropagation();
-                            selectCharacter(createCharacterId(character.id));
-                            setScreen('character-profile');
+                            void selectCharacter(character.id);
                           }}
                           iconLeft="📋"
                         >
                           Profile
                         </PrimaryButton>
 
-                        {character.affection >= affectionThresholds.HIGH ? (
-                          <SecondaryButton
-                            size="xs"
-                            onClick={e => {
-                              e.stopPropagation();
-                              selectCharacter(createCharacterId(character.id));
-                              setScreen('character-interaction');
-                            }}
-                            iconLeft="📅"
-                          >
-                            Date
-                          </SecondaryButton>
-                        ) : (
-                          <Button size="xs" disabled variant="ghost" iconLeft="🔒">
-                            Locked
-                          </Button>
-                        )}
+                        <SecondaryButton
+                          size="xs"
+                          onClick={e => {
+                            e.stopPropagation();
+                            void selectCharacter(character.id).then(() => setScreen('date-planning'));
+                          }}
+                          iconLeft="📅"
+                        >
+                          Date
+                        </SecondaryButton>
                       </div>
 
                       {/* Milestones */}
@@ -376,3 +356,15 @@ export const MainHub: React.FC = () => {
     </div>
   );
 };
+
+function getPreferenceDescription(preference: string): string {
+  const labels: Record<string, string> = {
+    men: 'Showing men',
+    women: 'Showing women',
+    all: 'Showing all genders',
+    'non-binary': 'Showing non-binary companions',
+    'alien-species': 'Showing all species',
+  };
+
+  return labels[preference] || 'Showing compatible companions';
+}

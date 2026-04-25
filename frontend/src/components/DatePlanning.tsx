@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { DatePlan, ActivityType } from '../types/game';
-import { getDatePlansByActivity } from '../data/date-plans';
-import { calculateCompatibility } from '../utils/compatibility';
 import { Button } from './ui/Button';
 import { StatePanel } from './ui/StatePanel';
 
 export const DatePlanning: React.FC = () => {
-  const { selectedCharacter, player, setScreen, updateAffection, addDateToHistory } =
-    useGameStore();
+  const { selectedCharacter, player, setScreen, completeDate, content, isSaving } = useGameStore();
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [selectedDatePlan, setSelectedDatePlan] = useState<DatePlan | null>(null);
   const [planningStep, setPlanningStep] = useState<
@@ -39,8 +36,8 @@ export const DatePlanning: React.FC = () => {
     );
   }
 
-  // const availablePlans = getAvailableDatePlans(selectedCharacter.affection);
-  const compatibility = calculateCompatibility(player, selectedCharacter.profile);
+  const datePlans = content.datePlans;
+  const compatibilityScore = selectedCharacter.relationshipStatus.compatibility;
 
   const activityTypes: {
     type: ActivityType;
@@ -90,34 +87,24 @@ export const DatePlanning: React.FC = () => {
     setPlanningStep('confirmation');
   };
 
-  const handleDateConfirmation = () => {
+  const handleDateConfirmation = async () => {
     if (!selectedDatePlan) return;
 
-    // Calculate date success based on compatibility and character preferences
-    const isPreferredActivity = selectedCharacter.profile.preferredActivities.includes(
-      selectedDatePlan.activityType
-    );
-    const baseAffectionGain = selectedDatePlan.compatibilityBonus;
-    const compatibilityMultiplier = compatibility.overall / 100;
-    const preferenceBonus = isPreferredActivity ? 5 : 0;
-
-    const totalAffectionGain = Math.round(
-      baseAffectionGain * compatibilityMultiplier + preferenceBonus
-    );
-    const dateSuccess = totalAffectionGain > 0 && compatibility.overall >= 40;
-
-    // Record the date before applying affection so the memory captures the full date result.
-    addDateToHistory(selectedCharacter.id, selectedDatePlan.id, totalAffectionGain, dateSuccess);
-    updateAffection(selectedCharacter.id, totalAffectionGain);
+    const result = await completeDate(selectedDatePlan.id);
+    if (!result) {
+      return;
+    }
 
     setDateOutcome({
-      title: dateSuccess ? 'Date Completed Successfully' : 'Date Was Challenging',
-      description: dateSuccess
-        ? `${selectedCharacter.name} will remember the ${selectedDatePlan.name.toLowerCase()} as a meaningful shared experience.`
-        : `${selectedCharacter.name} may need time to process the ${selectedDatePlan.name.toLowerCase()}, but the moment is now part of your shared history.`,
-      affectionGained: totalAffectionGain,
-      success: dateSuccess,
-      memoryTitle: `${dateSuccess ? 'Memorable' : 'Complicated'} Date: ${selectedDatePlan.name}`,
+      title: result.outcome.success ? 'Date Completed Successfully' : 'Date Was Challenging',
+      description:
+        result.outcome.memory?.description ||
+        `${selectedCharacter.name} will remember the ${selectedDatePlan.name.toLowerCase()} as part of your shared history.`,
+      affectionGained: result.outcome.affectionGained,
+      success: result.outcome.success,
+      memoryTitle:
+        result.outcome.memory?.title ||
+        `${result.outcome.success ? 'Memorable' : 'Complicated'} Date: ${selectedDatePlan.name}`,
     });
 
     // Reset planning state
@@ -126,7 +113,9 @@ export const DatePlanning: React.FC = () => {
     setPlanningStep('outcome');
   };
 
-  const filteredPlans = selectedActivity ? getDatePlansByActivity(selectedActivity) : [];
+  const filteredPlans = selectedActivity
+    ? datePlans.filter(plan => plan.activityType === selectedActivity)
+    : [];
 
   return (
     <div className="min-h-screen">
@@ -195,8 +184,6 @@ export const DatePlanning: React.FC = () => {
                   const isPreferred = selectedCharacter.profile.preferredActivities.includes(
                     activity.type
                   );
-                  const compatibilityScore = compatibility.breakdown.activities;
-
                   return (
                     <button
                       key={activity.type}
@@ -220,7 +207,7 @@ export const DatePlanning: React.FC = () => {
                         {activity.description}
                       </p>
                       <div className="text-xs text-[var(--text-muted)]">
-                        Compatibility: {compatibilityScore}%
+                        Relationship compatibility: {compatibilityScore}%
                       </div>
                     </button>
                   );
@@ -408,9 +395,9 @@ export const DatePlanning: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex justify-between mb-2">
-                        <span className="text-[var(--text-muted)]">Compatibility Multiplier:</span>
+                        <span className="text-[var(--text-muted)]">Backend Compatibility:</span>
                         <span className="text-[var(--resource-research)]">
-                          {compatibility.overall}%
+                          {compatibilityScore}%
                         </span>
                       </div>
                       {selectedCharacter.profile.preferredActivities.includes(
@@ -424,20 +411,9 @@ export const DatePlanning: React.FC = () => {
                     </div>
 
                     <div className="border-t border-[var(--border-inner)] pt-4">
-                      <div className="flex justify-between text-lg font-semibold">
-                        <span>Estimated Total:</span>
-                        <span className="text-[var(--state-available)]">
-                          +
-                          {Math.round(
-                            (selectedDatePlan.compatibilityBonus * compatibility.overall) / 100 +
-                              (selectedCharacter.profile.preferredActivities.includes(
-                                selectedDatePlan.activityType
-                              )
-                                ? 5
-                                : 0)
-                          )}{' '}
-                          affection
-                        </span>
+                      <div className="text-sm text-[var(--text-secondary)]">
+                        The backend will calculate the final outcome from your save state,
+                        relationship status, selected plan, and character preferences.
                       </div>
                     </div>
 
@@ -473,23 +449,23 @@ export const DatePlanning: React.FC = () => {
                         <li className="flex items-center space-x-2">
                           <span
                             className={
-                              compatibility.overall >= 70
+                              compatibilityScore >= 70
                                 ? 'text-[var(--state-available)]'
-                                : compatibility.overall >= 50
+                                : compatibilityScore >= 50
                                   ? 'text-[var(--resource-energy)]'
                                   : 'text-[var(--state-deficit)]'
                             }
                           >
-                            {compatibility.overall >= 70
+                            {compatibilityScore >= 70
                               ? '✅'
-                              : compatibility.overall >= 50
+                              : compatibilityScore >= 50
                                 ? '⚠️'
                                 : '❌'}
                           </span>
                           <span>
-                            {compatibility.overall >= 70
+                            {compatibilityScore >= 70
                               ? 'High compatibility'
-                              : compatibility.overall >= 50
+                              : compatibilityScore >= 50
                                 ? 'Moderate compatibility'
                                 : 'Low compatibility - be careful!'}
                           </span>
@@ -502,8 +478,13 @@ export const DatePlanning: React.FC = () => {
 
               {/* Confirmation Button */}
               <div className="flex justify-center mt-8">
-                <Button onClick={handleDateConfirmation} variant="primary" size="lg">
-                  Confirm Date Plan
+                <Button
+                  onClick={() => void handleDateConfirmation()}
+                  variant="primary"
+                  size="lg"
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Confirming...' : 'Confirm Date Plan'}
                 </Button>
               </div>
             </div>

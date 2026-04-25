@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { StorylineEvent } from '../data/character-storylines';
+import { StorylineEvent } from '../types/game';
 
 interface StorylinePanelProps {
   characterId: string;
 }
 
 export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) => {
-  const { availableStorylines, completeStorylineChoice } = useGameStore();
+  const { availableStorylines, completeStorylineChoice, isSaving } = useGameStore();
   const [selectedStoryline, setSelectedStoryline] = useState<StorylineEvent | null>(null);
 
   const characterStorylines = availableStorylines[characterId] || [];
@@ -17,8 +17,8 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) =
     setSelectedStoryline(storyline);
   };
 
-  const handleChoiceSelect = (storylineId: string, choiceId: string) => {
-    completeStorylineChoice(storylineId, choiceId);
+  const handleChoiceSelect = async (storylineId: string, choiceId: string) => {
+    await completeStorylineChoice(storylineId, choiceId);
     setSelectedStoryline(null);
   };
 
@@ -85,12 +85,13 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) =
                   {selectedStoryline.choices.map(choice => (
                     <button
                       key={choice.id}
-                      onClick={() => handleChoiceSelect(selectedStoryline.id, choice.id)}
+                      onClick={() => void handleChoiceSelect(selectedStoryline.id, choice.id)}
+                      disabled={isSaving}
                       className="w-full text-left p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
                     >
                       <div className="text-white mb-1">{choice.text}</div>
                       <div className="text-xs text-green-400">
-                        +{choice.affectionChange} affection
+                        {isSaving ? 'Applying...' : `+${choice.affectionChange} affection`}
                       </div>
                     </button>
                   ))}

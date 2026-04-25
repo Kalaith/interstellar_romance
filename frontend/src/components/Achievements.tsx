@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { AchievementCategory } from '../types/game';
-import { getAchievementsByCategory } from '../data/achievements';
 import { Button } from './ui/Button';
 import { ProgressBar } from './ui/ProgressBar';
 
@@ -25,7 +24,7 @@ export const Achievements: React.FC = () => {
   const filteredAchievements =
     selectedCategory === 'all'
       ? achievements
-      : getAchievementsByCategory(achievements, selectedCategory);
+      : achievements.filter(achievement => achievement.category === selectedCategory);
 
   const achievedCount = achievements.filter(a => a.achieved).length;
   const totalCount = achievements.length;
@@ -87,7 +86,9 @@ export const Achievements: React.FC = () => {
                 const categoryAchievements =
                   category.key === 'all'
                     ? achievements
-                    : getAchievementsByCategory(achievements, category.key as AchievementCategory);
+                    : achievements.filter(
+                        achievement => achievement.category === category.key
+                      );
                 const categoryAchieved = categoryAchievements.filter(a => a.achieved).length;
 
                 return (

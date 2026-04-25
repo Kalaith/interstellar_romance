@@ -11,10 +11,17 @@ use DomainException;
 final class GameRulesService
 {
     private const STAT_KEYS = ['charisma', 'intelligence', 'adventure', 'empathy', 'technology'];
+    private const TRAIT_STAT_BONUSES = [
+        'charismatic' => ['charisma' => 2],
+        'intelligent' => ['intelligence' => 2],
+        'adventurous' => ['adventure' => 2],
+        'empathetic' => ['empathy' => 2],
+        'tech-savvy' => ['technology' => 2],
+    ];
 
     public function validatePlayer(array $body): array
     {
-        $required = ['name', 'species', 'gender', 'sexualPreference', 'traits', 'backstory', 'stats'];
+        $required = ['name', 'species', 'gender', 'sexualPreference', 'traits', 'backstory'];
         foreach ($required as $key) {
             if (!array_key_exists($key, $body)) {
                 throw new DomainException('Missing player field: ' . $key);
@@ -27,17 +34,24 @@ final class GameRulesService
         if (!is_array($body['traits'])) {
             throw new DomainException('Player traits must be an array.');
         }
-        if (!is_array($body['stats'])) {
-            throw new DomainException('Player stats must be an object.');
+
+        $traits = array_values(array_unique(array_map('strval', $body['traits'])));
+        if (count($traits) !== 2) {
+            throw new DomainException('Exactly two player traits are required.');
         }
 
-        $stats = [];
-        foreach (self::STAT_KEYS as $statKey) {
-            $value = $body['stats'][$statKey] ?? null;
-            if (!is_numeric($value)) {
-                throw new DomainException('Player stat must be numeric: ' . $statKey);
+        $stats = array_fill_keys(self::STAT_KEYS, 5);
+        foreach ($traits as $trait) {
+            if (!isset(self::TRAIT_STAT_BONUSES[$trait])) {
+                throw new DomainException('Unknown player trait: ' . $trait);
             }
-            $stats[$statKey] = $this->clamp((int) $value, 0, 100);
+
+            foreach (self::TRAIT_STAT_BONUSES[$trait] as $statKey => $bonus) {
+                $stats[$statKey] = $this->clamp((int) $stats[$statKey] + (int) $bonus, 0, 100);
+            }
+        }
+        foreach (self::STAT_KEYS as $statKey) {
+            $stats[$statKey] = $this->clamp((int) $stats[$statKey], 0, 100);
         }
 
         return [
@@ -45,7 +59,7 @@ final class GameRulesService
             'species' => (string) $body['species'],
             'gender' => (string) $body['gender'],
             'sexual_preference' => (string) $body['sexualPreference'],
-            'traits' => array_values(array_map('strval', $body['traits'])),
+            'traits' => $traits,
             'backstory' => (string) $body['backstory'],
             'stats' => $stats,
         ];

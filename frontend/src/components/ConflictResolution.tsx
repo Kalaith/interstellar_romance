@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RelationshipConflict, ConflictResolutionOption, ConflictResolution } from '../types/game';
+import { RelationshipConflict, ConflictResolutionOption } from '../types/game';
 
 interface ConflictResolutionProps {
   conflict: RelationshipConflict;
@@ -12,7 +12,7 @@ interface ConflictResolutionProps {
     empathy: number;
     technology: number;
   };
-  onResolve: (resolution: ConflictResolution) => void;
+  onResolve: (option: ConflictResolutionOption) => void;
   onClose: () => void;
 }
 
@@ -52,49 +52,12 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
     return true;
   };
 
-  const calculateActualSuccess = (option: ConflictResolutionOption): number => {
-    let successChance = option.preview.successChance;
-
-    // Adjust based on player stats
-    if (option.requirements?.playerStat && option.requirements.minValue) {
-      const statValue = playerStats[option.requirements.playerStat as keyof typeof playerStats];
-      const bonus = Math.max(0, (statValue - option.requirements.minValue) * 0.5);
-      successChance = Math.min(95, successChance + bonus);
-    }
-
-    // Adjust based on conflict severity
-    const severityModifier = {
-      minor: 1.1,
-      moderate: 1.0,
-      major: 0.85,
-      critical: 0.7,
-    };
-
-    return Math.round(successChance * severityModifier[conflict.severity]);
-  };
-
   const handleResolve = () => {
     if (!selectedOption) return;
 
     setIsResolving(true);
-
-    const actualSuccessChance = calculateActualSuccess(selectedOption);
-    const isSuccessful = Math.random() * 100 <= actualSuccessChance;
-
-    const effectivenessMultiplier = isSuccessful ? 1 : 0.3;
-    const affectionRecovery = Math.round(
-      selectedOption.preview.affectionChange * effectivenessMultiplier -
-        conflict.affectionPenalty * (isSuccessful ? 0.8 : 0.3)
-    );
-
-    const resolution: ConflictResolution = {
-      method: selectedOption.method,
-      effectiveness: isSuccessful ? actualSuccessChance : Math.round(actualSuccessChance * 0.3),
-      affectionRecovery: Math.max(-conflict.affectionPenalty, affectionRecovery),
-    };
-
     setTimeout(() => {
-      onResolve(resolution);
+      onResolve(selectedOption);
     }, 2000);
   };
 
@@ -170,7 +133,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {conflict.resolutionOptions.map(option => {
                 const canUse = canUseOption(option);
-                const actualSuccess = calculateActualSuccess(option);
+                const backendPreview = option.preview.successChance;
 
                 return (
                   <div
@@ -188,14 +151,14 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                       <h5 className="text-white font-semibold">{option.label}</h5>
                       <div
                         className={`px-2 py-1 rounded text-xs font-bold ${
-                          actualSuccess >= 70
+                          backendPreview >= 70
                             ? 'bg-green-600'
-                            : actualSuccess >= 50
+                            : backendPreview >= 50
                               ? 'bg-yellow-600'
                               : 'bg-red-600'
                         } text-white`}
                       >
-                        {actualSuccess}%
+                        {backendPreview}%
                       </div>
                     </div>
 
@@ -254,7 +217,9 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Success Chance:</span>
-                  <span className="text-white ml-2">{calculateActualSuccess(selectedOption)}%</span>
+                  <span className="text-white ml-2">
+                    {selectedOption.preview.successChance}%
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-400">Potential Recovery:</span>

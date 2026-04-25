@@ -14,6 +14,8 @@ import { SelfImprovementScreen } from '../components/SelfImprovementScreen';
 
 export function GamePage() {
   const currentScreen = useGameStore(state => state.currentScreen);
+  const isLoading = useGameStore(state => state.isLoading);
+  const error = useGameStore(state => state.error);
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -47,7 +49,24 @@ export function GamePage() {
   return (
     <div className="stellaris-theme min-h-screen relative">
       <div className="starfield"></div>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">{renderScreen()}</div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">
+        {isLoading ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-8 text-center">
+              <div className="text-xl text-[var(--text-primary)]">Loading save data...</div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {error && (
+              <div className="mx-auto mb-4 max-w-3xl rounded-lg border border-red-500/40 bg-red-950/40 p-4 text-sm text-red-100">
+                {error}
+              </div>
+            )}
+            {renderScreen()}
+          </>
+        )}
+      </div>
     </div>
   );
 }

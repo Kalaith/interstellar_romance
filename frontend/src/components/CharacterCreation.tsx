@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { PlayerCharacter, Gender, SexualPreference } from '../types/game';
+import { PlayerCreationInput, Gender, SexualPreference } from '../types/game';
 import { Button } from './ui/Button';
 import { StatePanel } from './ui/StatePanel';
 
 export const CharacterCreation: React.FC = () => {
-  const { setScreen, createPlayer } = useGameStore();
+  const { setScreen, createPlayer, isSaving } = useGameStore();
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -36,7 +36,7 @@ export const CharacterCreation: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim() || formData.traits.length !== 2) {
@@ -44,23 +44,22 @@ export const CharacterCreation: React.FC = () => {
       return;
     }
 
-    const player: PlayerCharacter = {
+    const player: PlayerCreationInput = {
       name: formData.name,
       species: formData.species,
       gender: formData.gender,
       sexualPreference: formData.sexualPreference,
       traits: formData.traits,
       backstory: formData.backstory,
-      stats: {
-        charisma: 5 + (formData.traits.includes('charismatic') ? 2 : 0),
-        intelligence: 5 + (formData.traits.includes('intelligent') ? 2 : 0),
-        adventure: 5 + (formData.traits.includes('adventurous') ? 2 : 0),
-        empathy: 5 + (formData.traits.includes('empathetic') ? 2 : 0),
-        technology: 5 + (formData.traits.includes('tech-savvy') ? 2 : 0),
-      },
     };
 
-    createPlayer(player);
+    try {
+      await createPlayer(player);
+    } catch (error) {
+      setValidationMessage(
+        error instanceof Error ? error.message : 'Unable to create your character.'
+      );
+    }
   };
 
   const selectionClass = (selected: boolean, disabled = false) =>
@@ -401,8 +400,8 @@ export const CharacterCreation: React.FC = () => {
               >
                 🏠 Back to Menu
               </Button>
-              <Button type="submit" variant="primary" size="lg" fullWidth>
-                ✨ Create Character
+              <Button type="submit" variant="primary" size="lg" fullWidth disabled={isSaving}>
+                {isSaving ? 'Creating...' : '✨ Create Character'}
               </Button>
             </div>
           </form>

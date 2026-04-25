@@ -20,7 +20,7 @@ final class GameRulesServiceTest extends TestCase
         self::assertSame(8, $rules->calculateMaxInteractions(80));
     }
 
-    public function testPlayerValidationNormalizesStats(): void
+    public function testPlayerValidationDerivesStatsFromTraits(): void
     {
         $rules = new GameRulesService();
 
@@ -29,7 +29,7 @@ final class GameRulesServiceTest extends TestCase
             'species' => 'human',
             'gender' => 'non-binary',
             'sexualPreference' => 'all',
-            'traits' => ['curious'],
+            'traits' => ['charismatic', 'tech-savvy'],
             'backstory' => 'A test explorer.',
             'stats' => [
                 'charisma' => 101,
@@ -40,8 +40,9 @@ final class GameRulesServiceTest extends TestCase
             ],
         ]);
 
-        self::assertSame(100, $player['stats']['charisma']);
-        self::assertSame(0, $player['stats']['technology']);
+        self::assertSame(7, $player['stats']['charisma']);
+        self::assertSame(5, $player['stats']['intelligence']);
+        self::assertSame(7, $player['stats']['technology']);
         self::assertSame('all', $player['sexual_preference']);
     }
 

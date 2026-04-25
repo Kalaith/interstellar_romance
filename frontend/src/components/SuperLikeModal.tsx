@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character, SuperLikeResult } from '../types/game';
-import { superLikeEffects, superLikeResponses, superLikeUnlocks } from '../data/super-likes';
+import { useGameStore } from '../stores/gameStore';
 
 interface SuperLikeModalProps {
   character: Character;
@@ -15,24 +15,17 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
   onUseSuperLike,
   onClose,
 }) => {
+  const sendSuperLike = useGameStore(state => state.useSuperLike);
+  const isSaving = useGameStore(state => state.isSaving);
   const [isConfirming, setIsConfirming] = useState(false);
   const [showResult, setShowResult] = useState<SuperLikeResult | null>(null);
 
-  const effect = superLikeEffects[character.id];
-  const responses = superLikeResponses[character.id];
-  const unlocks = superLikeUnlocks[character.id];
-
-  const handleConfirm = () => {
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-    const result: SuperLikeResult = {
-      affectionGained: effect.affectionBonus,
-      specialResponse: randomResponse,
-      unlockedContent: unlocks.content,
-    };
-
-    setShowResult(result);
-    onUseSuperLike(result);
+  const handleConfirm = async () => {
+    const result = await sendSuperLike(character.id);
+    if (result) {
+      setShowResult(result);
+      onUseSuperLike(result);
+    }
   };
 
   if (showResult) {
@@ -92,8 +85,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               <div className="bg-blue-900/30 border border-blue-400 rounded-lg p-4">
                 <h4 className="text-blue-300 font-semibold mb-2">Temporary Boost Active</h4>
                 <p className="text-gray-300 text-sm">
-                  +{effect.temporaryCompatibilityBonus}% compatibility bonus for the next{' '}
-                  {effect.duration} hours
+                  The backend has applied the temporary compatibility boost to your save.
                 </p>
               </div>
             </div>
@@ -151,7 +143,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="text-green-400">💕</span>
                 <span className="text-green-300 text-sm">
-                  Instant +{effect.affectionBonus} affection bonus
+                  Backend-calculated affection bonus
                 </span>
               </div>
             </div>
@@ -169,8 +161,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="text-blue-400">⚡</span>
                 <span className="text-blue-300 text-sm">
-                  +{effect.temporaryCompatibilityBonus}% compatibility boost for {effect.duration}{' '}
-                  hours
+                  Temporary compatibility boost from the backend rules
                 </span>
               </div>
             </div>
@@ -218,10 +209,11 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
                 </button>
               ) : (
                 <button
-                  onClick={handleConfirm}
+                  onClick={() => void handleConfirm()}
+                  disabled={isSaving}
                   className="flex-1 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors animate-pulse"
                 >
-                  Confirm - Use Super Like
+                  {isSaving ? 'Sending...' : 'Confirm - Use Super Like'}
                 </button>
               )
             ) : (

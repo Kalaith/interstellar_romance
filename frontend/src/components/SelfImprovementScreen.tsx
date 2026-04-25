@@ -1,9 +1,9 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { selfImprovementActivities } from '../data/self-improvement';
 
 export const SelfImprovementScreen: React.FC = () => {
-  const { player, setScreen } = useGameStore();
+  const { player, setScreen, content, completeSelfImprovement, isSaving } = useGameStore();
+  const [activeActivityId, setActiveActivityId] = React.useState<string | null>(null);
 
   if (!player) {
     return (
@@ -21,13 +21,13 @@ export const SelfImprovementScreen: React.FC = () => {
     );
   }
 
-  const handleActivityClick = (activityId: string) => {
-    const activity = selfImprovementActivities.find(a => a.id === activityId);
-    if (activity?.statBonus) {
-      // Apply stat bonuses (this would be handled by game store in real implementation)
-      // console.log(`Applied bonuses from ${activity.name}:`, activity.statBonus);
-    }
+  const handleActivityClick = async (activityId: string) => {
+    setActiveActivityId(activityId);
+    await completeSelfImprovement(activityId);
+    setActiveActivityId(null);
   };
+
+  const selfImprovementActivities = content.selfImprovementActivities;
 
   return (
     <div className="min-h-screen">
@@ -122,8 +122,10 @@ export const SelfImprovementScreen: React.FC = () => {
             {selfImprovementActivities.map(activity => (
               <div
                 key={activity.id}
-                onClick={() => handleActivityClick(activity.id)}
-                className="bg-[var(--bg-section)] border-2 border-[var(--border-inner)] rounded-lg p-4 transition-all duration-300 cursor-pointer hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-item)] hover:shadow-[0_0_15px_rgba(0,212,255,0.2)] transform hover:scale-105"
+                onClick={() => !isSaving && void handleActivityClick(activity.id)}
+                className={`bg-[var(--bg-section)] border-2 border-[var(--border-inner)] rounded-lg p-4 transition-all duration-300 hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-item)] hover:shadow-[0_0_15px_rgba(0,212,255,0.2)] transform hover:scale-105 ${
+                  isSaving ? 'cursor-wait opacity-70' : 'cursor-pointer'
+                }`}
               >
                 {/* Activity Icon */}
                 <div className="w-full h-20 bg-[var(--bg-item)] rounded-lg mb-3 flex items-center justify-center text-3xl">
@@ -160,7 +162,7 @@ export const SelfImprovementScreen: React.FC = () => {
 
                   {/* Rewards */}
                   <div className="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--state-available)] text-[var(--bg-space)]">
-                    {activity.reward}
+                    {activeActivityId === activity.id ? 'Applying...' : activity.reward}
                   </div>
                 </div>
               </div>

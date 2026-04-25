@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { DialogueOption, EmotionType } from '../types/game';
-import { getDialogueTree, getDialogueResponse } from '../data/dialogue-trees';
-import { getMoodModifier } from '../data/moods';
 import { EmotionalText } from './ui/EmotionalText';
 import { MoodDisplay } from './ui/MoodDisplay';
 import { Button } from './ui/Button';
@@ -12,10 +10,9 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   const {
     selectedCharacter,
     setScreen,
-    updateAffection,
-    updateLastInteractionDate,
-    incrementConversations,
     canTalkToCharacterToday,
+    chooseDialogue,
+    isSaving,
   } = useGameStore();
   const [currentDialogue, setCurrentDialogue] = useState<string>(
     'Choose how to start your conversation...'
@@ -29,18 +26,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
 
   useEffect(() => {
     if (selectedCharacter) {
-      const dialogueTree = getDialogueTree(selectedCharacter.id);
-      if (dialogueTree) {
-        setAvailableOptions(dialogueTree.rootOptions);
-      } else {
-        // Fallback to basic options for characters without dialogue trees
-        setAvailableOptions([
-          { id: 'greeting', text: 'General Chat', topic: 'greeting' },
-          { id: 'interests', text: 'Ask About Interests', topic: 'interests' },
-          { id: 'backstory', text: 'Learn About Past', topic: 'backstory' },
-          { id: 'flirt', text: 'Flirt', topic: 'flirt', requiresAffection: 20 },
-        ]);
-      }
+      setAvailableOptions(selectedCharacter.availableDialogueOptions || []);
     }
   }, [selectedCharacter]);
 
@@ -61,8 +47,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     );
   }
 
-  const handleDialogueChoice = (option: DialogueOption) => {
-    // Check if we can talk today (once per day limit)
+  const handleDialogueChoice = async (option: DialogueOption) => {
     if (!canTalkToCharacterToday(selectedCharacter.id)) {
       setCurrentDialogue(
         `You've already had your daily conversation with ${selectedCharacter.name}. Come back tomorrow for another chat!`
@@ -71,114 +56,21 @@ export const EnhancedCharacterInteraction: React.FC = () => {
       return;
     }
 
-    // Check requirements
-    if (option.requiresAffection && selectedCharacter.affection < option.requiresAffection) {
-      setCurrentDialogue(
-        `${selectedCharacter.name} seems uncomfortable with that approach. Perhaps build more trust first.`
-      );
-      setCurrentEmotion('nervous');
-      return;
-    }
-
-    if (option.requiresMood && selectedCharacter.mood !== option.requiresMood) {
-      setCurrentDialogue(
-        `${selectedCharacter.name} doesn't seem to be in the right mood for that conversation.`
-      );
-      setCurrentEmotion('neutral');
-      return;
-    }
-
-    // Mark that we've talked today (no longer using the multi-interaction system)
-    updateLastInteractionDate(selectedCharacter.id);
-
-    // Get response
-    const response = getDialogueResponse(option.id);
-    if (response) {
-      setCurrentDialogue(response.text);
-      setCurrentEmotion(response.emotion);
-
-      // Calculate affection change with mood modifier
-      const moodModifier = getMoodModifier(selectedCharacter.mood, option.topic);
-      const totalAffectionChange = response.affectionChange + moodModifier;
-
-      if (totalAffectionChange !== 0) {
-        updateAffection(selectedCharacter.id, totalAffectionChange);
-        incrementConversations();
-      }
-
-      // Add to dialogue history
+    const result = await chooseDialogue(selectedCharacter.id, option.id);
+    if (result) {
+      setCurrentDialogue(result.response.text);
+      setCurrentEmotion(result.response.emotion as EmotionType);
       setDialogueHistory(prev => [
         ...prev,
         {
           player: option.text,
-          character: response.text,
-          emotion: response.emotion,
+          character: result.response.text,
+          emotion: result.response.emotion,
         },
       ]);
-
-      // Update available options based on branches
-      if (option.nextOptions) {
-        const dialogueTree = getDialogueTree(selectedCharacter.id);
-        if (dialogueTree) {
-          const nextBranchOptions = option.nextOptions.flatMap(
-            (branchId: string) => dialogueTree.branches[branchId] || []
-          );
-          setAvailableOptions([...dialogueTree.rootOptions, ...nextBranchOptions]);
-          // setCurrentBranch(option.nextOptions[0] || null);
-        }
-      }
     } else {
-      // Fallback for basic dialogue
-      handleBasicDialogue(option);
-    }
-  };
-
-  const handleBasicDialogue = (option: DialogueOption) => {
-    // Note: interaction already used in handleDialogueChoice, don't use again
-
-    let dialogue = '';
-    let affectionGain = 0;
-    let emotion: EmotionType = 'neutral';
-
-    switch (option.topic) {
-      case 'greeting':
-        dialogue = `${selectedCharacter.name} greets you warmly and seems pleased to see you.`;
-        affectionGain = 1;
-        emotion = 'happy';
-        break;
-      case 'interests':
-        dialogue = `${selectedCharacter.name} shares some of their hobbies and interests with you. You learn more about their personality.`;
-        affectionGain = 2;
-        emotion = 'thoughtful';
-        break;
-      case 'backstory':
-        dialogue = `${selectedCharacter.name} opens up about their past experiences. You feel a deeper connection forming.`;
-        affectionGain = 3;
-        emotion = 'thoughtful';
-        break;
-      case 'flirt':
-        if (selectedCharacter.affection >= 20) {
-          dialogue = `${selectedCharacter.name} blushes at your compliment and seems charmed by your words.`;
-          affectionGain = 5;
-          emotion = 'flirty';
-        } else {
-          dialogue = `${selectedCharacter.name} seems a bit uncomfortable with your advance. Maybe you should get to know them better first.`;
-          affectionGain = 0;
-          emotion = 'nervous';
-        }
-        break;
-    }
-
-    // Apply mood modifier
-    const moodModifier = getMoodModifier(selectedCharacter.mood, option.topic);
-    const totalAffectionChange = affectionGain + moodModifier;
-
-    setCurrentDialogue(dialogue);
-    setCurrentEmotion(emotion);
-
-    if (totalAffectionChange > 0) {
-      updateAffection(selectedCharacter.id, totalAffectionChange);
-      incrementConversations();
+      setCurrentDialogue('The channel flickers. Try again once the backend confirms the exchange.');
+      setCurrentEmotion('neutral');
     }
   };
 
@@ -302,13 +194,15 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                         Trust
                       </span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">75/100</span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        {selectedCharacter.relationshipStatus.trust}/100
+                      </span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
-                          width: `75%`,
+                          width: `${selectedCharacter.relationshipStatus.trust}%`,
                           background: `linear-gradient(90deg, var(--accent-teal), var(--accent-cyan))`,
                         }}
                       ></div>
@@ -320,13 +214,15 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                       <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
                         Compatibility
                       </span>
-                      <span className="text-[var(--text-primary)] text-sm font-bold">85%</span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        {selectedCharacter.relationshipStatus.compatibility}%
+                      </span>
                     </div>
                     <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
-                          width: `85%`,
+                          width: `${selectedCharacter.relationshipStatus.compatibility}%`,
                           background: `linear-gradient(90deg, var(--state-available), var(--resource-food))`,
                         }}
                       ></div>
@@ -397,12 +293,12 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 const isLocked =
                   option.requiresAffection &&
                   selectedCharacter.affection < option.requiresAffection;
-                const isDisabled = isLocked || !canTalkToday;
+                const isDisabled = isLocked || !canTalkToday || isSaving;
 
                 return (
                   <button
                     key={option.id}
-                    onClick={() => !isDisabled && handleDialogueChoice(option)}
+                    onClick={() => !isDisabled && void handleDialogueChoice(option)}
                     className={`p-4 rounded-lg border-2 text-left transition-all duration-300 ${
                       isDisabled
                         ? 'border-[var(--state-locked)] bg-[var(--bg-item)] text-[var(--text-muted)] cursor-not-allowed opacity-50'

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Determine the base URL from the environment or use a relative path
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// Determine the base URL from the environment or the deployed Vite base path.
+const APP_BASE_URL = import.meta.env.BASE_URL || '/';
+const DEFAULT_API_BASE_URL = APP_BASE_URL === '/' ? '' : APP_BASE_URL.replace(/\/$/, '');
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
 /**
  * Standardized Web Hatchery Axios Instance

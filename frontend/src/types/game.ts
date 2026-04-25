@@ -25,6 +25,9 @@ export interface Character {
   conflictHistory: RelationshipConflict[];
   icebreakerMessages: IcebreakerMessage[];
   temporaryBoosts: TemporaryBoost[];
+  availableDialogueOptions?: DialogueOption[];
+  availableIcebreakers?: IcebreakerMessage[];
+  romanticallyCompatible?: boolean;
 }
 
 export interface PlayerCharacter {
@@ -36,6 +39,8 @@ export interface PlayerCharacter {
   backstory: string;
   stats: PlayerStats;
 }
+
+export type PlayerCreationInput = Omit<PlayerCharacter, 'stats'>;
 
 export interface PlayerStats {
   charisma: number;
@@ -53,6 +58,8 @@ export interface Activity {
   type: 'weekly' | 'daily';
   category?: 'social' | 'exploration' | 'personal' | 'fitness' | 'study' | 'leisure';
   statBonus?: Partial<PlayerStats>;
+  energyCost?: number;
+  timeSlots?: number;
 }
 
 export interface SelfImprovementActivity extends Activity {
@@ -263,6 +270,33 @@ export interface AchievementCondition {
 
 export interface AchievementReward {
   type: 'photo' | 'dialogue_option' | 'date_plan' | 'cosmetic';
+  id: string;
+  description: string;
+}
+
+export interface StorylineEvent {
+  id: string;
+  characterId: string;
+  requiredAffection: number;
+  title: string;
+  description: string;
+  dialogue: string;
+  unlocked: boolean;
+  completed: boolean;
+  choices: StorylineChoice[];
+  rewards: StorylineReward[];
+}
+
+export interface StorylineChoice {
+  id: string;
+  text: string;
+  consequence: string;
+  affectionChange: number;
+  unlockNext?: string;
+}
+
+export interface StorylineReward {
+  type: AchievementReward['type'];
   id: string;
   description: string;
 }
