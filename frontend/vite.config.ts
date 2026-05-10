@@ -1,33 +1,7 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
+import { createWebHatcheryViteConfig } from '../../tools/shared/frontend/viteConfig';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  base: '/interstellar_romance/',
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: [],
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/interstellar_romance/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/interstellar_romance\/api/, '/api'),
-      },
-    },
-  },
+export default createWebHatcheryViteConfig({
+  slug: 'interstellar_romance',
+  enableDevProxy: true,
+  enableTest: true,
 });
