@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\AuthUser;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameRulesService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
@@ -15,6 +16,7 @@ final class ResolveConflictAction
 {
     public function __construct(
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly GameRulesService $rules,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
@@ -26,65 +28,94 @@ final class ResolveConflictAction
         $conflictId = $this->requiredString($body, 'conflict_id');
         $optionId = $this->requiredString($body, 'option_id');
         $save = $this->gameRepository->getOrCreateSave($user);
-        $conflict = $this->gameRepository->getConflict((int) $save['id'], $conflictId);
-        if ($conflict['resolved']) {
-            throw new DomainException('Conflict is already resolved.');
-        }
-
-        $option = null;
-        foreach ($conflict['resolution_options'] as $candidate) {
-            if (($candidate['id'] ?? null) === $optionId) {
-                $option = $candidate;
-                break;
+        $this->progressionService->ensureInitialized((int) $save['id']);
+        $this->gameRepository->begin();
+        try {
+            $conflict = $this->gameRepository->getConflict((int) $save['id'], $conflictId);
+            if ($conflict['resolved']) {
+                throw new DomainException('Conflict is already resolved.');
             }
+
+            $option = null;
+            foreach ($conflict['resolution_options'] as $candidate) {
+                if (($candidate['id'] ?? null) === $optionId) {
+                    $option = $candidate;
+                    break;
+                }
+            }
+            if ($option === null) {
+                throw new DomainException('Resolution option is not available for this conflict.');
+            }
+            $actionCost = $this->actionEconomy->conflictResolutionCost($option);
+            $this->actionEconomy->assertCanSpend(
+                (int) $save['id'],
+                (int) $save['current_week'],
+                $actionCost,
+                'Conflict resolution'
+            );
+
+            $relationship = $this->gameRepository->getRelationshipState(
+                (int) $save['id'],
+                (string) $conflict['character_id']
+            );
+            $result = $this->rules->resolveConflict($save, $relationship, $conflict, $option);
+            $newAffection = max(
+                0,
+                min(100, (int) $relationship['affection'] + (int) $result['affection_recovery'])
+            );
+
+            $this->gameRepository->resolveConflict((int) $save['id'], $conflictId, (string) $result['method']);
+            $this->gameRepository->updateRelationship((int) $save['id'], (string) $conflict['character_id'], [
+                'affection' => $newAffection,
+                'conflicts_count' => (int) $relationship['conflicts_count'] + 1,
+            ]);
+            $this->gameRepository->updateSave((int) $save['id'], [
+                'conflict_resolution_skill' => min(
+                    100,
+                    (int) $save['conflict_resolution_skill'] + ($result['success'] ? 3 : 1)
+                ),
+            ]);
+            $this->gameRepository->addMemory([
+                'save_id' => (int) $save['id'],
+                'character_id' => (string) $conflict['character_id'],
+                'memory_key' => $this->rules->memoryKey('conflict'),
+                'memory_type' => 'conflict_resolution',
+                'title' => 'Conflict Resolved: ' . $option['label'],
+                'description' => $conflict['description'],
+                'emotional_impact' => (int) $result['affection_recovery'],
+                'participant_emotions' => [$result['success'] ? 'hopeful' : 'thoughtful'],
+                'affection_at_time' => $newAffection,
+                'consequence' => ((int) $result['affection_recovery'] >= 0 ? '+' : '') .
+                    (string) $result['affection_recovery'] . ' affection',
+                'tags' => ['conflict_resolution', (string) $conflict['type']],
+            ]);
+            $this->gameRepository->addEvent(
+                (int) $save['id'],
+                'conflict_resolved',
+                (string) $conflict['character_id'],
+                [
+                    'conflict_id' => $conflictId,
+                    'option_id' => $optionId,
+                    'result' => $result,
+                    'energy_cost' => $actionCost['energy'],
+                    'time_slots' => $actionCost['timeSlots'],
+                    'social_cost' => $actionCost['socialFocus'],
+                    'action_cost' => $actionCost,
+                    'week' => (int) $save['current_week'],
+                ]
+            );
+            $this->progressionService->sync((int) $save['id']);
+            $state = $this->stateService->state((int) $save['id']);
+            $this->gameRepository->commit();
+
+            return [
+                'resolution' => $result,
+                'game_state' => $state,
+            ];
+        } catch (\Throwable $exception) {
+            $this->gameRepository->rollBack();
+            throw $exception;
         }
-        if ($option === null) {
-            throw new DomainException('Resolution option is not available for this conflict.');
-        }
-
-        $relationship = $this->gameRepository->getRelationshipState(
-            (int) $save['id'],
-            (string) $conflict['character_id']
-        );
-        $result = $this->rules->resolveConflict($save, $relationship, $conflict, $option);
-        $newAffection = max(0, min(100, (int) $relationship['affection'] + (int) $result['affection_recovery']));
-
-        $this->gameRepository->resolveConflict((int) $save['id'], $conflictId, (string) $result['method']);
-        $this->gameRepository->updateRelationship((int) $save['id'], (string) $conflict['character_id'], [
-            'affection' => $newAffection,
-            'conflicts_count' => (int) $relationship['conflicts_count'] + 1,
-        ]);
-        $this->gameRepository->updateSave((int) $save['id'], [
-            'conflict_resolution_skill' => min(
-                100,
-                (int) $save['conflict_resolution_skill'] + ($result['success'] ? 3 : 1)
-            ),
-        ]);
-        $this->gameRepository->addMemory([
-            'save_id' => (int) $save['id'],
-            'character_id' => (string) $conflict['character_id'],
-            'memory_key' => $this->rules->memoryKey('conflict'),
-            'memory_type' => 'conflict_resolution',
-            'title' => 'Conflict Resolved: ' . $option['label'],
-            'description' => $conflict['description'],
-            'emotional_impact' => (int) $result['affection_recovery'],
-            'participant_emotions' => [$result['success'] ? 'hopeful' : 'thoughtful'],
-            'affection_at_time' => $newAffection,
-            'consequence' => ((int) $result['affection_recovery'] >= 0 ? '+' : '') .
-                (string) $result['affection_recovery'] . ' affection',
-            'tags' => ['conflict_resolution', (string) $conflict['type']],
-        ]);
-        $this->gameRepository->addEvent((int) $save['id'], 'conflict_resolved', (string) $conflict['character_id'], [
-            'conflict_id' => $conflictId,
-            'option_id' => $optionId,
-            'result' => $result,
-        ]);
-        $this->progressionService->sync((int) $save['id']);
-
-        return [
-            'resolution' => $result,
-            'game_state' => $this->stateService->state((int) $save['id']),
-        ];
     }
 
     private function requiredString(array $body, string $key): string

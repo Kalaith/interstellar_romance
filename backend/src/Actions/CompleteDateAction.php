@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Models\AuthUser;
 use App\Repositories\ContentRepository;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameRulesService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
@@ -17,6 +18,7 @@ final class CompleteDateAction
     public function __construct(
         private readonly ContentRepository $contentRepository,
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly GameRulesService $rules,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
@@ -35,12 +37,22 @@ final class CompleteDateAction
             $character = $this->contentRepository->getCharacter($characterId);
             $relationship = $this->gameRepository->getRelationshipState((int) $save['id'], $characterId);
             $datePlan = $this->contentRepository->getDatePlan($datePlanId);
-            if ($this->hasDateThisWeek((int) $save['id'], $characterId, (int) $save['current_week'])) {
+            if ($this->actionEconomy->hasActiveConflict((int) $save['id'], $characterId)) {
+                throw new DomainException('Resolve the active conflict before planning another date.');
+            }
+            if ($this->actionEconomy->hasDateThisWeek((int) $save['id'], $characterId, (int) $save['current_week'])) {
                 throw new DomainException('This character is already scheduled for a date this cycle.');
             }
             if ((int) $relationship['affection'] < (int) $datePlan['required_affection']) {
                 throw new DomainException('This date plan requires more affection.');
             }
+            $actionCost = $this->actionEconomy->dateCost($datePlan);
+            $this->actionEconomy->assertCanSpend(
+                (int) $save['id'],
+                (int) $save['current_week'],
+                $actionCost,
+                'Date'
+            );
 
             $outcome = $this->rules->dateOutcome($save, $relationship, $character, $datePlan);
             $newAffection = max(0, min(100, (int) $relationship['affection'] + (int) $outcome['affection_gained']));
@@ -80,6 +92,10 @@ final class CompleteDateAction
                 'week' => (int) $save['current_week'],
                 'date_plan_id' => $datePlanId,
                 'outcome' => $outcome,
+                'energy_cost' => $actionCost['energy'],
+                'time_slots' => $actionCost['timeSlots'],
+                'social_cost' => $actionCost['socialFocus'],
+                'action_cost' => $actionCost,
                 'follow_up_pending' => true,
             ]);
 
@@ -108,15 +124,5 @@ final class CompleteDateAction
         }
 
         return $body[$key];
-    }
-
-    private function hasDateThisWeek(int $saveId, string $characterId, int $week): bool
-    {
-        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'date_completed') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === $week) {
-                return true;
-            }
-        }
-        return false;
     }
 }

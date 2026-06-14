@@ -3,10 +3,12 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { gameApi } from '../api/gameApi';
 import {
   Achievement,
+  ActionEconomyState,
   Activity,
   Character,
   CharacterKnownInfo,
   CharacterMood,
+  ConflictResolutionOption,
   DateHistoryEntry,
   DatePlan,
   DialogueOption,
@@ -65,6 +67,19 @@ interface WeeklySummary {
   };
 }
 
+const emptyActionEconomy: ActionEconomyState = {
+  week: 1,
+  energy: { available: 10, used: 0, remaining: 10 },
+  timeSlots: { available: 5, used: 0, remaining: 5 },
+  socialFocus: { available: 8, used: 0, remaining: 8 },
+  costs: {
+    storylineChoice: { energy: 2, timeSlots: 1, socialFocus: 1 },
+    dateFollowUp: { energy: 0, timeSlots: 0, socialFocus: 1 },
+    superLike: { energy: 0, timeSlots: 0, socialFocus: 2 },
+  },
+  warnings: [],
+};
+
 interface DialogueResult {
   option: DialogueOption;
   response: {
@@ -114,6 +129,7 @@ interface GameState {
   advancedState: PlayerAdvancedState;
   content: GameContent;
   selfImprovementState: SelfImprovementState;
+  actionEconomy: ActionEconomyState;
   weeklySummary: WeeklySummary | null;
   randomEvents: { type: string; title: string; description: string }[];
   isGuest: boolean;
@@ -132,6 +148,7 @@ interface GameState {
   selectCharacter: (characterId: string) => Promise<void>;
   chooseDialogue: (characterId: string, optionId: string) => Promise<DialogueResult | null>;
   completeDate: (datePlanId: string) => Promise<DateResult | null>;
+  completeDateFollowUp: (choiceId: 'warm' | 'playful' | 'reflective') => Promise<void>;
   completeSelfImprovement: (activityId: string) => Promise<void>;
   completeStorylineChoice: (storylineId: string, choiceId: string) => Promise<void>;
   useSuperLike: (characterId: string) => Promise<SuperLikeResult | null>;
@@ -217,6 +234,7 @@ const initialState = {
   advancedState: emptyAdvancedState,
   content: emptyContent,
   selfImprovementState: emptySelfImprovementState,
+  actionEconomy: emptyActionEconomy,
   weeklySummary: null,
   randomEvents: [],
   isGuest: false,
@@ -429,6 +447,26 @@ export const useGameStore = create<GameState>()(
         } catch (error) {
           set({ isSaving: false, error: errorMessage(error) });
           return null;
+        }
+      },
+
+      completeDateFollowUp: async choiceId => {
+        const selectedCharacter = get().selectedCharacter;
+        if (!selectedCharacter) {
+          return;
+        }
+
+        set({ isSaving: true, error: null });
+        try {
+          const payload = await gameApi.completeDateFollowUp(selectedCharacter.id, choiceId);
+          const record = asRecord(payload);
+          set({
+            ...normalizeGameState(record.game_state ?? payload, get().currentScreen),
+            isSaving: false,
+            error: null,
+          });
+        } catch (error) {
+          set({ isSaving: false, error: errorMessage(error) });
         }
       },
 
@@ -648,6 +686,7 @@ function normalizeGameState(payload: unknown, requestedScreen?: GameScreen): Par
     advancedState: normalizeAdvancedState(state.advancedState),
     content,
     selfImprovementState: normalizeSelfImprovementState(state.selfImprovementState),
+    actionEconomy: normalizeActionEconomy(state.actionEconomy),
     weeklySummary: normalizeWeeklySummary(state.weeklySummary),
     randomEvents: asArray(state.randomEvents).map(event => {
       const record = asRecord(event);
@@ -695,13 +734,74 @@ function normalizeWeeklySummary(raw: unknown): WeeklySummary | null {
 function normalizeSelfImprovementState(raw: unknown): SelfImprovementState {
   const state = asRecord(raw);
   return {
-    energyAvailable: toNumber(state.energyAvailable ?? state.energy_available, 100),
+    energyAvailable: toNumber(state.energyAvailable ?? state.energy_available, 10),
     energyUsed: toNumber(state.energyUsed ?? state.energy_used, 0),
     timeSlotsAvailable: toNumber(state.timeSlotsAvailable ?? state.time_slots_available, 5),
     timeSlotsUsed: toNumber(state.timeSlotsUsed ?? state.time_slots_used, 0),
     completedActivityIds: asArray<string>(
       state.completedActivityIds ?? state.completed_activity_ids
     ),
+  };
+}
+
+function normalizeActionEconomy(raw: unknown): ActionEconomyState {
+  const economy = asRecord(raw);
+  return {
+    week: toNumber(economy.week, 1),
+    energy: normalizeResourceBudget(economy.energy, emptyActionEconomy.energy),
+    timeSlots: normalizeResourceBudget(
+      economy.timeSlots ?? economy.time_slots,
+      emptyActionEconomy.timeSlots
+    ),
+    socialFocus: normalizeResourceBudget(
+      economy.socialFocus ?? economy.social_focus,
+      emptyActionEconomy.socialFocus
+    ),
+    costs: {
+      storylineChoice: normalizeActionCost(
+        asRecord(economy.costs).storylineChoice ?? asRecord(economy.costs).storyline_choice,
+        emptyActionEconomy.costs.storylineChoice
+      ),
+      dateFollowUp: normalizeActionCost(
+        asRecord(economy.costs).dateFollowUp ?? asRecord(economy.costs).date_follow_up,
+        emptyActionEconomy.costs.dateFollowUp
+      ),
+      superLike: normalizeActionCost(
+        asRecord(economy.costs).superLike ?? asRecord(economy.costs).super_like,
+        emptyActionEconomy.costs.superLike
+      ),
+    },
+    warnings: asArray<string>(economy.warnings),
+  };
+}
+
+function normalizeResourceBudget(raw: unknown, fallback: ActionEconomyState['energy']) {
+  const budget = asRecord(raw);
+  return {
+    available: toNumber(budget.available, fallback.available),
+    used: toNumber(budget.used, fallback.used),
+    remaining: toNumber(budget.remaining, fallback.remaining),
+  };
+}
+
+function normalizeActionCost(raw: unknown, fallback = { energy: 0, timeSlots: 0, socialFocus: 0 }) {
+  const cost = asRecord(raw);
+  return {
+    energy: toNumber(cost.energy, fallback.energy),
+    timeSlots: toNumber(cost.timeSlots ?? cost.time_slots, fallback.timeSlots),
+    socialFocus: toNumber(cost.socialFocus ?? cost.social_focus, fallback.socialFocus),
+  };
+}
+
+function normalizeActionAvailability(raw: Record<string, unknown>) {
+  const canUseValue = raw.canUse ?? raw.can_use;
+  return {
+    actionCost:
+      raw.actionCost || raw.action_cost
+        ? normalizeActionCost(raw.actionCost ?? raw.action_cost)
+        : undefined,
+    canUse: canUseValue === undefined ? undefined : toBoolean(canUseValue),
+    disabledReason: asOptionalString(raw.disabledReason ?? raw.disabled_reason),
   };
 }
 
@@ -912,6 +1012,37 @@ function normalizeCharacter(raw: unknown): Character {
             asRecord(character.cooldowns).dateAvailableThisWeek ??
               asRecord(character.cooldowns).date_available_this_week
           ),
+          dateBlockedReason: asOptionalString(
+            asRecord(character.cooldowns).dateBlockedReason ??
+              asRecord(character.cooldowns).date_blocked_reason
+          ),
+          storylineChoiceAvailableThisWeek: toBoolean(
+            asRecord(character.cooldowns).storylineChoiceAvailableThisWeek ??
+              asRecord(character.cooldowns).storyline_choice_available_this_week,
+            true
+          ),
+          storylineBlockedReason: asOptionalString(
+            asRecord(character.cooldowns).storylineBlockedReason ??
+              asRecord(character.cooldowns).storyline_blocked_reason
+          ),
+          superLikeAvailableThisWeek: toBoolean(
+            asRecord(character.cooldowns).superLikeAvailableThisWeek ??
+              asRecord(character.cooldowns).super_like_available_this_week,
+            true
+          ),
+          superLikeBlockedReason: asOptionalString(
+            asRecord(character.cooldowns).superLikeBlockedReason ??
+              asRecord(character.cooldowns).super_like_blocked_reason
+          ),
+          dateFollowUpPending: toBoolean(
+            asRecord(character.cooldowns).dateFollowUpPending ??
+              asRecord(character.cooldowns).date_follow_up_pending
+          ),
+          conflictCheckAvailableThisWeek: toBoolean(
+            asRecord(character.cooldowns).conflictCheckAvailableThisWeek ??
+              asRecord(character.cooldowns).conflict_check_available_this_week,
+            true
+          ),
         }
       : undefined,
     romanticallyCompatible: toBoolean(character.romanticallyCompatible, true),
@@ -931,6 +1062,7 @@ function normalizeDialogueOption(raw: unknown): DialogueOption {
       | CharacterMood
       | undefined,
     nextOptions: asArray<string>(option.nextOptions ?? option.next_option_ids),
+    ...normalizeActionAvailability(option),
   };
 }
 
@@ -946,6 +1078,7 @@ function normalizeDatePlan(raw: unknown): DatePlan {
     preferredTopics: asArray<string>(plan.preferredTopics ?? plan.preferred_topics),
     requiredAffection: toNumber(plan.requiredAffection ?? plan.required_affection),
     compatibilityBonus: toNumber(plan.compatibilityBonus ?? plan.compatibility_bonus),
+    ...normalizeActionAvailability(plan),
   };
 }
 
@@ -961,6 +1094,7 @@ function normalizeActivity(raw: unknown, fallbackType?: Activity['type']): Activ
     statBonus: asRecord(activity.statBonus ?? activity.stat_bonus),
     energyCost: toOptionalNumber(activity.energyCost ?? activity.energy_cost),
     timeSlots: toOptionalNumber(activity.timeSlots ?? activity.time_slots),
+    ...normalizeActionAvailability(activity),
   };
 }
 
@@ -1037,7 +1171,22 @@ function normalizeConflict(raw: unknown): RelationshipConflict {
     resolutionDate: toOptionalDate(conflict.resolutionDate ?? conflict.resolved_at),
     resolutionMethod: conflict.resolutionMethod as RelationshipConflict['resolutionMethod'],
     affectionPenalty: toNumber(conflict.affectionPenalty ?? conflict.affection_penalty),
-    resolutionOptions: asArray(conflict.resolutionOptions ?? conflict.resolution_options),
+    resolutionOptions: asArray(conflict.resolutionOptions ?? conflict.resolution_options).map(
+      option => {
+        const item = asRecord(option);
+        return {
+          id: asString(item.id),
+          method: asString(item.method) as ConflictResolutionOption['method'],
+          label: asString(item.label),
+          description: asString(item.description),
+          requirements: item.requirements
+            ? (asRecord(item.requirements) as ConflictResolutionOption['requirements'])
+            : undefined,
+          preview: asRecord(item.preview) as ConflictResolutionOption['preview'],
+          ...normalizeActionAvailability(item),
+        };
+      }
+    ),
   };
 }
 
@@ -1057,6 +1206,7 @@ function normalizeStorylines(raw: unknown): Record<string, StorylineEvent[]> {
           dialogue: asString(item.dialogue),
           unlocked: toBoolean(item.unlocked),
           completed: toBoolean(item.completed),
+          ...normalizeActionAvailability(item),
           choices: asArray(item.choices).map(choice => {
             const option = asRecord(choice);
             return {
@@ -1065,6 +1215,7 @@ function normalizeStorylines(raw: unknown): Record<string, StorylineEvent[]> {
               consequence: asString(option.consequence),
               affectionChange: toNumber(option.affectionChange ?? option.affection_change),
               unlockNext: asOptionalString(option.unlockNext ?? option.unlock_next),
+              ...normalizeActionAvailability(option),
             };
           }),
           rewards: asArray(item.rewards),

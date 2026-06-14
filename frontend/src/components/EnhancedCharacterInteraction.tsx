@@ -12,6 +12,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
     setScreen,
     canTalkToCharacterToday,
     chooseDialogue,
+    actionEconomy,
     isSaving,
   } = useGameStore();
   const [currentDialogue, setCurrentDialogue] = useState<string>(
@@ -82,6 +83,8 @@ export const EnhancedCharacterInteraction: React.FC = () => {
   });
 
   const canTalkToday = canTalkToCharacterToday(selectedCharacter.id);
+  const weeklyDialoguesUsed = selectedCharacter.cooldowns?.dialoguesUsedThisWeek ?? 0;
+  const weeklyDialoguesAllowed = selectedCharacter.cooldowns?.dialoguesAllowedThisWeek ?? 0;
 
   const unlockedMilestones = selectedCharacter.milestones.filter(m => m.achieved);
   const nextMilestone = selectedCharacter.milestones.find(m => !m.achieved);
@@ -139,12 +142,13 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
-                        Daily Chat
+                        Weekly Chats
                       </div>
                       <div
                         className={`font-semibold ${canTalkToday ? 'text-[var(--state-available)]' : 'text-[var(--state-deficit)]'}`}
                       >
-                        {canTalkToday ? 'AVAILABLE' : 'USED'}
+                        {Math.max(0, weeklyDialoguesAllowed - weeklyDialoguesUsed)}/
+                        {weeklyDialoguesAllowed}
                       </div>
                     </div>
                   </div>
@@ -168,7 +172,7 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 )}
 
                 {/* Relationship Resources */}
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
@@ -224,6 +228,30 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                         style={{
                           width: `${selectedCharacter.relationshipStatus.compatibility}%`,
                           background: `linear-gradient(90deg, var(--state-available), var(--resource-food))`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[var(--bg-item)] border border-[var(--border-inner)] rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
+                        Social Focus
+                      </span>
+                      <span className="text-[var(--text-primary)] text-sm font-bold">
+                        {actionEconomy.socialFocus.remaining}/{actionEconomy.socialFocus.available}
+                      </span>
+                    </div>
+                    <div className="w-full bg-[var(--bg-section)] rounded-full h-2">
+                      <div
+                        className="h-full rounded-full transition-all duration-500 bg-[var(--resource-influence)]"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            (actionEconomy.socialFocus.used /
+                              Math.max(1, actionEconomy.socialFocus.available)) *
+                              100
+                          )}%`,
                         }}
                       ></div>
                     </div>
@@ -293,7 +321,14 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                 const isLocked =
                   option.requiresAffection &&
                   selectedCharacter.affection < option.requiresAffection;
-                const isDisabled = isLocked || !canTalkToday || isSaving;
+                const isDisabled = isLocked || !canTalkToday || isSaving || option.canUse === false;
+                const disabledReason =
+                  option.disabledReason ||
+                  (isLocked
+                    ? `Requires ${option.requiresAffection} affection.`
+                    : !canTalkToday
+                      ? 'No daily interactions remain.'
+                      : null);
 
                 return (
                   <button
@@ -308,12 +343,24 @@ export const EnhancedCharacterInteraction: React.FC = () => {
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{option.text}</span>
-                      {option.requiresAffection && (
-                        <span className="text-xs px-2 py-1 rounded-full bg-[var(--bg-section)] border border-[var(--border-inner)]">
-                          {isLocked ? '🔒' : '💖'} {option.requiresAffection}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {option.actionCost && option.actionCost.socialFocus > 0 && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-[var(--bg-section)] border border-[var(--border-inner)] text-[var(--resource-influence)]">
+                            Focus {option.actionCost.socialFocus}
+                          </span>
+                        )}
+                        {option.requiresAffection && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-[var(--bg-section)] border border-[var(--border-inner)]">
+                            {isLocked ? '🔒' : '💖'} {option.requiresAffection}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                    {disabledReason && (
+                      <div className="mt-2 text-xs text-[var(--state-deficit)]">
+                        {disabledReason}
+                      </div>
+                    )}
                   </button>
                 );
               })}

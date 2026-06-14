@@ -12,6 +12,7 @@ final class GameStateService
     public function __construct(
         private readonly ContentRepository $contentRepository,
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly GameRulesService $rules
     ) {
     }
@@ -76,10 +77,15 @@ final class GameStateService
                 $characterConflicts,
                 static fn(array $conflict): bool => !$conflict['resolved']
             ));
+            $activeConflicts = array_map(
+                fn(array $conflict): array => $this->decorateConflict($save, $conflict),
+                $activeConflicts
+            );
             $conflictHistory = array_values(array_filter(
                 $characterConflicts,
                 static fn(array $conflict): bool => $conflict['resolved']
             ));
+            $hasActiveConflict = $activeConflicts !== [];
 
             $characters[] = [
                 'id' => $character['id'],
@@ -106,7 +112,11 @@ final class GameStateService
                 'relationshipMemories' => $memories[$character['id']] ?? [],
                 'activeConflicts' => $activeConflicts,
                 'conflictHistory' => $conflictHistory,
-                'availableDialogueOptions' => $this->contentRepository->listRootDialogueOptions($character['id']),
+                'availableDialogueOptions' => $this->dialogueOptionsPayload(
+                    $save,
+                    $relationship,
+                    $this->contentRepository->listRootDialogueOptions($character['id'])
+                ),
                 'availableIcebreakers' => $this->contentRepository->listAvailableIcebreakers(
                     $character['id'],
                     (int) $relationship['affection'],
@@ -120,7 +130,12 @@ final class GameStateService
                     'activeConflicts' => $activeConflicts,
                     'milestones' => $characterMilestones,
                 ],
-                'cooldowns' => $this->cooldownPayload((int) $save['id'], (string) $character['id'], (int) $save['current_week']),
+                'cooldowns' => $this->cooldownPayload(
+                    (int) $save['id'],
+                    (string) $character['id'],
+                    (int) $save['current_week'],
+                    $hasActiveConflict
+                ),
                 'romanticallyCompatible' => $this->rules->isRomanticallyCompatible($save, $character),
             ];
         }
@@ -140,6 +155,10 @@ final class GameStateService
                 'icebreakerUnlocks' => $save['icebreaker_unlocks'],
             ],
             'selfImprovementState' => $this->selfImprovementPayload($save),
+            'actionEconomy' => $this->actionEconomy->budgetPayload(
+                (int) $save['id'],
+                (int) $save['current_week']
+            ),
             'weeklySummary' => $this->weeklySummaryPayload((int) $save['id'], (int) $save['current_week']),
             'randomEvents' => $this->randomEventPayload((int) $save['id']),
             'accountStatus' => [
@@ -157,9 +176,29 @@ final class GameStateService
     {
         return [
             'characters' => $this->contentRepository->listCharacters(),
-            'datePlans' => $this->contentRepository->listDatePlans(),
-            'weeklyActivities' => $this->contentRepository->listActivities('weekly'),
-            'selfImprovementActivities' => $this->contentRepository->listActivities('daily'),
+            'datePlans' => array_map(
+                fn(array $datePlan): array => [
+                    ...$datePlan,
+                    'actionCost' => $this->actionEconomy->dateCost($datePlan),
+                ],
+                $this->contentRepository->listDatePlans()
+            ),
+            'weeklyActivities' => array_map(
+                fn(array $activity): array => [
+                    ...$activity,
+                    'actionCost' => $this->actionEconomy->weeklyActivityCost($activity),
+                    'energy_cost' => (int) ($activity['energy_cost'] ?? 3),
+                    'time_slots' => (int) ($activity['time_slots'] ?? 1),
+                ],
+                $this->contentRepository->listActivities('weekly')
+            ),
+            'selfImprovementActivities' => array_map(
+                fn(array $activity): array => [
+                    ...$activity,
+                    'actionCost' => $this->actionEconomy->selfImprovementCost($activity),
+                ],
+                $this->contentRepository->listActivities('daily')
+            ),
             'achievements' => $this->contentRepository->listAchievements(),
             'moods' => $moods ?? $this->contentRepository->listMoods(),
             'relationshipMilestones' => $this->contentRepository->listMilestones(),
@@ -203,10 +242,7 @@ final class GameStateService
 
     private function selfImprovementPayload(array $save): array
     {
-        $energyAvailable = 100;
-        $timeSlotsAvailable = 5;
-        $energyUsed = 0;
-        $timeSlotsUsed = 0;
+        $budget = $this->actionEconomy->budgetPayload((int) $save['id'], (int) $save['current_week']);
         $completedActivityIds = [];
         $week = (int) $save['current_week'];
 
@@ -219,15 +255,13 @@ final class GameStateService
             if (is_string($payload['activity_id'] ?? null)) {
                 $completedActivityIds[] = (string) $payload['activity_id'];
             }
-            $energyUsed += (int) ($payload['energy_cost'] ?? 0);
-            $timeSlotsUsed += (int) ($payload['time_slots'] ?? 0);
         }
 
         return [
-            'energyAvailable' => $energyAvailable,
-            'energyUsed' => $energyUsed,
-            'timeSlotsAvailable' => $timeSlotsAvailable,
-            'timeSlotsUsed' => $timeSlotsUsed,
+            'energyAvailable' => $budget['energy']['available'],
+            'energyUsed' => $budget['energy']['used'],
+            'timeSlotsAvailable' => $budget['timeSlots']['available'],
+            'timeSlotsUsed' => $budget['timeSlots']['used'],
             'completedActivityIds' => array_values(array_unique($completedActivityIds)),
         ];
     }
@@ -251,26 +285,82 @@ final class GameStateService
         ), 0, 3);
     }
 
-    private function cooldownPayload(int $saveId, string $characterId, int $week): array
+    private function dialogueOptionsPayload(array $save, array $relationship, array $options): array
     {
-        $dialogues = 0;
-        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'dialogue_choice') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === $week) {
-                $dialogues++;
+        $saveId = (int) $save['id'];
+        $week = (int) $save['current_week'];
+        $characterId = (string) $relationship['character_id'];
+        $dialoguesUsed = $this->actionEconomy->weeklyDialogueCount($saveId, $characterId, $week);
+        $dailyUsed = (int) $relationship['interactions_used'] >= (int) $relationship['max_interactions'];
+        $weeklyUsed = $dialoguesUsed >= ActionEconomyService::WEEKLY_DIALOGUES_PER_CHARACTER;
+
+        return array_map(function (array $option) use ($saveId, $week, $dailyUsed, $weeklyUsed): array {
+            $blockedReason = null;
+            if ($dailyUsed) {
+                $blockedReason = 'No daily interactions remain for this character.';
+            } elseif ($weeklyUsed) {
+                $blockedReason = 'This character needs space until the next cycle.';
             }
-        }
-        $dateUsed = false;
-        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'date_completed') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === $week) {
-                $dateUsed = true;
-                break;
-            }
-        }
+
+            $availability = $this->actionEconomy->actionAvailability(
+                $saveId,
+                $week,
+                $this->actionEconomy->dialogueCost($option),
+                $blockedReason
+            );
+
+            return [
+                ...$option,
+                ...$availability,
+            ];
+        }, $options);
+    }
+
+    private function decorateConflict(array $save, array $conflict): array
+    {
+        $saveId = (int) $save['id'];
+        $week = (int) $save['current_week'];
+
+        $conflict['resolution_options'] = array_map(function (array $option) use ($saveId, $week): array {
+            return [
+                ...$option,
+                ...$this->actionEconomy->actionAvailability(
+                    $saveId,
+                    $week,
+                    $this->actionEconomy->conflictResolutionCost($option)
+                ),
+            ];
+        }, $conflict['resolution_options']);
+
+        return $conflict;
+    }
+
+    private function cooldownPayload(int $saveId, string $characterId, int $week, bool $hasActiveConflict): array
+    {
+        $dialogues = $this->actionEconomy->weeklyDialogueCount($saveId, $characterId, $week);
+        $dateUsed = $this->actionEconomy->hasDateThisWeek($saveId, $characterId, $week);
+        $storylineUsed = $this->actionEconomy->hasStoryChoiceThisWeek($saveId, $characterId, $week);
+        $superLikeUsed = $this->actionEconomy->hasSuperLikeThisWeek($saveId, $characterId, $week);
+        $dateFollowUpPending = $this->actionEconomy->hasDateAwaitingFollowUp($saveId, $characterId, $week);
+        $conflictChecked = $this->actionEconomy->hasConflictCheckThisWeek($saveId, $characterId, $week);
 
         return [
             'dialoguesUsedThisWeek' => $dialogues,
-            'dialoguesAllowedThisWeek' => 3,
-            'dateAvailableThisWeek' => !$dateUsed,
+            'dialoguesAllowedThisWeek' => ActionEconomyService::WEEKLY_DIALOGUES_PER_CHARACTER,
+            'dateAvailableThisWeek' => !$dateUsed && !$hasActiveConflict,
+            'dateBlockedReason' => $hasActiveConflict
+                ? 'Resolve the active conflict before planning a date.'
+                : ($dateUsed ? 'This character already had a date this cycle.' : null),
+            'storylineChoiceAvailableThisWeek' => !$storylineUsed && !$hasActiveConflict,
+            'storylineBlockedReason' => $hasActiveConflict
+                ? 'Resolve the active conflict before making story decisions.'
+                : ($storylineUsed ? 'Story focus has already been spent on this character this cycle.' : null),
+            'superLikeAvailableThisWeek' => !$superLikeUsed && !$hasActiveConflict,
+            'superLikeBlockedReason' => $hasActiveConflict
+                ? 'Resolve the active conflict before sending a super like.'
+                : ($superLikeUsed ? 'Super like attention has already been spent here this cycle.' : null),
+            'dateFollowUpPending' => $dateFollowUpPending,
+            'conflictCheckAvailableThisWeek' => !$conflictChecked && !$hasActiveConflict,
         ];
     }
 
@@ -309,6 +399,8 @@ final class GameStateService
 
     private function availableStorylinePayload(int $saveId): array
     {
+        $save = $this->gameRepository->getSave($saveId);
+        $week = (int) $save['current_week'];
         $states = $this->indexBy($this->gameRepository->listStorylineStates($saveId), 'storyline_id');
         $payload = [];
         foreach ($this->contentRepository->listStorylines() as $storyline) {
@@ -318,6 +410,19 @@ final class GameStateService
             }
 
             $characterId = (string) $storyline['character_id'];
+            $blockedReason = null;
+            if ($this->actionEconomy->hasActiveConflict($saveId, $characterId)) {
+                $blockedReason = 'Resolve the active conflict before making story decisions.';
+            } elseif ($this->actionEconomy->hasStoryChoiceThisWeek($saveId, $characterId, $week)) {
+                $blockedReason = 'Story focus has already been spent on this character this cycle.';
+            }
+            $availability = $this->actionEconomy->actionAvailability(
+                $saveId,
+                $week,
+                $this->actionEconomy->storylineChoiceCost(),
+                $blockedReason
+            );
+
             $payload[$characterId][] = [
                 'id' => $storyline['storyline_id'],
                 'characterId' => $characterId,
@@ -327,7 +432,8 @@ final class GameStateService
                 'dialogue' => $storyline['dialogue'],
                 'unlocked' => true,
                 'completed' => false,
-                'choices' => $this->storylineChoicesPayload((string) $storyline['storyline_id']),
+                ...$availability,
+                'choices' => $this->storylineChoicesPayload((string) $storyline['storyline_id'], $availability),
                 'rewards' => $this->storylineRewardsPayload((string) $storyline['storyline_id']),
             ];
         }
@@ -335,7 +441,7 @@ final class GameStateService
         return $payload;
     }
 
-    private function storylineChoicesPayload(string $storylineId): array
+    private function storylineChoicesPayload(string $storylineId, array $availability): array
     {
         return array_map(static fn(array $choice): array => [
             'id' => $choice['choice_id'],
@@ -343,6 +449,7 @@ final class GameStateService
             'consequence' => $choice['consequence'],
             'affectionChange' => (int) $choice['affection_change'],
             'unlockNext' => $choice['unlock_next_storyline_id'],
+            ...$availability,
         ], $this->contentRepository->listStorylineChoices($storylineId));
     }
 

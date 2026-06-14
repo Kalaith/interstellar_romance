@@ -33,6 +33,37 @@ export interface Character {
   romanticallyCompatible?: boolean;
 }
 
+export interface ActionCost {
+  energy: number;
+  timeSlots: number;
+  socialFocus: number;
+}
+
+export interface ActionAvailability {
+  actionCost?: ActionCost;
+  canUse?: boolean;
+  disabledReason?: string | null;
+}
+
+export interface ActionEconomyState {
+  week: number;
+  energy: ResourceBudget;
+  timeSlots: ResourceBudget;
+  socialFocus: ResourceBudget;
+  costs: {
+    storylineChoice: ActionCost;
+    dateFollowUp: ActionCost;
+    superLike: ActionCost;
+  };
+  warnings: string[];
+}
+
+export interface ResourceBudget {
+  available: number;
+  used: number;
+  remaining: number;
+}
+
 export interface RelationshipGoal {
   id: string;
   title: string;
@@ -53,6 +84,13 @@ export interface CharacterCooldowns {
   dialoguesUsedThisWeek: number;
   dialoguesAllowedThisWeek: number;
   dateAvailableThisWeek: boolean;
+  dateBlockedReason?: string | null;
+  storylineChoiceAvailableThisWeek?: boolean;
+  storylineBlockedReason?: string | null;
+  superLikeAvailableThisWeek?: boolean;
+  superLikeBlockedReason?: string | null;
+  dateFollowUpPending?: boolean;
+  conflictCheckAvailableThisWeek?: boolean;
 }
 
 export interface PlayerCharacter {
@@ -75,7 +113,7 @@ export interface PlayerStats {
   technology: number;
 }
 
-export interface Activity {
+export interface Activity extends ActionAvailability {
   id: string;
   name: string;
   description: string;
@@ -107,7 +145,7 @@ export type GameScreen =
   | 'relationship-timeline'
   | 'character-journal';
 
-export interface DialogueOption {
+export interface DialogueOption extends ActionAvailability {
   id: string;
   text: string;
   topic: string;
@@ -224,7 +262,7 @@ export type Gender = 'male' | 'female' | 'non-binary' | 'other';
 
 export type SexualPreference = 'men' | 'women' | 'all' | 'non-binary' | 'alien-species';
 
-export interface DatePlan {
+export interface DatePlan extends ActionAvailability {
   id: string;
   name: string;
   description: string;
@@ -300,7 +338,7 @@ export interface AchievementReward {
   description: string;
 }
 
-export interface StorylineEvent {
+export interface StorylineEvent extends ActionAvailability {
   id: string;
   characterId: string;
   requiredAffection: number;
@@ -313,7 +351,7 @@ export interface StorylineEvent {
   rewards: StorylineReward[];
 }
 
-export interface StorylineChoice {
+export interface StorylineChoice extends ActionAvailability {
   id: string;
   text: string;
   consequence: string;
@@ -409,7 +447,7 @@ export interface ConflictResolution {
   personalityGrowth?: PersonalityGrowth[];
 }
 
-export interface ConflictResolutionOption {
+export interface ConflictResolutionOption extends ActionAvailability {
   id: string;
   method: ConflictResolution['method'];
   label: string;

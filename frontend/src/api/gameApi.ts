@@ -69,6 +69,11 @@ export const gameApi = {
       character_id: characterId,
       date_plan_id: datePlanId,
     }),
+  completeDateFollowUp: (characterId: string, choiceId: 'warm' | 'playful' | 'reflective') =>
+    request<unknown>('post', '/api/date/follow-up', {
+      character_id: characterId,
+      choice_id: choiceId,
+    }),
   completeActivities: (activityIds: string[]) =>
     request<unknown>('post', '/api/week/activities', { activity_ids: activityIds }),
   completeSelfImprovement: (activityId: string) =>

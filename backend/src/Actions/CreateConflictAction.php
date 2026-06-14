@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Models\AuthUser;
 use App\Repositories\ContentRepository;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameRulesService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
@@ -17,6 +18,7 @@ final class CreateConflictAction
     public function __construct(
         private readonly ContentRepository $contentRepository,
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly GameRulesService $rules,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
@@ -46,7 +48,26 @@ final class CreateConflictAction
             ];
         }
 
+        if (
+            !$force
+            && $this->actionEconomy->hasConflictCheckThisWeek(
+                (int) $save['id'],
+                $characterId,
+                (int) $save['current_week']
+            )
+        ) {
+            return [
+                'created' => false,
+                'conflict' => null,
+                'game_state' => $this->stateService->state((int) $save['id']),
+            ];
+        }
+
         if (!$force && random_int(1, 100) > $this->rules->conflictChance((int) $relationship['affection'])) {
+            $this->gameRepository->addEvent((int) $save['id'], 'conflict_check', $characterId, [
+                'week' => (int) $save['current_week'],
+                'created' => false,
+            ]);
             return [
                 'created' => false,
                 'conflict' => null,
@@ -79,7 +100,11 @@ final class CreateConflictAction
         ];
 
         $this->gameRepository->addConflict($conflict);
-        $this->gameRepository->addEvent((int) $save['id'], 'conflict_created', $characterId, $conflict);
+        $this->gameRepository->addEvent((int) $save['id'], 'conflict_created', $characterId, [
+            ...$conflict,
+            'week' => (int) $save['current_week'],
+            'created' => true,
+        ]);
 
         return [
             'created' => true,

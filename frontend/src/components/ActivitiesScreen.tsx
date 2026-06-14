@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { Activity } from '../types/game';
+import { ActionCost, Activity } from '../types/game';
 
 export const ActivitiesScreen: React.FC = () => {
   const {
@@ -10,16 +10,27 @@ export const ActivitiesScreen: React.FC = () => {
     toggleActivity,
     confirmActivities,
     content,
+    actionEconomy,
     isSaving,
   } = useGameStore();
 
+  const activities = content.weeklyActivities;
+  const selectedCost = selectedActivities.reduce(
+    (total, activityId) =>
+      addCost(total, activities.find(activity => activity.id === activityId)?.actionCost),
+    { energy: 0, timeSlots: 0, socialFocus: 0 }
+  );
+  const canAffordSelected =
+    selectedCost.energy <= actionEconomy.energy.remaining &&
+    selectedCost.timeSlots <= actionEconomy.timeSlots.remaining &&
+    selectedCost.socialFocus <= actionEconomy.socialFocus.remaining;
+
   const handleConfirm = async () => {
-    if (selectedActivities.length === 2) {
+    if (selectedActivities.length === 2 && canAffordSelected) {
       await confirmActivities();
     }
   };
 
-  const activities = content.weeklyActivities;
   // Categorize activities
   const socialActivities = activities.filter(a => a.category === 'social');
   const explorationActivities = activities.filter(a => a.category === 'exploration');
@@ -37,16 +48,24 @@ export const ActivitiesScreen: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {activityList.map(activity => {
           const isSelected = selectedActivities.includes(activity.id);
+          const projectedCost = isSelected
+            ? selectedCost
+            : addCost(selectedCost, activity.actionCost);
+          const canAffordProjected =
+            projectedCost.energy <= actionEconomy.energy.remaining &&
+            projectedCost.timeSlots <= actionEconomy.timeSlots.remaining &&
+            projectedCost.socialFocus <= actionEconomy.socialFocus.remaining;
           const canSelect = selectedActivities.length < 2 || isSelected;
+          const isAvailable = canSelect && canAffordProjected;
 
           return (
             <div
               key={activity.id}
-              onClick={() => canSelect && toggleActivity(activity.id)}
+              onClick={() => isAvailable && toggleActivity(activity.id)}
               className={`bg-[var(--bg-section)] border-2 rounded-lg p-4 transition-all duration-300 ${
                 isSelected
                   ? 'border-[var(--state-available)] bg-[var(--bg-item)] shadow-[0_0_20px_rgba(46,213,115,0.3)] transform scale-105'
-                  : canSelect
+                  : isAvailable
                     ? 'border-[var(--border-inner)] hover:border-[var(--accent-cyan)] hover:bg-[var(--bg-item)] cursor-pointer hover:shadow-[0_0_15px_rgba(0,212,255,0.2)]'
                     : 'border-[var(--state-locked)] opacity-50 cursor-not-allowed'
               }`}
@@ -84,6 +103,11 @@ export const ActivitiesScreen: React.FC = () => {
                 <div className="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--bg-item)] border border-[var(--border-inner)] text-[var(--resource-energy)]">
                   {activity.reward}
                 </div>
+                {activity.actionCost && (
+                  <div className="mt-2 text-xs text-[var(--text-muted)]">
+                    {formatCost(activity.actionCost)}
+                  </div>
+                )}
               </div>
 
               {/* Selection Indicator */}
@@ -117,6 +141,24 @@ export const ActivitiesScreen: React.FC = () => {
                 </span>
                 <span className="text-[var(--resource-energy)] text-lg font-bold">
                   {currentWeek}
+                </span>
+              </div>
+              <div className="w-px h-4 bg-[var(--border-inner)]"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-[var(--text-muted)] text-sm uppercase tracking-wide">
+                  Energy
+                </span>
+                <span className="text-[var(--resource-energy)] text-lg font-bold">
+                  {actionEconomy.energy.remaining}/{actionEconomy.energy.available}
+                </span>
+              </div>
+              <div className="w-px h-4 bg-[var(--border-inner)]"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-[var(--text-muted)] text-sm uppercase tracking-wide">
+                  Time
+                </span>
+                <span className="text-[var(--accent-cyan)] text-lg font-bold">
+                  {actionEconomy.timeSlots.remaining}/{actionEconomy.timeSlots.available}
                 </span>
               </div>
               <div className="w-px h-4 bg-[var(--border-inner)]"></div>
@@ -182,15 +224,21 @@ export const ActivitiesScreen: React.FC = () => {
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => void handleConfirm()}
-                disabled={selectedActivities.length !== 2 || isSaving}
+                disabled={selectedActivities.length !== 2 || !canAffordSelected || isSaving}
                 className={`flex items-center gap-3 px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 ${
-                  selectedActivities.length === 2 && !isSaving
+                  selectedActivities.length === 2 && canAffordSelected && !isSaving
                     ? 'text-[var(--bg-space)] bg-gradient-to-r from-[var(--state-available)] to-[var(--accent-teal)] hover:from-[var(--accent-teal)] hover:to-[var(--state-available)] transform hover:scale-105 shadow-lg hover:shadow-[0_0_20px_rgba(46,213,115,0.3)]'
                     : 'text-[var(--text-muted)] bg-[var(--state-locked)] cursor-not-allowed opacity-50'
                 }`}
               >
                 <span className="text-2xl">✅</span>
-                <span>{isSaving ? 'Confirming...' : 'Confirm Schedule'}</span>
+                <span>
+                  {isSaving
+                    ? 'Confirming...'
+                    : canAffordSelected
+                      ? 'Confirm Schedule'
+                      : 'Not Enough Resources'}
+                </span>
               </button>
 
               <button
@@ -207,3 +255,20 @@ export const ActivitiesScreen: React.FC = () => {
     </div>
   );
 };
+
+function addCost(total: ActionCost, cost?: ActionCost): ActionCost {
+  if (!cost) return total;
+  return {
+    energy: total.energy + cost.energy,
+    timeSlots: total.timeSlots + cost.timeSlots,
+    socialFocus: total.socialFocus + cost.socialFocus,
+  };
+}
+
+function formatCost(cost: ActionCost): string {
+  const parts = [];
+  if (cost.energy > 0) parts.push(`${cost.energy} energy`);
+  if (cost.timeSlots > 0) parts.push(`${cost.timeSlots} time`);
+  if (cost.socialFocus > 0) parts.push(`${cost.socialFocus} focus`);
+  return parts.length > 0 ? parts.join(', ') : 'No weekly resources';
+}

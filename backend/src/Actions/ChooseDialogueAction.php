@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Models\AuthUser;
 use App\Repositories\ContentRepository;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameRulesService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
@@ -17,6 +18,7 @@ final class ChooseDialogueAction
     public function __construct(
         private readonly ContentRepository $contentRepository,
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly GameRulesService $rules,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
@@ -48,7 +50,13 @@ final class ChooseDialogueAction
             if ((int) $relationship['interactions_used'] >= (int) $relationship['max_interactions']) {
                 throw new DomainException('No daily interactions remain for this character.');
             }
-            if ($this->weeklyDialogueCount((int) $save['id'], $characterId, (int) $save['current_week']) >= 3) {
+            if (
+                $this->actionEconomy->weeklyDialogueCount(
+                    (int) $save['id'],
+                    $characterId,
+                    (int) $save['current_week']
+                ) >= ActionEconomyService::WEEKLY_DIALOGUES_PER_CHARACTER
+            ) {
                 throw new DomainException('This character needs space until the next cycle.');
             }
 
@@ -66,6 +74,14 @@ final class ChooseDialogueAction
                 throw new DomainException('This dialogue option requires a different mood.');
             }
 
+            $actionCost = $this->actionEconomy->dialogueCost($option);
+            $this->actionEconomy->assertCanSpend(
+                (int) $save['id'],
+                (int) $save['current_week'],
+                $actionCost,
+                'Dialogue'
+            );
+
             $response = $this->contentRepository->getDialogueResponse($optionId);
             if ($response === null) {
                 $fallbackTopic = $option['topic'] === 'flirt' && (int) $relationship['affection'] < 20
@@ -76,8 +92,18 @@ final class ChooseDialogueAction
             }
 
             $mood = $this->contentRepository->getMood((string) $relationship['mood']);
+            $repeatPenalty = min(
+                2,
+                $this->actionEconomy->topicCountThisWeek(
+                    (int) $save['id'],
+                    $characterId,
+                    (int) $save['current_week'],
+                    (string) $option['topic']
+                )
+            );
             $affectionChange = (int) $response['affection_change']
-                + $this->rules->moodModifier($mood, $option['topic']);
+                + $this->rules->moodModifier($mood, $option['topic'])
+                - $repeatPenalty;
             $newAffection = max(0, min(100, (int) $relationship['affection'] + $affectionChange));
             $today = $this->rules->today($timezone);
 
@@ -108,6 +134,9 @@ final class ChooseDialogueAction
                 'option_id' => $optionId,
                 'topic' => $option['topic'],
                 'affection_change' => $affectionChange,
+                'repeat_penalty' => $repeatPenalty,
+                'social_cost' => $actionCost['socialFocus'],
+                'action_cost' => $actionCost,
                 'response' => $response,
             ]);
 
@@ -137,16 +166,5 @@ final class ChooseDialogueAction
         }
 
         return $body[$key];
-    }
-
-    private function weeklyDialogueCount(int $saveId, string $characterId, int $week): int
-    {
-        $count = 0;
-        foreach ($this->gameRepository->listEventsForCharacter($saveId, $characterId, 'dialogue_choice') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === $week) {
-                $count++;
-            }
-        }
-        return $count;
     }
 }

@@ -17,8 +17,16 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
 }) => {
   const sendSuperLike = useGameStore(state => state.useSuperLike);
   const isSaving = useGameStore(state => state.isSaving);
+  const actionEconomy = useGameStore(state => state.actionEconomy);
   const [isConfirming, setIsConfirming] = useState(false);
   const [showResult, setShowResult] = useState<SuperLikeResult | null>(null);
+  const cooldownBlocked = character.cooldowns?.superLikeAvailableThisWeek === false;
+  const focusBlocked =
+    actionEconomy.socialFocus.remaining < actionEconomy.costs.superLike.socialFocus;
+  const blockedReason =
+    character.cooldowns?.superLikeBlockedReason ||
+    (focusBlocked ? 'Not enough social focus remains this cycle.' : null);
+  const canSendSuperLike = superLikesAvailable > 0 && !cooldownBlocked && !focusBlocked;
 
   const handleConfirm = async () => {
     const result = await sendSuperLike(character.id);
@@ -142,9 +150,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
             <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
               <div className="flex items-center space-x-2">
                 <span className="text-green-400">💕</span>
-                <span className="text-green-300 text-sm">
-                  Backend-calculated affection bonus
-                </span>
+                <span className="text-green-300 text-sm">Backend-calculated affection bonus</span>
               </div>
             </div>
 
@@ -186,8 +192,16 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               </div>
             </div>
             {superLikesAvailable === 0 && (
-              <p className="text-red-400 text-sm mt-2">You'll get 1 new Super Like tomorrow!</p>
+              <p className="text-red-400 text-sm mt-2">
+                You'll recover 1 super like when the next cycle begins.
+              </p>
             )}
+            {superLikesAvailable > 0 && blockedReason && (
+              <p className="text-red-400 text-sm mt-2">{blockedReason}</p>
+            )}
+            <p className="text-gray-400 text-xs mt-2">
+              Cost: {actionEconomy.costs.superLike.socialFocus} social focus
+            </p>
           </div>
 
           {/* Action Buttons */}
@@ -199,7 +213,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
               Maybe Later
             </button>
 
-            {superLikesAvailable > 0 ? (
+            {canSendSuperLike ? (
               !isConfirming ? (
                 <button
                   onClick={() => setIsConfirming(true)}
@@ -221,7 +235,7 @@ export const SuperLikeModal: React.FC<SuperLikeModalProps> = ({
                 disabled
                 className="flex-1 py-3 bg-gray-500 text-gray-300 rounded-lg cursor-not-allowed"
               >
-                No Super Likes Available
+                Super Like Unavailable
               </button>
             )}
           </div>

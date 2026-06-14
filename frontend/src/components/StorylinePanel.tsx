@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { StorylineEvent } from '../types/game';
+import { ActionCost, StorylineEvent } from '../types/game';
 
 interface StorylinePanelProps {
   characterId: string;
@@ -82,19 +82,36 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) =
               {selectedStoryline.choices && (
                 <div className="space-y-3">
                   <h4 className="text-white font-semibold mb-3">How do you respond?</h4>
-                  {selectedStoryline.choices.map(choice => (
-                    <button
-                      key={choice.id}
-                      onClick={() => void handleChoiceSelect(selectedStoryline.id, choice.id)}
-                      disabled={isSaving}
-                      className="w-full text-left p-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
-                    >
-                      <div className="text-white mb-1">{choice.text}</div>
-                      <div className="text-xs text-green-400">
-                        {isSaving ? 'Applying...' : `+${choice.affectionChange} affection`}
-                      </div>
-                    </button>
-                  ))}
+                  {selectedStoryline.choices.map(choice => {
+                    const isDisabled = isSaving || choice.canUse === false;
+                    return (
+                      <button
+                        key={choice.id}
+                        onClick={() =>
+                          !isDisabled && void handleChoiceSelect(selectedStoryline.id, choice.id)
+                        }
+                        disabled={isDisabled}
+                        className={`w-full text-left p-3 rounded-lg transition-colors ${
+                          isDisabled
+                            ? 'bg-slate-800 text-gray-500 cursor-not-allowed'
+                            : 'bg-slate-700 hover:bg-slate-600'
+                        }`}
+                      >
+                        <div className="text-white mb-1">{choice.text}</div>
+                        <div className="flex flex-wrap gap-3 text-xs">
+                          <span className="text-green-400">
+                            {isSaving ? 'Applying...' : `+${choice.affectionChange} affection`}
+                          </span>
+                          {choice.actionCost && (
+                            <span className="text-blue-300">{formatCost(choice.actionCost)}</span>
+                          )}
+                        </div>
+                        {choice.disabledReason && (
+                          <div className="mt-2 text-xs text-red-300">{choice.disabledReason}</div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -118,3 +135,11 @@ export const StorylinePanel: React.FC<StorylinePanelProps> = ({ characterId }) =
     </div>
   );
 };
+
+function formatCost(cost: ActionCost): string {
+  const parts = [];
+  if (cost.energy > 0) parts.push(`${cost.energy} energy`);
+  if (cost.timeSlots > 0) parts.push(`${cost.timeSlots} time`);
+  if (cost.socialFocus > 0) parts.push(`${cost.socialFocus} focus`);
+  return parts.length > 0 ? parts.join(', ') : 'No weekly resources';
+}

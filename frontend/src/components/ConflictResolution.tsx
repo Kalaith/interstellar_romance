@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RelationshipConflict, ConflictResolutionOption } from '../types/game';
+import { ActionCost, RelationshipConflict, ConflictResolutionOption } from '../types/game';
 
 interface ConflictResolutionProps {
   conflict: RelationshipConflict;
@@ -42,6 +42,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
   };
 
   const canUseOption = (option: ConflictResolutionOption): boolean => {
+    if (option.canUse === false) return false;
     if (!option.requirements) return true;
 
     if (option.requirements.playerStat && option.requirements.minValue) {
@@ -200,6 +201,14 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
                       <div className="text-xs text-blue-300">
                         {option.preview.personalityEffects.join(', ')}
                       </div>
+                      {option.actionCost && (
+                        <div className="text-xs text-purple-300">
+                          Cost: {formatCost(option.actionCost)}
+                        </div>
+                      )}
+                      {option.disabledReason && (
+                        <div className="text-xs text-red-300">{option.disabledReason}</div>
+                      )}
                     </div>
                   </div>
                 );
@@ -217,9 +226,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Success Chance:</span>
-                  <span className="text-white ml-2">
-                    {selectedOption.preview.successChance}%
-                  </span>
+                  <span className="text-white ml-2">{selectedOption.preview.successChance}%</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Potential Recovery:</span>
@@ -256,3 +263,11 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionProps> = ({
     </div>
   );
 };
+
+function formatCost(cost: ActionCost): string {
+  const parts = [];
+  if (cost.energy > 0) parts.push(`${cost.energy} energy`);
+  if (cost.timeSlots > 0) parts.push(`${cost.timeSlots} time`);
+  if (cost.socialFocus > 0) parts.push(`${cost.socialFocus} focus`);
+  return parts.length > 0 ? parts.join(', ') : 'No weekly resources';
+}

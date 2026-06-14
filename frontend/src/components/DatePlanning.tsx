@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { DatePlan, ActivityType } from '../types/game';
+import { ActionCost, DatePlan, ActivityType } from '../types/game';
 import { Button } from './ui/Button';
 import { StatePanel } from './ui/StatePanel';
 
 export const DatePlanning: React.FC = () => {
-  const { selectedCharacter, player, setScreen, completeDate, content, isSaving } = useGameStore();
+  const {
+    selectedCharacter,
+    player,
+    setScreen,
+    completeDate,
+    completeDateFollowUp,
+    content,
+    actionEconomy,
+    isSaving,
+  } = useGameStore();
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [selectedDatePlan, setSelectedDatePlan] = useState<DatePlan | null>(null);
   const [planningStep, setPlanningStep] = useState<
@@ -38,6 +47,11 @@ export const DatePlanning: React.FC = () => {
 
   const datePlans = content.datePlans;
   const compatibilityScore = selectedCharacter.relationshipStatus.compatibility;
+  const dateBlockedReason =
+    selectedCharacter.cooldowns?.dateBlockedReason ||
+    (selectedCharacter.cooldowns?.dateAvailableThisWeek === false
+      ? 'This character is unavailable for another date this cycle.'
+      : null);
 
   const activityTypes: {
     type: ActivityType;
@@ -130,10 +144,32 @@ export const DatePlanning: React.FC = () => {
                 </h1>
                 <p className="text-[var(--text-secondary)]">with {selectedCharacter.name}</p>
               </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <Budget
+                  label="Energy"
+                  value={actionEconomy.energy.remaining}
+                  max={actionEconomy.energy.available}
+                />
+                <Budget
+                  label="Time"
+                  value={actionEconomy.timeSlots.remaining}
+                  max={actionEconomy.timeSlots.available}
+                />
+                <Budget
+                  label="Focus"
+                  value={actionEconomy.socialFocus.remaining}
+                  max={actionEconomy.socialFocus.available}
+                />
+              </div>
               <Button onClick={() => setScreen('character-profile')} variant="secondary">
                 Back to Profile
               </Button>
             </div>
+            {dateBlockedReason && (
+              <div className="mt-4 rounded border border-[var(--state-deficit)]/40 bg-[var(--state-deficit)]/10 p-3 text-sm text-[var(--state-deficit)]">
+                {dateBlockedReason}
+              </div>
+            )}
           </div>
 
           {/* Progress Indicator */}
@@ -238,7 +274,14 @@ export const DatePlanning: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {filteredPlans.map(plan => {
-                    const isLocked = selectedCharacter.affection < plan.requiredAffection;
+                    const isLocked =
+                      selectedCharacter.affection < plan.requiredAffection ||
+                      selectedCharacter.cooldowns?.dateAvailableThisWeek === false ||
+                      plan.canUse === false;
+                    const disabledReason =
+                      selectedCharacter.affection < plan.requiredAffection
+                        ? `Build ${plan.requiredAffection - selectedCharacter.affection} more affection to unlock this date.`
+                        : dateBlockedReason || plan.disabledReason;
 
                     return (
                       <button
@@ -292,12 +335,19 @@ export const DatePlanning: React.FC = () => {
                               +{plan.compatibilityBonus} affection
                             </span>
                           </div>
+                          {plan.actionCost && (
+                            <div className="flex justify-between">
+                              <span className="text-[var(--text-muted)]">Cost:</span>
+                              <span className="text-[var(--resource-influence)]">
+                                {formatCost(plan.actionCost)}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
-                        {isLocked && (
+                        {isLocked && disabledReason && (
                           <div className="mt-4 p-3 rounded border border-[var(--resource-influence)]/40 bg-[var(--resource-influence)]/10 text-sm text-[var(--resource-energy)]">
-                            Build {plan.requiredAffection - selectedCharacter.affection} more
-                            affection to unlock this date.
+                            {disabledReason}
                           </div>
                         )}
 
@@ -482,7 +532,7 @@ export const DatePlanning: React.FC = () => {
                   onClick={() => void handleDateConfirmation()}
                   variant="primary"
                   size="lg"
-                  disabled={isSaving}
+                  disabled={isSaving || selectedDatePlan.canUse === false}
                 >
                   {isSaving ? 'Confirming...' : 'Confirm Date Plan'}
                 </Button>
@@ -534,6 +584,33 @@ export const DatePlanning: React.FC = () => {
                   </p>
                 </div>
 
+                {selectedCharacter.cooldowns?.dateFollowUpPending && (
+                  <div className="bg-[var(--bg-section)] rounded-lg border border-[var(--border-inner)] p-5 mb-8">
+                    <div className="text-sm uppercase tracking-wide text-[var(--accent-cyan)] mb-3">
+                      Follow-Up Available
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {(['warm', 'playful', 'reflective'] as const).map(choice => (
+                        <Button
+                          key={choice}
+                          onClick={() => void completeDateFollowUp(choice)}
+                          variant="secondary"
+                          disabled={isSaving}
+                        >
+                          {choice === 'warm'
+                            ? 'Warm Note'
+                            : choice === 'playful'
+                              ? 'Playful Message'
+                              : 'Reflective Reply'}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-xs text-[var(--text-muted)]">
+                      Cost: {formatCost(actionEconomy.costs.dateFollowUp)}
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-wrap justify-center gap-3">
                   <Button onClick={() => setScreen('character-profile')} variant="primary">
                     View Profile
@@ -553,3 +630,20 @@ export const DatePlanning: React.FC = () => {
     </div>
   );
 };
+
+const Budget: React.FC<{ label: string; value: number; max: number }> = ({ label, value, max }) => (
+  <div className="rounded border border-[var(--border-inner)] bg-[var(--bg-section)] px-3 py-2">
+    <div className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">{label}</div>
+    <div className="text-sm font-semibold text-[var(--text-primary)]">
+      {value}/{max}
+    </div>
+  </div>
+);
+
+function formatCost(cost: ActionCost): string {
+  const parts = [];
+  if (cost.energy > 0) parts.push(`${cost.energy} energy`);
+  if (cost.timeSlots > 0) parts.push(`${cost.timeSlots} time`);
+  if (cost.socialFocus > 0) parts.push(`${cost.socialFocus} focus`);
+  return parts.length > 0 ? parts.join(', ') : 'No weekly resources';
+}

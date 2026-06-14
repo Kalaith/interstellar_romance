@@ -25,6 +25,7 @@ use App\Controllers\GameController;
 use App\Controllers\SystemController;
 use App\Repositories\ContentRepository;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameRulesService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
@@ -36,6 +37,7 @@ final class ServiceFactory
     private ?PDO $db = null;
     private ?ContentRepository $contentRepository = null;
     private ?GameRepository $gameRepository = null;
+    private ?ActionEconomyService $actionEconomy = null;
     private ?GameRulesService $rules = null;
     private ?ProgressionService $progressionService = null;
     private ?GameStateService $stateService = null;
@@ -67,6 +69,7 @@ final class ServiceFactory
                 new ChooseDialogueAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
@@ -74,18 +77,21 @@ final class ServiceFactory
                 new CompleteDateAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
                 ),
                 new CompleteDateFollowUpAction(
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->progressionService(),
                     $this->stateService()
                 ),
                 new CompleteActivitiesAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
@@ -93,12 +99,14 @@ final class ServiceFactory
                 new CompleteSelfImprovementAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->progressionService(),
                     $this->stateService()
                 ),
                 new CompleteStorylineChoiceAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
@@ -106,6 +114,7 @@ final class ServiceFactory
                 new UseSuperLikeAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
@@ -113,12 +122,14 @@ final class ServiceFactory
                 new CreateConflictAction(
                     $this->contentRepository(),
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
                 ),
                 new ResolveConflictAction(
                     $this->gameRepository(),
+                    $this->actionEconomy(),
                     $this->rules(),
                     $this->progressionService(),
                     $this->stateService()
@@ -155,6 +166,16 @@ final class ServiceFactory
         return $this->gameRepository;
     }
 
+    private function actionEconomy(): ActionEconomyService
+    {
+        if ($this->actionEconomy instanceof ActionEconomyService) {
+            return $this->actionEconomy;
+        }
+
+        $this->actionEconomy = new ActionEconomyService($this->gameRepository());
+        return $this->actionEconomy;
+    }
+
     private function rules(): GameRulesService
     {
         if ($this->rules instanceof GameRulesService) {
@@ -188,6 +209,7 @@ final class ServiceFactory
         $this->stateService = new GameStateService(
             $this->contentRepository(),
             $this->gameRepository(),
+            $this->actionEconomy(),
             $this->rules()
         );
         return $this->stateService;

@@ -7,18 +7,17 @@ namespace App\Actions;
 use App\Models\AuthUser;
 use App\Repositories\ContentRepository;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
 use DomainException;
 
 final class CompleteSelfImprovementAction
 {
-    private const WEEKLY_ENERGY = 100;
-    private const WEEKLY_TIME_SLOTS = 5;
-
     public function __construct(
         private readonly ContentRepository $contentRepository,
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
     ) {
@@ -32,6 +31,7 @@ final class CompleteSelfImprovementAction
         }
 
         $save = $this->gameRepository->getOrCreateSave($user);
+        $this->progressionService->ensureInitialized((int) $save['id']);
         $activity = $this->contentRepository->getActivity($activityId, 'daily');
         $week = (int) $save['current_week'];
         $completedThisWeek = $this->completedThisWeek((int) $save['id'], $week);
@@ -39,14 +39,8 @@ final class CompleteSelfImprovementAction
             throw new DomainException('That self-improvement activity has already been completed this week.');
         }
 
-        $energyCost = (int) ($activity['energy_cost'] ?? 0);
-        $timeSlots = (int) ($activity['time_slots'] ?? 0);
-        if ($completedThisWeek['energy_used'] + $energyCost > self::WEEKLY_ENERGY) {
-            throw new DomainException('Not enough weekly energy for that activity.');
-        }
-        if ($completedThisWeek['time_slots_used'] + $timeSlots > self::WEEKLY_TIME_SLOTS) {
-            throw new DomainException('Not enough free time slots for that activity.');
-        }
+        $actionCost = $this->actionEconomy->selfImprovementCost($activity);
+        $this->actionEconomy->assertCanSpend((int) $save['id'], $week, $actionCost, 'Self-improvement');
 
         $stats = $save['stats'];
         foreach ($activity['stat_bonus'] as $stat => $amount) {
@@ -66,8 +60,10 @@ final class CompleteSelfImprovementAction
             'week' => $week,
             'activity_id' => $activityId,
             'activity' => $activity,
-            'energy_cost' => $energyCost,
-            'time_slots' => $timeSlots,
+            'energy_cost' => $actionCost['energy'],
+            'time_slots' => $actionCost['timeSlots'],
+            'social_cost' => $actionCost['socialFocus'],
+            'action_cost' => $actionCost,
             'stats' => $stats,
         ]);
         $this->progressionService->sync((int) $save['id']);

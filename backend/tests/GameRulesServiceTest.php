@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Services\GameRulesService;
+use App\Services\ActionEconomyService;
 use PHPUnit\Framework\TestCase;
 
 final class GameRulesServiceTest extends TestCase
@@ -82,6 +83,45 @@ final class GameRulesServiceTest extends TestCase
         self::assertSame(
             ['interests', 'values', 'conversationStyle', 'activities'],
             array_keys($compatibility['breakdown'])
+        );
+    }
+
+    public function testActionEconomyCostsReflectActionIntensity(): void
+    {
+        $economy = new ActionEconomyService();
+
+        self::assertSame(
+            ['energy' => 0, 'timeSlots' => 0, 'socialFocus' => 1],
+            $economy->dialogueCost(['topic' => 'greeting', 'emotion' => 'happy'])
+        );
+        self::assertSame(
+            ['energy' => 0, 'timeSlots' => 0, 'socialFocus' => 2],
+            $economy->dialogueCost(['topic' => 'flirt', 'emotion' => 'flirty'])
+        );
+        self::assertSame(
+            ['energy' => 4, 'timeSlots' => 3, 'socialFocus' => 1],
+            $economy->dateCost(['duration_minutes' => 150])
+        );
+        self::assertSame(
+            ['energy' => 3, 'timeSlots' => 1, 'socialFocus' => 0],
+            $economy->weeklyActivityCost(['energy_cost' => null, 'time_slots' => null])
+        );
+    }
+
+    public function testActionEconomyReportsShortfalls(): void
+    {
+        $economy = new ActionEconomyService();
+
+        self::assertNull($economy->disabledReason(
+            ['energy' => 6, 'timeSlots' => 3, 'socialFocus' => 6],
+            ['energy' => 4, 'timeSlots' => 2, 'socialFocus' => 2]
+        ));
+        self::assertSame(
+            'not enough 1 energy, 1 time slot, 1 social focus',
+            $economy->disabledReason(
+                ['energy' => 8, 'timeSlots' => 4, 'socialFocus' => 7],
+                ['energy' => 3, 'timeSlots' => 2, 'socialFocus' => 2]
+            )
         );
     }
 }

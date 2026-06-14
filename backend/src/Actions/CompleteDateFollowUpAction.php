@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\AuthUser;
 use App\Repositories\GameRepository;
+use App\Services\ActionEconomyService;
 use App\Services\GameStateService;
 use App\Services\ProgressionService;
 use DomainException;
@@ -20,6 +21,7 @@ final class CompleteDateFollowUpAction
 
     public function __construct(
         private readonly GameRepository $gameRepository,
+        private readonly ActionEconomyService $actionEconomy,
         private readonly ProgressionService $progressionService,
         private readonly GameStateService $stateService
     ) {
@@ -37,38 +39,70 @@ final class CompleteDateFollowUpAction
         }
 
         $save = $this->gameRepository->getOrCreateSave($user);
-        $relationship = $this->gameRepository->getRelationshipState((int) $save['id'], $characterId);
-        $latestDate = null;
-        foreach ($this->gameRepository->listEventsForCharacter((int) $save['id'], $characterId, 'date_completed') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === (int) $save['current_week']) {
-                $latestDate = $event;
-                break;
+        $this->progressionService->ensureInitialized((int) $save['id']);
+        $this->gameRepository->begin();
+        try {
+            $relationship = $this->gameRepository->getRelationshipState((int) $save['id'], $characterId);
+            $latestDate = null;
+            foreach (
+                $this->gameRepository->listEventsForCharacter(
+                    (int) $save['id'],
+                    $characterId,
+                    'date_completed'
+                ) as $event
+            ) {
+                if ((int) ($event['payload']['week'] ?? 0) === (int) $save['current_week']) {
+                    $latestDate = $event;
+                    break;
+                }
             }
-        }
-        if ($latestDate === null) {
-            throw new DomainException('No date is waiting for a follow-up this cycle.');
-        }
-        foreach ($this->gameRepository->listEventsForCharacter((int) $save['id'], $characterId, 'date_follow_up') as $event) {
-            if ((int) ($event['payload']['week'] ?? 0) === (int) $save['current_week']) {
-                throw new DomainException('This date already has a follow-up response.');
+            if ($latestDate === null) {
+                throw new DomainException('No date is waiting for a follow-up this cycle.');
             }
+            foreach (
+                $this->gameRepository->listEventsForCharacter(
+                    (int) $save['id'],
+                    $characterId,
+                    'date_follow_up'
+                ) as $event
+            ) {
+                if ((int) ($event['payload']['week'] ?? 0) === (int) $save['current_week']) {
+                    throw new DomainException('This date already has a follow-up response.');
+                }
+            }
+            $actionCost = $this->actionEconomy->dateFollowUpCost();
+            $this->actionEconomy->assertCanSpend(
+                (int) $save['id'],
+                (int) $save['current_week'],
+                $actionCost,
+                'Date follow-up'
+            );
+
+            $choice = self::CHOICES[$choiceId];
+            $this->gameRepository->updateRelationship((int) $save['id'], $characterId, [
+                'affection' => min(100, (int) $relationship['affection'] + (int) $choice['affection']),
+                'trust' => min(100, (int) $relationship['trust'] + (int) $choice['trust']),
+            ]);
+            $this->gameRepository->addEvent((int) $save['id'], 'date_follow_up', $characterId, [
+                'week' => (int) $save['current_week'],
+                'choice_id' => $choiceId,
+                'choice' => $choice,
+                'energy_cost' => $actionCost['energy'],
+                'time_slots' => $actionCost['timeSlots'],
+                'social_cost' => $actionCost['socialFocus'],
+                'action_cost' => $actionCost,
+            ]);
+            $this->progressionService->sync((int) $save['id']);
+            $state = $this->stateService->state((int) $save['id']);
+            $this->gameRepository->commit();
+
+            return [
+                'choice' => $choice,
+                'game_state' => $state,
+            ];
+        } catch (\Throwable $exception) {
+            $this->gameRepository->rollBack();
+            throw $exception;
         }
-
-        $choice = self::CHOICES[$choiceId];
-        $this->gameRepository->updateRelationship((int) $save['id'], $characterId, [
-            'affection' => min(100, (int) $relationship['affection'] + (int) $choice['affection']),
-            'trust' => min(100, (int) $relationship['trust'] + (int) $choice['trust']),
-        ]);
-        $this->gameRepository->addEvent((int) $save['id'], 'date_follow_up', $characterId, [
-            'week' => (int) $save['current_week'],
-            'choice_id' => $choiceId,
-            'choice' => $choice,
-        ]);
-        $this->progressionService->sync((int) $save['id']);
-
-        return [
-            'choice' => $choice,
-            'game_state' => $this->stateService->state((int) $save['id']),
-        ];
     }
 }
