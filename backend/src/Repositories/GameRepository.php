@@ -8,7 +8,7 @@ use App\Models\AuthUser;
 use PDO;
 use RuntimeException;
 
-final class GameRepository
+final class GameRepository implements GameLedgerRepository
 {
     public function __construct(private readonly PDO $db)
     {

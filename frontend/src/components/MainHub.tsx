@@ -5,6 +5,8 @@ import { ProgressBar } from './ui/ProgressBar';
 import { Button, PrimaryButton, SecondaryButton } from './ui/Button';
 import { CharacterImage } from './AssetLoader';
 import { Logger } from '../services/Logger';
+import { CyclePlanner } from './CyclePlanner';
+import { WeeklyRecapModal } from './WeeklyRecapModal';
 
 export const MainHub: React.FC = () => {
   const { player, currentWeek, setScreen, characters, selectCharacter, canTalkToCharacterToday } =
@@ -36,6 +38,7 @@ export const MainHub: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <WeeklyRecapModal />
       <div className="mx-auto px-4 py-8 max-w-7xl">
         {/* Stellaris-Style Top Bar */}
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8 backdrop-blur-sm">
@@ -120,6 +123,8 @@ export const MainHub: React.FC = () => {
             ))}
           </div>
         </div>
+
+        <CyclePlanner />
 
         {/* Main Content Panel - Characters Grid */}
         <div className="bg-[var(--bg-panel)] border border-[var(--border-frame)] rounded-lg p-6 mb-8">

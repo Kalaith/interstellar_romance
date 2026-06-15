@@ -59,14 +59,36 @@ final class ResolveConflictAction
                 (string) $conflict['character_id']
             );
             $result = $this->rules->resolveConflict($save, $relationship, $conflict, $option);
+            $recoveryBonus = $this->actionEconomy->conflictRecoveryBonus(
+                (string) $conflict['character_id'],
+                $option,
+                (bool) $result['success']
+            );
             $newAffection = max(
                 0,
-                min(100, (int) $relationship['affection'] + (int) $result['affection_recovery'])
+                min(
+                    100,
+                    (int) $relationship['affection'] +
+                    (int) $result['affection_recovery'] +
+                    (int) $recoveryBonus['affection']
+                )
             );
+            $newTrust = max(
+                0,
+                min(100, (int) $relationship['trust'] + (int) $recoveryBonus['trust'])
+            );
+            $newCommitment = max(
+                0,
+                min(100, (int) $relationship['commitment'] + (int) $recoveryBonus['commitment'])
+            );
+            $result['recovery_bonus'] = $recoveryBonus;
 
             $this->gameRepository->resolveConflict((int) $save['id'], $conflictId, (string) $result['method']);
             $this->gameRepository->updateRelationship((int) $save['id'], (string) $conflict['character_id'], [
                 'affection' => $newAffection,
+                'trust' => $newTrust,
+                'commitment' => $newCommitment,
+                'mood' => $result['success'] ? 'cheerful' : 'neutral',
                 'conflicts_count' => (int) $relationship['conflicts_count'] + 1,
             ]);
             $this->gameRepository->updateSave((int) $save['id'], [
@@ -86,7 +108,8 @@ final class ResolveConflictAction
                 'participant_emotions' => [$result['success'] ? 'hopeful' : 'thoughtful'],
                 'affection_at_time' => $newAffection,
                 'consequence' => ((int) $result['affection_recovery'] >= 0 ? '+' : '') .
-                    (string) $result['affection_recovery'] . ' affection',
+                    (string) ((int) $result['affection_recovery'] + (int) $recoveryBonus['affection']) .
+                    ' affection, +' . (string) $recoveryBonus['trust'] . ' trust',
                 'tags' => ['conflict_resolution', (string) $conflict['type']],
             ]);
             $this->gameRepository->addEvent(

@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repositories\GameRepository;
+use App\Repositories\GameLedgerRepository;
 use DomainException;
 use LogicException;
 
 final class ActionEconomyService
 {
-    public const WEEKLY_ENERGY = 10;
+    public const WEEKLY_ENERGY = 12;
     public const WEEKLY_TIME_SLOTS = 5;
-    public const WEEKLY_SOCIAL_FOCUS = 8;
+    public const WEEKLY_SOCIAL_FOCUS = 10;
     public const WEEKLY_DIALOGUES_PER_CHARACTER = 3;
     public const WEEKLY_STORY_CHOICES_PER_CHARACTER = 1;
     public const WEEKLY_SUPER_LIKES_PER_CHARACTER = 1;
     public const WEEKLY_CONFLICT_CHECKS_PER_CHARACTER = 1;
 
-    public function __construct(private readonly ?GameRepository $gameRepository = null)
+    public function __construct(private readonly ?GameLedgerRepository $gameRepository = null)
     {
     }
 
     public function weeklyActivityCost(array $activity): array
     {
         return $this->cost(
-            (int) ($activity['energy_cost'] ?? 3),
+            (int) ($activity['energy_cost'] ?? 2),
             (int) ($activity['time_slots'] ?? 1),
             0
         );
@@ -60,7 +60,7 @@ final class ActionEconomyService
             return $this->cost(3, 2, 1);
         }
 
-        return $this->cost(4, 3, 1);
+        return $this->cost(4, 2, 1);
     }
 
     public function storylineChoiceCost(): array
@@ -248,6 +248,117 @@ final class ActionEconomyService
         return false;
     }
 
+    public function activeConflictPressure(array $conflicts): array
+    {
+        $items = [];
+        $affection = 0;
+        $trust = 0;
+        $mood = null;
+        $highestWeight = 0;
+
+        foreach ($conflicts as $conflict) {
+            if ((bool) ($conflict['resolved'] ?? false)) {
+                continue;
+            }
+
+            $pressure = $this->unresolvedConflictPressure($conflict);
+            $items[] = $pressure;
+            $affection += $pressure['affection'];
+            $trust += $pressure['trust'];
+
+            if ($pressure['weight'] > $highestWeight) {
+                $mood = $pressure['mood'];
+                $highestWeight = $pressure['weight'];
+            }
+        }
+
+        return [
+            'affection' => $affection,
+            'trust' => $trust,
+            'mood' => $mood,
+            'items' => $items,
+        ];
+    }
+
+    public function unresolvedConflictPressure(array $conflict): array
+    {
+        $severity = (string) ($conflict['severity'] ?? 'moderate');
+        $impact = match ($severity) {
+            'minor' => ['affection' => -1, 'trust' => 0, 'mood' => 'melancholy', 'weight' => 1],
+            'major' => ['affection' => -3, 'trust' => -2, 'mood' => 'tired', 'weight' => 3],
+            'critical' => ['affection' => -4, 'trust' => -3, 'mood' => 'melancholy', 'weight' => 4],
+            default => ['affection' => -2, 'trust' => -1, 'mood' => 'tired', 'weight' => 2],
+        };
+
+        return [
+            ...$impact,
+            'conflict_id' => (string) ($conflict['id'] ?? $conflict['conflict_id'] ?? ''),
+            'severity' => $severity,
+            'reason' => ucfirst($severity) . ' unresolved conflict added pressure',
+        ];
+    }
+
+    public function conflictRecoveryBonus(string $characterId, array $option, bool $successful): array
+    {
+        if (!$successful) {
+            return [
+                'affection' => 0,
+                'trust' => 0,
+                'commitment' => 0,
+                'reason' => 'The recovery approach did not land cleanly.',
+            ];
+        }
+
+        $method = (string) ($option['method'] ?? '');
+        $base = match ($method) {
+            'apologize' => [
+                'affection' => 1,
+                'trust' => 1,
+                'commitment' => 0,
+                'reason' => 'A direct apology repaired some trust.',
+            ],
+            'discuss' => [
+                'affection' => 0,
+                'trust' => 2,
+                'commitment' => 0,
+                'reason' => 'A patient discussion rebuilt trust.',
+            ],
+            'compromise' => [
+                'affection' => 1,
+                'trust' => 1,
+                'commitment' => 1,
+                'reason' => 'A fair compromise strengthened commitment.',
+            ],
+            'gift' => [
+                'affection' => 2,
+                'trust' => 0,
+                'commitment' => 0,
+                'reason' => 'A thoughtful gesture softened the moment.',
+            ],
+            'time_apart' => [
+                'affection' => 0,
+                'trust' => 1,
+                'commitment' => 0,
+                'reason' => 'Giving space prevented deeper harm.',
+            ],
+            default => [
+                'affection' => 0,
+                'trust' => 0,
+                'commitment' => 0,
+                'reason' => null,
+            ],
+        };
+
+        $character = $this->characterRecoveryPath($characterId, $method);
+
+        return [
+            'affection' => $base['affection'] + $character['affection'],
+            'trust' => $base['trust'] + $character['trust'],
+            'commitment' => $base['commitment'] + $character['commitment'],
+            'reason' => trim((string) $base['reason'] . ' ' . (string) $character['reason']),
+        ];
+    }
+
     public function disabledReason(array $usage, array $cost): ?string
     {
         $missing = [];
@@ -318,9 +429,82 @@ final class ActionEconomyService
         ];
     }
 
+    private function characterRecoveryPath(string $characterId, string $method): array
+    {
+        $empty = ['affection' => 0, 'trust' => 0, 'commitment' => 0, 'reason' => ''];
+
+        return match ($characterId) {
+            'kyrathen' => in_array($method, ['discuss', 'compromise'], true)
+                ? [
+                    'affection' => 0,
+                    'trust' => 1,
+                    'commitment' => 1,
+                    'reason' => 'Kyra\'then respects honorable repair.',
+                ]
+                : $empty,
+            'seraphina' => in_array($method, ['apologize', 'discuss'], true)
+                ? [
+                    'affection' => 0,
+                    'trust' => 1,
+                    'commitment' => 0,
+                    'reason' => 'Seraphina values emotional clarity.',
+                ]
+                : $empty,
+            'thessarian' => $method === 'discuss'
+                ? [
+                    'affection' => 0,
+                    'trust' => 2,
+                    'commitment' => 0,
+                    'reason' => 'Thessarian responds to clear analysis.',
+                ]
+                : $empty,
+            'lyralynn' => in_array($method, ['apologize', 'compromise'], true)
+                ? [
+                    'affection' => 1,
+                    'trust' => 1,
+                    'commitment' => 0,
+                    'reason' => 'Lyralynn recovers through care and gentleness.',
+                ]
+                : $empty,
+            'zarantha' => in_array($method, ['compromise', 'discuss'], true)
+                ? [
+                    'affection' => 0,
+                    'trust' => 1,
+                    'commitment' => 1,
+                    'reason' => 'Zarantha respects decisive accountability.',
+                ]
+                : $empty,
+            'thalassos' => in_array($method, ['time_apart', 'discuss'], true)
+                ? [
+                    'affection' => 0,
+                    'trust' => 1,
+                    'commitment' => 0,
+                    'reason' => 'Thalassos values patient reflection.',
+                ]
+                : $empty,
+            'nightshade' => $method === 'discuss'
+                ? [
+                    'affection' => 0,
+                    'trust' => 2,
+                    'commitment' => 0,
+                    'reason' => 'Nightshade rewards direct honesty.',
+                ]
+                : $empty,
+            'kronos' => $method === 'discuss'
+                ? [
+                    'affection' => 0,
+                    'trust' => 2,
+                    'commitment' => 0,
+                    'reason' => 'Kronos responds to transparent reasoning.',
+                ]
+                : $empty,
+            default => $empty,
+        };
+    }
+
     private function requireRepository(): void
     {
-        if (!$this->gameRepository instanceof GameRepository) {
+        if (!$this->gameRepository instanceof GameLedgerRepository) {
             throw new LogicException('Action economy usage requires a game repository.');
         }
     }

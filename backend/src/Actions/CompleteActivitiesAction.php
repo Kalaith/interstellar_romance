@@ -83,22 +83,25 @@ final class CompleteActivitiesAction
                     (int) $save['id'],
                     (string) $relationship['character_id'],
                     (int) $save['current_week']
-                ) ? 0 : -2;
-                $conflictPenalty = $this->actionEconomy->hasActiveConflict(
-                    (int) $save['id'],
-                    (string) $relationship['character_id']
-                ) ? -2 : 0;
+                ) ? 0 : -1;
+                $conflictPressure = $this->actionEconomy->activeConflictPressure(
+                    $this->gameRepository->listConflicts(
+                        (int) $save['id'],
+                        (string) $relationship['character_id']
+                    )
+                );
+                $conflictPenalty = (int) $conflictPressure['affection'];
                 $followUpPenalty = $this->actionEconomy->hasDateAwaitingFollowUp(
                     (int) $save['id'],
                     (string) $relationship['character_id'],
                     (int) $save['current_week']
                 ) ? -1 : 0;
-                $trustChange = $followUpPenalty;
+                $trustChange = (int) $conflictPressure['trust'] + $followUpPenalty;
                 $affectionChange = $activityBonus + $neglectPenalty + $conflictPenalty + $followUpPenalty;
                 $newAffection = max(0, min(100, (int) $relationship['affection'] + $affectionChange));
                 $newTrust = max(0, min(100, (int) $relationship['trust'] + $trustChange));
-                $mood = $conflictPenalty < 0
-                    ? 'tired'
+                $mood = $conflictPressure['mood'] !== null
+                    ? (string) $conflictPressure['mood']
                     : ($activityBonus > 0
                     ? 'cheerful'
                     : ($neglectPenalty < 0 ? 'melancholy' : $this->rules->randomMood($moods)));
@@ -111,7 +114,9 @@ final class CompleteActivitiesAction
                     $reasons[] = 'Felt neglected this cycle';
                 }
                 if ($conflictPenalty < 0) {
-                    $reasons[] = 'Unresolved conflict added pressure';
+                    foreach ($conflictPressure['items'] as $pressure) {
+                        $reasons[] = (string) $pressure['reason'];
+                    }
                 }
                 if ($followUpPenalty < 0) {
                     $reasons[] = 'A date follow-up was missed';
@@ -132,6 +137,7 @@ final class CompleteActivitiesAction
                     'trust_change' => $trustChange,
                     'mood' => $mood,
                     'reason' => implode('; ', $reasons),
+                    'conflict_pressure' => $conflictPressure['items'],
                 ];
             }
 

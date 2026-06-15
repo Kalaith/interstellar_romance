@@ -47,18 +47,22 @@ interface SelfImprovementState {
 }
 
 interface WeeklySummary {
+  week: number;
   activity_ids: string[];
   activities: unknown[];
   energy_used: number;
   time_slots_used: number;
+  social_cost: number;
   previous_stats: Record<string, number>;
   stats: Record<string, number>;
   relationship_effects: {
     character_id: string;
     character_name: string;
     affection_change: number;
+    trust_change: number;
     mood: string;
     reason: string;
+    conflict_pressure?: unknown[];
   }[];
   random_event?: {
     type: string;
@@ -69,9 +73,9 @@ interface WeeklySummary {
 
 const emptyActionEconomy: ActionEconomyState = {
   week: 1,
-  energy: { available: 10, used: 0, remaining: 10 },
+  energy: { available: 12, used: 0, remaining: 12 },
   timeSlots: { available: 5, used: 0, remaining: 5 },
-  socialFocus: { available: 8, used: 0, remaining: 8 },
+  socialFocus: { available: 10, used: 0, remaining: 10 },
   costs: {
     storylineChoice: { energy: 2, timeSlots: 1, socialFocus: 1 },
     dateFollowUp: { energy: 0, timeSlots: 0, socialFocus: 1 },
@@ -705,10 +709,12 @@ function normalizeWeeklySummary(raw: unknown): WeeklySummary | null {
   }
   const summary = asRecord(raw);
   return {
+    week: toNumber(summary.week),
     activity_ids: asArray<string>(summary.activity_ids),
     activities: asArray(summary.activities),
     energy_used: toNumber(summary.energy_used),
     time_slots_used: toNumber(summary.time_slots_used),
+    social_cost: toNumber(summary.social_cost),
     previous_stats: asRecord(summary.previous_stats) as Record<string, number>,
     stats: asRecord(summary.stats) as Record<string, number>,
     relationship_effects: asArray(summary.relationship_effects).map(effect => {
@@ -717,8 +723,10 @@ function normalizeWeeklySummary(raw: unknown): WeeklySummary | null {
         character_id: asString(record.character_id),
         character_name: asString(record.character_name),
         affection_change: toNumber(record.affection_change),
+        trust_change: toNumber(record.trust_change),
         mood: asString(record.mood),
         reason: asString(record.reason),
+        conflict_pressure: asArray(record.conflict_pressure),
       };
     }),
     random_event: summary.random_event

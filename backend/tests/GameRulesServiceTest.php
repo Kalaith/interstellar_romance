@@ -99,11 +99,11 @@ final class GameRulesServiceTest extends TestCase
             $economy->dialogueCost(['topic' => 'flirt', 'emotion' => 'flirty'])
         );
         self::assertSame(
-            ['energy' => 4, 'timeSlots' => 3, 'socialFocus' => 1],
+            ['energy' => 4, 'timeSlots' => 2, 'socialFocus' => 1],
             $economy->dateCost(['duration_minutes' => 150])
         );
         self::assertSame(
-            ['energy' => 3, 'timeSlots' => 1, 'socialFocus' => 0],
+            ['energy' => 2, 'timeSlots' => 1, 'socialFocus' => 0],
             $economy->weeklyActivityCost(['energy_cost' => null, 'time_slots' => null])
         );
     }
@@ -117,9 +117,9 @@ final class GameRulesServiceTest extends TestCase
             ['energy' => 4, 'timeSlots' => 2, 'socialFocus' => 2]
         ));
         self::assertSame(
-            'not enough 1 energy, 1 time slot, 1 social focus',
+            'not enough 2 energy, 1 time slot, 1 social focus',
             $economy->disabledReason(
-                ['energy' => 8, 'timeSlots' => 4, 'socialFocus' => 7],
+                ['energy' => 11, 'timeSlots' => 4, 'socialFocus' => 9],
                 ['energy' => 3, 'timeSlots' => 2, 'socialFocus' => 2]
             )
         );
